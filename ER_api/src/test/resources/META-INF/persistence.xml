@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!-- THIS FILE IS FOR UNIT TESTING ONLY -->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0">
+  
+     
+   	<persistence-unit name="test" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<class>com.vizzavi.ecommerce.business.selfcare.PaymentTxn</class>
+		<class>com.vizzavi.ecommerce.business.selfcare.RefundTxn</class>
+		<class>com.vizzavi.ecommerce.business.selfcare.ModifyTxn</class>
+		<class>com.vizzavi.ecommerce.business.selfcare.Subscription</class>
+		<class>com.vizzavi.ecommerce.business.selfcare.BasicAccount</class>
+		<class>com.vizzavi.ecommerce.business.common.ChargingResource</class>
+		<class>com.vizzavi.ecommerce.business.selfcare.UserGroup</class>
+		<class>com.vizzavi.ecommerce.business.selfcare.ResourceBalance</class>
+													
+ 	<properties>
+       <!--  
+        <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+        <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+        <property name="hibernate.connection.username" value="sa"/>
+        <property name="hibernate.connection.password" value=""/>
+        <property name="hibernate.show_sql" value="true" /> -->
+           	<property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" />
+           	 <property name="hibernate.connection.url" value="jdbc:oracle:thin:@dbhost:1521:db"/>
+            <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.driver.OracleDriver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@dbhost:1521:db" />
+            <property name="javax.persistence.jdbc.user" value="matt" />
+            <property name="javax.persistence.jdbc.password" value="matt" />
+        
+    </properties>
+		
+	</persistence-unit>
+   
+   
+</persistence>
