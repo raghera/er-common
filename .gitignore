@@ -2,6 +2,12 @@
 ### Java template
 *.class
 
+# Created by .ignore support plugin (hsz.mobi)
+.idea/
+target/
+*.iml
+
+
 # Package Files #
 *.jar
 *.war
