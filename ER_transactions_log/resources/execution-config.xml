@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"> -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="contextconfig" class="com.vodafone.global.er.translog.ExecutionContextConfig">
+		<property name="ExecutionConfigMap">
+			<map>
+				<entry>
+					<key>
+						<value>modifyMsisdn</value>
+					</key>
+					<value>CHANGE_MSISDN</value>
+				</entry>
+				<entry>
+					<key>
+						<value>purchasePackageMsisdn</value>
+					</key>
+					<value>PURCHASE</value>
+				</entry>
+				<entry>
+					<key>
+						<value>renewPurchasePackageMsisdn</value>
+					</key>
+					<value>RENEW_PURCHASE</value>
+				</entry>
+				<entry>
+					<key>
+						<value>inactivateAccount</value>
+					</key>
+					<value>TERMINATE_ACCOUNT</value>
+				</entry>
+				<entry>
+					<key>
+						<value>inactivateSubscription</value>
+					</key>
+					<value>INACTIVATE_SUBSCRIPTION</value>
+				</entry>				
+			</map>
+		</property>
+	</bean>
+</beans>
+
+
