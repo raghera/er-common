@@ -1,0 +1,48 @@
+package com.vodafone.global.er.generated;
+
+import java.io.*;
+import java.net.*;
+import java.util.HashMap;
+
+import java.util.Locale;
+
+import java.util.Properties;
+import java.util.Vector;
+
+import com.vizzavi.ecommerce.lw.*;
+import com.vizzavi.ecommerce.resources.PropertyServer;
+
+
+
+import <XDtPackage:packageOf><XDtClass:fullClassName/></XDtPackage:packageOf>.*;
+
+
+public class <XDtClass:classOf><XDtClass:className/>Mock</XDtClass:classOf> implements <XDtClass:classOf><XDtClass:className/></XDtClass:classOf> {
+
+   
+    private Locale locale;
+    private static LWLogger log = LWSupportFactoryImpl.getInstance().getLogger(<XDtClass:classOf><XDtClass:className/>Stub</XDtClass:classOf>.class);
+    
+    
+    public <XDtClass:classOf><XDtClass:className/>Mock</XDtClass:classOf>(Locale locale) {
+        this.locale = locale;
+    }
+    
+
+<XDtMethod:forAllMethods>
+    public <XDtMethod:methodType/> <XDtMethod:methodName/> (<XDtParameter:parameterList/>) <XDtMethod:exceptionList/> {
+        
+        
+        
+        <XDtMethod:ifDoesntReturnVoid>
+        <XDtType:ifIsNotPrimitive value="<XDtMethod:methodType/>">
+        return null;
+        </XDtType:ifIsNotPrimitive>
+        <XDtType:ifIsPrimitive value="<XDtMethod:methodType/>">
+        return <XDtPrimitives:initPrimitive type="<XDtMethod:methodType/>"/>;
+        </XDtType:ifIsPrimitive>
+        </XDtMethod:ifDoesntReturnVoid>
+    }
+</XDtMethod:forAllMethods>
+
+}

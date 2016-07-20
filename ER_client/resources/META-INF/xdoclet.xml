@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+<!DOCTYPE xdoclet-module PUBLIC "-//XDoclet Team//DTD XDoclet Module 1.0//EN" "http://xdoclet.sourceforge.net/dtd/xdoclet-module_1_0.dtd">
+-->
+<xdoclet-module>
+  <taghandler namespace="Sequence" class="com.vodafone.global.er.xdoclet.SequenceTagsHandler"/>
+  <taghandler namespace="Primitives" class="com.vodafone.global.er.xdoclet.PrimitivesTagsHandler"/>
+  <taghandler namespace="TypeConv" class="com.vodafone.global.er.xdoclet.TypeConverterTagsHandler"/>
+</xdoclet-module>
