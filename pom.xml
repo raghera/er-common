@@ -40,11 +40,6 @@
     </dependencyManagement>
 
     <modules>
-        <!--<module>er-trans-log</module>-->
-        <!--<module>er-api</module>-->
-        <!--<module>er-client</module>-->
-        <!--<module>er-decoupling-client</module>-->
-        <!--<module>er-decoupling-common</module>-->
         <module>ER_api</module>
         <module>ER_transactions_log</module>
         <module>DECOUPLING_common</module>
@@ -65,7 +60,20 @@
                     <encoding>${build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
     </build>
 
 </project>

@@ -2,11 +2,9 @@ package com.vodafone.global.er.decoupling.client;
 
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 import javax.xml.bind.Element;
 import javax.xml.bind.JAXBException;
@@ -48,13 +46,40 @@ import com.vodafone.global.er.ulf.service.impl.ERULFLogDataManagerImpl;
  */
 class DecouplingClient	{
 
-	static final Logger _log = LoggerFactory.getLogger(DecouplingClient.class);
+
+    static final Logger _log = LoggerFactory.getLogger(DecouplingClient.class);
+    private static final String PROPERTY_FILE_NAME = "env.properties";
+
+    private static final String _ER_SERVER_HOST;
+    private static final int _ER_SERVER_PORT;
+
+	static {
+        Properties props = new Properties();
+
+		final InputStream in = DecouplingClient.class.getClassLoader().getResourceAsStream(PROPERTY_FILE_NAME);
+        try {
+            props.load(in);
+        }catch (IOException ioEx) {
+            _log.warn("Unable to load properties from classpath - could not find filename: " + PROPERTY_FILE_NAME
+                    + ". Will use system defaults."
+            );
+        }
+        _ER_SERVER_HOST = props.getProperty("er.server.host", "0.0.0.0");
+        _ER_SERVER_PORT = Integer.parseInt(props.getProperty("er.server.port", "8094"));
+
+        _log.info("DECOUPLING_client host=" + _ER_SERVER_HOST + " port=" + _ER_SERVER_PORT);
+
+	}
+
+
 	private final boolean _use_gig = ConfigProvider.getProperty("server.communication.api", "DECOUPLING").equalsIgnoreCase("GIG");
 
 	private final String _HEADER_CONTENT_TYPE = ConfigProvider.getProperty("http.header.content-type", "application/xml");
 
-	private final String _ER_SERVER_HOST = ConfigProvider.getProperty("er.server.host", "0.0.0.0");
-	private final int 	 _ER_SERVER_PORT = ConfigProvider.getPropertyAsInteger("er.server.port", 8094);
+//	private final String _ER_SERVER_HOST = ConfigProvider.getProperty("er.server.host", "0.0.0.0");
+//	private final int 	 _ER_SERVER_PORT = ConfigProvider.getPropertyAsInteger("er.server.port", 8094);
+
+
 
 	//MQC 8714 - set from config parameter
 	private final String _GIG_BASIC_AUTH_CREDENTIALS = ConfigProvider.getProperty("erif.gig.credentials","");

@@ -20,7 +20,9 @@ import com.vizzavi.ecommerce.common.ErCountry;
 @Entity
 @Table(name="ER_PAYMENT_TRANSACTIONS")
 public class PaymentTxn extends Transaction {
-	
+
+	private static final long serialVersionUID = -2371875240842074575L;
+
 	public PaymentTxn(){
 		
 	}

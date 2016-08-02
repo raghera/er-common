@@ -86,6 +86,18 @@ public class CatalogUtil {
 	
 	}
 
+    /*
+    Pass in a service pricepoint id and get the package id returned.
+    If you pass in 'content:pAlt_TAX_sAlt_1_999_999_999' and get pAlt back
+     */
+    public static String getPackageIdFromServicePricepoint(String pricePoint) {
+        if(pricePoint.indexOf(PricePoint.CONTENT_PRICEPOINT_ID_PREFIX)==0) {
+            int underScore = pricePoint.indexOf("_", PricePoint.CONTENT_PRICEPOINT_ID_PREFIX.length());
+            String substr = pricePoint.substring(PricePoint.CONTENT_PRICEPOINT_ID_PREFIX.length(), underScore);
+            return substr;
+        }
+        return pricePoint;
+    }
 
 	/**
 	 * <p>pass in a "full" packageId and it will get the pricepoint string (required eg for catalogApi.getPricepoint)</p>
@@ -180,20 +192,6 @@ public class CatalogUtil {
 	    return translatedPricingText;
 	    
 	}
-	
-	
-//	@Test
-//	public void testUtil()	{
-//		assertTrue(matchesPackageId("p001", "p001"));
-//		assertFalse(matchesPackageId("!(p001)", "p001"));
-//		assertTrue(matchesPackageId("!(p002)", "p001"));
-//		assertFalse(matchesPackageId("p002", "p001"));
-//		assertTrue(matchesPackageId("PK_Spotify.*", "PK_Spotify_SA"));
-//		assertFalse(matchesPackageId("!PK_Spotify", "PK_Spotify"));
-//		assertTrue(matchesPackageId("!PK_Spotify", "PK_netflix"));
-//
-//	}
-	
 	
 	   /**
      * Checks whether the supplied packageId string matches the regex - incorporating custom negation (!) syntax<br/>

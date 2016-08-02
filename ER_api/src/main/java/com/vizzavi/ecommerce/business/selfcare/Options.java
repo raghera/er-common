@@ -10,6 +10,8 @@ import javax.persistence.*;
 @Table(name="ER_OPTIONS")
 public class Options implements Serializable	{
 
+    private static final long serialVersionUID = 3299708651771836112L;
+
 	public Options() {
 	}
 

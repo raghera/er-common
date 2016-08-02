@@ -1,18 +1,17 @@
 package com.vizzavi.ecommerce.business.common;
 
+import com.vizzavi.ecommerce.business.common.generated.currency.Currencies;
+import com.vizzavi.ecommerce.business.common.generated.currency.Currency;
+import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
+
+import javax.persistence.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
-import com.vizzavi.ecommerce.business.common.generated.currency.Currencies;
-import com.vizzavi.ecommerce.business.common.generated.currency.Currency;
-import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
 
 /**
 * Represents the resources that customers use to pay for goods.
@@ -50,7 +49,7 @@ public final class ChargingResource implements Serializable	{
 	//@SequenceGenerator(name="resseq", sequenceName="er_resources_seq", allocationSize=1)
 	@Id
 	@Column(name="resource_obj_id", insertable=false, updatable=false)
-    int id;
+    long id;
     
 	@Column(name="country_obj_id", insertable=false, updatable=false)
     int countryId;
