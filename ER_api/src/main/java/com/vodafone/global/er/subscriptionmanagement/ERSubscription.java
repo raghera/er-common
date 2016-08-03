@@ -1,4 +1,4 @@
-package com.com.vodafone.global.er.subscriptionmanagement;
+package com.vodafone.global.er.subscriptionmanagement;
 
 import com.vizzavi.ecommerce.business.catalog.CatalogPackage;
 import com.vizzavi.ecommerce.business.selfcare.PurchasedService;

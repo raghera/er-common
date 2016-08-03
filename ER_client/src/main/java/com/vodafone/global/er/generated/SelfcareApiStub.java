@@ -1,6 +1,6 @@
 package com.vodafone.global.er.generated;
 
-import com.com.vodafone.global.er.subscriptionmanagement.ERSubscription;
+import com.vodafone.global.er.subscriptionmanagement.ERSubscription;
 import com.vizzavi.ecommerce.business.charging.BaseAuthorization;
 import com.vizzavi.ecommerce.business.common.AccountNotFoundException;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
@@ -1206,6 +1206,7 @@ if (generatedException instanceof EcommerceException)
 	     }
             try {
             	long beforeReadObject = System.currentTimeMillis() ;
+                ERSubscription erSubscription;
                 Object result = ois.readObject();
               	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
                    if (result == null)

@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package com.com.vodafone.global.er.subscriptionmanagement;
+package com.vodafone.global.er.subscriptionmanagement;
 
 import com.vizzavi.ecommerce.business.selfcare.PurchasedService;
 
