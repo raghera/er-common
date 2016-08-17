@@ -33,7 +33,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public void setCustCareDetails (String csrId,String reason)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap<String, Serializable> requestPayload = new HashMap<String, Serializable>();
@@ -124,7 +125,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public boolean inactivateAccount (String clientId,String msisdn,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -357,7 +359,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public boolean inactivateAccount (String clientId,String msisdn,boolean validateAccount,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -592,7 +595,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public boolean inactivateSubscription (String clientId,String msisdn,String subscriptionId,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -827,7 +831,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public RefundAuthorization refundTransactionMonetary (String clientId,String msisdn,String transactionId,double amount,com.vizzavi.ecommerce.business.common.ChargingResource res,RefundAttributes attributes) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -951,6 +956,7 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public RefundAuthorization refundTransactionEnlargement (String clientId,String msisdn,String transactionId,long numberDaysToExtend,RefundAttributes attributes) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1074,7 +1080,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public RefundAuthorization refundTransactionDiscount (String clientId,String msisdn,String transactionId,double discount,RefundAttributes attributes) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -1197,7 +1204,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public boolean modifyMsisdn (String clientId,String msisdn,String newMsisdn,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -1432,7 +1440,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public boolean modifyBan (String clientId,String msisdn,String newBan,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	    PostMethod method = null ;
+	    boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -1545,12 +1554,19 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	}
         return false;
     }
+
+	@Override
+	public BasicAccount getBasicAccount (String clientId,String msisdn,int accessDevice) throws EcommerceException {
+		return getBasicAccount(clientId, msisdn, false);
+	}
+    
     @Override
-	public BasicAccount getBasicAccount(String clientId, String msisdn,
-			boolean forceRefresh) throws EcommerceException {
+//	public BasicAccount getBasicAccount (String clientId,String msisdn,int accessDevice) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public BasicAccount getBasicAccount(String clientId, String msisdn, boolean forceRefresh) throws EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -1559,6 +1575,7 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
             requestPayload.put("methodName",methodName);
             requestPayload.put("clientId",clientId);
             requestPayload.put("msisdn",msisdn);
+//            requestPayload.put("accessDevice", new Integer(accessDevice) );
 	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
 	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
@@ -1664,11 +1681,6 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	   }
 	}
         return null;
-    }
-
-    @Override
-	public BasicAccount getBasicAccount (String clientId,String msisdn,int accessDevice) throws EcommerceException {
-        return getBasicAccount(clientId, msisdn, false);
     }
 
 //    @Override
@@ -1792,7 +1804,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public boolean inactivateSubscription (String clientId,String msisdn,int device,CustcareAttributes custcareAttributes) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -1965,16 +1978,16 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 //					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
 //                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
 //                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
 //                }
-//                else                 
+//                else
 //                {
 //                }
 //            }
 //            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");              
+//                log.error("Primitive data in stream");
 //                return ois.readBoolean();
 //            }
 //            catch (ClassNotFoundException e4) {
@@ -1992,15 +2005,15 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 //                     if (generatedException instanceof  EcommerceException){
 //                          throw (EcommerceException) generatedException ;
 //                      }
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", e2);
 //                }
 //	     else{
 //	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
 //
 //	     }
-//        } 
+//        }
 //        finally {
 //	   try {
 //                if (oos != null) {
@@ -2010,7 +2023,7 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 //	            ois.close();
 //	       }
 //       		if (method != null ){
-//       		log.debug("Releasing http connection" );  
+//       		log.debug("Releasing http connection" );
 //	     	  method.releaseConnection();
 //		}
 //	   }
@@ -2025,7 +2038,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public RefundAuthorization refundTransactionCredit (RefundAttributes refundAttr) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -2144,7 +2158,8 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	public Subscription[] getSubscriptions (String clientId,String msisdn,int device) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -2269,7 +2284,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public Subscription[] getSubscriptions (String clientId,String msisdn,int device,SubscriptionFilter filter) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -2395,7 +2411,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public boolean modifySubscriptionChargingMethod (String clientId,String msisdn,int deviceType,String packageSubId,int chargingMethod) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -2517,7 +2534,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public boolean modifySubscriptionChargingMethod (String clientId,String msisdn,int deviceType,String packageSubId,int chargingMethod,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -2641,7 +2659,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public Transaction[] getTransactions (String clientId,String msisdn,int deviceType,java.util.Date startDate,java.util.Date endDate,int maxNum) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -2765,7 +2784,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public Transaction[] getTransactions (String clientId,String msisdn,int accessDevice,TransactionFilter filter) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -2887,7 +2907,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public Transaction getTransaction (String clientId,String transId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3007,7 +3028,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public Transaction[] getPaymentTransactions (String clientId,String msisdn,int deviceType,TransactionFilter filter) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3129,7 +3151,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public ResourceBalance[] getBalances (String clientId,String msisdn,int device) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3254,7 +3277,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public Subscription getSubscription (String clientId,String msisdn,int deviceType,String packageSubId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3373,10 +3397,11 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
     }
 
     @Override
-	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws EcommerceException {
+	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3501,7 +3526,8 @@ if (generatedException instanceof java.rmi.RemoteException)
 	public boolean modifySubscriptionChargingMethod (String clientId,String msisdn,int deviceType,CustcareAttributes attr) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3632,7 +3658,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //            requestPayload.put("methodName",methodName);
 //            requestPayload.put("clientId",clientId);
 //            requestPayload.put("msisdn",msisdn);
-//            requestPayload.put("device", new Integer(device) );  
+//            requestPayload.put("device", new Integer(device) );
 //	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 //
 //	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
@@ -3687,17 +3713,17 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //                          throw (com.vizzavi.ecommerce.business.common.AccountNotFoundException) generatedException ;
 //if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
 //                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
 //                }
-//                else                 
+//                else
 //                {
 //                    return (ResourceBalance[])result;
 //                }
 //            }
 //            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");              
+//                log.error("Primitive data in stream");
 //            }
 //            catch (ClassNotFoundException e4) {
 //                log.error("Exception during deserialization", e4);
@@ -3715,15 +3741,15 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //                     if (generatedException instanceof  EcommerceException){
 //                          throw (EcommerceException) generatedException ;
 //                      }
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", e2);
 //                }
 //	     else{
 //	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
 //
 //	     }
-//        } 
+//        }
 //        finally {
 //	   try {
 //                if (oos != null) {
@@ -3733,7 +3759,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //	            ois.close();
 //	       }
 //       		if (method != null ){
-//       		log.debug("Releasing http connection" );  
+//       		log.debug("Releasing http connection" );
 //	     	  method.releaseConnection();
 //		}
 //	   }
@@ -3748,7 +3774,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public ResourceBalance[] getBalances (String msisdn,String clientId,int deviceId,com.vodafone.global.er.business.selfcare.BalanceFilter filter) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3874,7 +3901,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public com.vodafone.global.er.business.selfcare.ParentTransaction getParentTransaction (String clientId,String msisdn,TransactionFilter transactionfilter) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -3995,7 +4023,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public com.vodafone.global.er.business.selfcare.MicroServiceStatus[] getMicroServiceStatus (String clientId,String msisdn,MicroServiceFilter msfilter) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -4116,7 +4145,8 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public Transaction getTransaction (String clientId,TransactionFilter filter) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-	PostMethod method = null ;
+	boolean state = true;
+        PostMethod method = null ;
 
         try {
             HashMap requestPayload = new HashMap();
@@ -4275,7 +4305,6 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 		log.info("ER delegate connection URL: " + url);
 
 		return url;
-
 
 	}
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
@@ -4473,11 +4502,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
             }
             catch (OptionalDataException e1) {
                 log.error("Primitive data in stream");              
-                try {
-					return (ModifyAuthorisation) ois.readObject();
-				} catch (ClassNotFoundException e) {
-					throw new EcommerceException(e1.getMessage(), e);
-				}
+                return (ModifyAuthorisation) ois.readObject();
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -4598,7 +4623,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
             catch (OptionalDataException e1) {
                 log.error("Primitive data in stream");              
                 try {
-					return (ModifyAuthorisation) ois.readObject();
+                    return (ModifyAuthorisation) ois.readObject();
 				} catch (ClassNotFoundException e) {
 					throw new EcommerceException(e);
 				}
@@ -4814,7 +4839,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			catch(IOException ie ){
 			     ie.printStackTrace();
 			}
-	    }
+	        }
 		else {
 		     URLConnection conn = null;
 		     conn = getConnection();
@@ -4829,13 +4854,13 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
                 Object result = ois.readObject();
               	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
                 log.debug("Result object type: " + result.getClass().getName());
-                
+
                 //Expected result
                 if (result != null && result instanceof ModifyAuthorisation) {
                 	 modAuth = (ModifyAuthorisation)result;
                 	log.debug("ModifyAuthorisation returned: {} ", modAuth );
                 }
-                
+
                 if (result instanceof ExceptionAdapter) {
 					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
 					Vector exceptionVector = new Vector();
@@ -4995,7 +5020,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
 				try {
-					return (ModifyAuthorisation) ois.readUnshared();
+				return (ModifyAuthorisation) ois.readUnshared();
 				} catch (ClassNotFoundException e) {
 					throw new EcommerceException(e);
 				}
@@ -5135,7 +5160,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
 				try {
-					return (ModifyAuthorisation) ois.readUnshared();
+				    return (ModifyAuthorisation) ois.readUnshared();
 				} catch (ClassNotFoundException e) {
 					throw new EcommerceException(e);
 				}
@@ -5198,6 +5223,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
+        boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -5384,17 +5410,17 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
 //                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
 //                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
 //                }
-//                else                 
+//                else
 //                {
 //                    return (RefundAuthorization)result;
 //                }
 //            }
 //            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");              
+//                log.error("Primitive data in stream");
 //            }
 //            catch (ClassNotFoundException e4) {
 //                log.error("Exception during deserialization", e4);
@@ -5411,15 +5437,15 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //                     if (generatedException instanceof  EcommerceException){
 //                          throw (EcommerceException) generatedException ;
 //                      }
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", e2);
 //                }
 //	     else{
 //	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
 //
 //	     }
-//        } 
+//        }
 //        finally {
 //	   try {
 //                if (oos != null) {
@@ -5429,7 +5455,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //	            ois.close();
 //	       }
 //       		if (method != null ){
-//       		log.debug("Releasing http connection" );  
+//       		log.debug("Releasing http connection" );
 //	     	  method.releaseConnection();
 //		}
 //	   }
@@ -5448,6 +5474,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
+        boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -5569,6 +5596,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	public ModifyAuthorisation modifySpendLimits (String clientId,String msisdn,SpendLimits spendLimits,String csrId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
     	ObjectOutputStream oos = null;
     	ObjectInputStream ois = null;
+    	boolean state = true;
     	PostMethod method = null ;
 
     	try {
@@ -5773,7 +5801,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
 				try {
-					return (ModifyAuthorisation) ois.readUnshared();
+				    return (ModifyAuthorisation) ois.readUnshared();
 				} catch (ClassNotFoundException e) {
 					throw new EcommerceException(e);
 				}
@@ -5913,7 +5941,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
 				try {
-					return (ModifyAuthorisation) ois.readUnshared();
+				return (ModifyAuthorisation) ois.readUnshared();
 				} catch (ClassNotFoundException e) {
 					throw new EcommerceException(e);
 				}
@@ -5975,7 +6003,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			throws EcommerceException {
 		throw new RuntimeException("getTransaction(String, String, long) not supported in ecom, only decoupling ");
 	}
-	
+
 	 /**
      * JIRA ET148 Add SMS blacklist flag to opt out of courtesy SMS notifications
 	 * @param clientId
@@ -6033,7 +6061,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 
 	  /**
      * Jira ET245 implement get subscriptions in decoupling version 2
-     * 
+     *
      * @param msisdn
      * @param filter
      * @param locale

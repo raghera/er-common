@@ -540,7 +540,7 @@ public class ProvisionApiStub  extends HttpClientConnector implements ProvisionA
     }
 
 	protected String getDelegateUrl() {
-//        String serverHost = ConfigProvider.getProperty("er.server.host", "0.0.0.0");
+        //        String serverHost = ConfigProvider.getProperty("er.server.host", "0.0.0.0");
 ////        int serverPort = ConfigProvider.getPropertyAsInteger("er.server.port", 8094);
 //        int serverPort = ConfigProvider.getPropertyAsInteger("er.server.port", 8888);
 //        String url = "http://" + serverHost + ":" + serverPort + "/delegates/ProvisionApi";
@@ -570,7 +570,6 @@ public class ProvisionApiStub  extends HttpClientConnector implements ProvisionA
         log.info("ER delegate connection URL: " + url);
 
         return url;
-
 
     }
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {

@@ -1,6 +1,5 @@
 package com.vodafone.global.er.generated;
 
-import com.vodafone.global.er.subscriptionmanagement.ERSubscription;
 import com.vizzavi.ecommerce.business.charging.BaseAuthorization;
 import com.vizzavi.ecommerce.business.common.AccountNotFoundException;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
@@ -168,7 +167,6 @@ if (generatedException instanceof EcommerceException)
             requestPayload.put("locale", locale);
             String methodName = "getSubscriptions2";
             requestPayload.put("methodName",methodName);
-			ERSubscription subs;
             requestPayload.put("clientId",clientId);
             requestPayload.put("msisdn",msisdn);
             requestPayload.put("device", new Integer(device) );  
@@ -1206,7 +1204,6 @@ if (generatedException instanceof EcommerceException)
 	     }
             try {
             	long beforeReadObject = System.currentTimeMillis() ;
-                ERSubscription erSubscription;
                 Object result = ois.readObject();
               	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
                    if (result == null)
@@ -1280,6 +1277,7 @@ if (generatedException instanceof EcommerceException)
     }
 
     @Override
+//	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws EcommerceException, java.rmi.RemoteException {
 	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
@@ -1541,7 +1539,7 @@ if (generatedException instanceof EcommerceException)
 //            requestPayload.put("methodName",methodName);
 //            requestPayload.put("clientId",clientId);
 //            requestPayload.put("msisdn",msisdn);
-//            requestPayload.put("device", new Integer(device) );  
+//            requestPayload.put("device", new Integer(device) );
 //	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 //
 //	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
@@ -1596,17 +1594,17 @@ if (generatedException instanceof EcommerceException)
 //                          throw (AccountNotFoundException) generatedException ;
 //if (generatedException instanceof EcommerceException)
 //                          throw (EcommerceException) generatedException ;
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
 //                }
-//                else                 
+//                else
 //                {
 //                    return (ResourceBalance[])result;
 //                }
 //            }
 //            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");              
+//                log.error("Primitive data in stream");
 //            }
 //            catch (ClassNotFoundException e4) {
 //                log.error("Exception during deserialization", e4);
@@ -1624,15 +1622,15 @@ if (generatedException instanceof EcommerceException)
 //                     if (generatedException instanceof  EcommerceException){
 //                          throw (EcommerceException) generatedException ;
 //                      }
-//                     } 
-//                    else 
+//                     }
+//                    else
 //					  log.error(" Exception during serialization ", e2);
 //                }
 //	     else{
 //	        throw new EcommerceException(e2);
 //
 //	     }
-//        } 
+//        }
 //        finally {
 //	   try {
 //                if (oos != null) {
@@ -1642,7 +1640,7 @@ if (generatedException instanceof EcommerceException)
 //	            ois.close();
 //	       }
 //       		if (method != null ){
-//       		log.debug("Releasing http connection" );  
+//       		log.debug("Releasing http connection" );
 //	     	  method.releaseConnection();
 //		}
 //	   }
@@ -2189,7 +2187,6 @@ if (generatedException instanceof EcommerceException)
 
 		return url;
 
-
 	}
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
@@ -2214,13 +2211,13 @@ if (generatedException instanceof EcommerceException)
      */
 	@Override
 	public List<SubscriptionPromoCode> getSubscriptionPromoCodes(String msisdn,
-			String clientId) throws EcommerceException {
+																 String clientId) throws EcommerceException {
 		throw new RuntimeException("getSubscriptionPromoCodes(String msisdn, String clientId) not supported in ecom, only decoupling ");
 	}
 
 	  /**
      * Jira ET245 implement get subscriptions in decoupling version 2
-     * 
+     *
      * @param msisdn
      * @param filter
      * @param locale
@@ -2234,7 +2231,7 @@ if (generatedException instanceof EcommerceException)
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public List<ServiceOffer> getServiceOffers(String msisdn, String serviceIds)
 			throws EcommerceException {

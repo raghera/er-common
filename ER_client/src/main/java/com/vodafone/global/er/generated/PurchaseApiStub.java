@@ -12,7 +12,10 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Vector;
 
 public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi {
 
@@ -974,6 +977,7 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 	}
 
 	@Override
+//	public GoodwillCreditAuthorization goodwillCredit (String clientId,String msisdn,String partnerId,String merchantId,String packageId,double preRate) throws GoodwillCreditAuthorizationException {
 	public GoodwillCreditAuthorization goodwillCredit (String msisdn, GoodwillCreditAttributes goodwillCreditAttributes) throws GoodwillCreditAuthorizationException {
 		ObjectOutputStream oos = null;
 		ObjectInputStream ois = null;
@@ -985,7 +989,12 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 			requestPayload.put("locale", locale);
 			String methodName = "goodwillCredit9";
 			requestPayload.put("methodName",methodName);
+//			requestPayload.put("clientId",clientId);
 			requestPayload.put("msisdn",msisdn);
+//			requestPayload.put("partnerId",partnerId);
+//			requestPayload.put("merchantId",merchantId);
+//			requestPayload.put("packageId",packageId);
+//			requestPayload.put("preRate", new Double(preRate) );
 			requestPayload.put("goodwillCreditAttributes",goodwillCreditAttributes);
 			String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
@@ -1109,7 +1118,7 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 //		log.info("ER delegate connection URL: " + url);
 //		return url;
 		final String filename = "env.properties";
-        final String apiName = "PurchaseApi";
+		final String apiName = "PurchaseApi";
 		Properties props = new Properties();
 		String url = "";
 		try {
@@ -1136,15 +1145,6 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 	public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
 		return oos;
-	}
-
-	/**
-	 * a decoupling-only method, this will not be implemented in this ecom implementation
-	 * {@inheritDoc}
-	 * @see {@link PurchaseApi#getVersionInfo}
-	 */
-	public Map<String, String> getVersionInfo() {
-		return null;
 	}
 
 }

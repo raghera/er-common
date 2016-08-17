@@ -19,10 +19,10 @@ import java.util.*;
 public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
 
     /**
-     *
-     */
-    private static final long	serialVersionUID	= -283724848623294431L;
-    private final Locale locale;
+	 * 
+	 */
+	private static final long	serialVersionUID	= -283724848623294431L;
+	private final Locale locale;
     //CR1231
     //private static LWLogger log = LWSupportFactoryImpl.getInstance().getLogger(CatalogApiStub.class);
     private static Logger log = Logger.getLogger(CatalogApiStub.class);
@@ -31,10 +31,10 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
     }
 
     @Override
-    public com.vizzavi.ecommerce.business.catalog.CatalogService getService (String id)  {
+	public com.vizzavi.ecommerce.business.catalog.CatalogService getService (String id)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -43,59 +43,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "getService1";
             requestPayload.put("methodName",methodName);
             requestPayload.put("id",id);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.CatalogService)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -104,27 +104,27 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
@@ -133,8 +133,8 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
      * @deprecated
      */
     @Deprecated
-    @Override
-    public CatalogPackage getPackage(String id)  {
+	@Override
+	public CatalogPackage getPackage(String id)  {
 //        return getPackage(id, new Date());
 //    }
 //
@@ -152,59 +152,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "getPackage2";
             requestPayload.put("methodName",methodName);
             requestPayload.put("id",id);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.CatalogPackage)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -213,38 +213,38 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
 
     @Deprecated
-    //CR1564 -Utctimezone for diff region in country
+	//CR1564 -Utctimezone for diff region in country
     @Override
-    public com.vizzavi.ecommerce.business.catalog.CatalogPackage getPackage (String packageId,String pricePointId,String tierId)  {
+	public com.vizzavi.ecommerce.business.catalog.CatalogPackage getPackage (String packageId,String pricePointId,String tierId)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -255,59 +255,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("packageId",packageId);
             requestPayload.put("pricePointId",pricePointId);
             requestPayload.put("tierId",tierId);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.CatalogPackage)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -316,35 +316,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public com.vizzavi.ecommerce.business.catalog.CatalogPackage[] getPackages ()  {
+	public com.vizzavi.ecommerce.business.catalog.CatalogPackage[] getPackages ()  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -352,59 +352,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("locale", locale);
             String methodName = "getPackages5";
             requestPayload.put("methodName",methodName);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.CatalogPackage[])result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -413,35 +413,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public com.vizzavi.ecommerce.business.catalog.CatalogService[] getServices ()  {
+	public com.vizzavi.ecommerce.business.catalog.CatalogService[] getServices ()  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -449,59 +449,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("locale", locale);
             String methodName = "getServices6";
             requestPayload.put("methodName",methodName);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.CatalogService[])result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -510,35 +510,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public com.vizzavi.ecommerce.business.catalog.CatalogPackage[] findPackagesWithService (com.vizzavi.ecommerce.business.catalog.CatalogService catalogService)  {
+	public com.vizzavi.ecommerce.business.catalog.CatalogPackage[] findPackagesWithService (com.vizzavi.ecommerce.business.catalog.CatalogService catalogService)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -547,59 +547,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "findPackagesWithService7";
             requestPayload.put("methodName",methodName);
             requestPayload.put("catalogService",catalogService);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.CatalogPackage[])result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -608,36 +608,36 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
 
     @Override
-    public CatalogPackage[] findPackagesWithService (String msisdn, CatalogService serv, PurchaseAttributes purchaseAttributes)  {
+	public CatalogPackage[] findPackagesWithService (String msisdn, CatalogService serv, PurchaseAttributes purchaseAttributes)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -648,59 +648,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("msisdn",msisdn);
             requestPayload.put("serv",serv);
             requestPayload.put("purchaseAttributes",purchaseAttributes);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.CatalogPackage[])result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -709,35 +709,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public String getVersion ()  {
+	public String getVersion ()  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -745,59 +745,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("locale", locale);
             String methodName = "getVersion10";
             requestPayload.put("methodName",methodName);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (String)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -806,27 +806,27 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
@@ -835,8 +835,8 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
      * @deprecated
      */
     @Deprecated
-    @Override
-    public PricePoint getPricePoint(String pricePointId) {
+	@Override
+	public PricePoint getPricePoint(String pricePointId) {
 //        return getPricePoint(pricePointId, new Date());
 //    }
 //
@@ -844,7 +844,7 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
 //	public com.vizzavi.ecommerce.business.catalog.PricePoint getPricePoint (String pricePointId, Date date)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -853,59 +853,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "getPricePoint11";
             requestPayload.put("methodName",methodName);
             requestPayload.put("pricePointId",pricePointId);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.PricePoint)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -914,35 +914,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public java.util.Locale getLocale ()  {
+	public java.util.Locale getLocale ()  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -950,59 +950,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("locale", locale);
             String methodName = "getLocale12";
             requestPayload.put("methodName",methodName);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (java.util.Locale)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1011,35 +1011,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public com.vizzavi.ecommerce.business.catalog.Tax getTax (String name)  {
+	public com.vizzavi.ecommerce.business.catalog.Tax getTax (String name)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1048,59 +1048,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "getTax13";
             requestPayload.put("methodName",methodName);
             requestPayload.put("name",name);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.Tax)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1109,35 +1109,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public com.vizzavi.ecommerce.business.catalog.PromotionsResult checkPromotions (String msisdn,com.vizzavi.ecommerce.business.catalog.CatalogService service)  {
+	public com.vizzavi.ecommerce.business.catalog.PromotionsResult checkPromotions (String msisdn,com.vizzavi.ecommerce.business.catalog.CatalogService service)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1147,59 +1147,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("methodName",methodName);
             requestPayload.put("msisdn",msisdn);
             requestPayload.put("service",service);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.PromotionsResult)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1208,37 +1208,37 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
 
 
     @Override
-    public Hashtable<String, ExpressData> findExpressPackagesByServiceId (String[] serviceId, boolean headline)  {
+	public Hashtable<String, ExpressData> findExpressPackagesByServiceId (String[] serviceId, boolean headline)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        //boolean state = true;
+	//boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1247,60 +1247,60 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "findExpressPackagesByServiceId17";
             requestPayload.put("methodName",methodName);
             requestPayload.put("serviceId",serviceId);
-            requestPayload.put("headline", new Boolean(headline) );
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+            requestPayload.put("headline", new Boolean(headline) );  
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (java.util.Hashtable)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1309,36 +1309,36 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
 
     @Override
-    public Map<String, ExpressData> findExpressPackagesByServiceId ( String[] serviceId, String msisdn, ExpressDisplayAttribute expressAttribute)  {
+	public Map<String, ExpressData> findExpressPackagesByServiceId ( String[] serviceId, String msisdn, ExpressDisplayAttribute expressAttribute)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1349,59 +1349,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("serviceId",serviceId);
             requestPayload.put("msisdn",msisdn);
             requestPayload.put("expressAttribute",expressAttribute);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (Map<String, ExpressData>)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1410,35 +1410,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public com.vodafone.global.er.business.catalog.BasePrice[] getBasePrices (String[] serviceId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public com.vodafone.global.er.business.catalog.BasePrice[] getBasePrices (String[] serviceId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1447,68 +1447,68 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "getBasePrices20";
             requestPayload.put("methodName",methodName);
             requestPayload.put("serviceId",serviceId);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
-                    Vector<String> exceptionVector = new Vector<String>();
-                    exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-                    if (exceptionVector.contains(exceptionName)){
-                        Exception generatedException = ((ExceptionAdapter)result).originalException ;
-                        if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
-                            throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-                    }
-                    else
-                        log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vodafone.global.er.business.catalog.BasePrice[])result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1517,48 +1517,48 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-                String exceptionName = ((EcommerceException) e2).getClass().getName();
-                Vector<String> exceptionVector = new Vector<String>();
-                exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-                if (exceptionVector.contains(exceptionName)){
-                    Exception generatedException = e2;
-                    if (generatedException instanceof  EcommerceException){
-                        throw (EcommerceException) generatedException ;
-                    }
+					String exceptionName = ((EcommerceException) e2).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = e2;
+                     if (generatedException instanceof  EcommerceException){
+                          throw (EcommerceException) generatedException ;
+                      }
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", e2);
                 }
-                else
-                    log.error(" Exception during serialization ", e2);
-            }
-            else{
-                throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+	     else{
+	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
 
-            }
-        }
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public boolean validateService (String id) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public boolean validateService (String id) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1567,62 +1567,62 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "validateService21";
             requestPayload.put("methodName",methodName);
             requestPayload.put("id",id);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
-                    Vector<String> exceptionVector = new Vector<String>();
-                    exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-                    if (exceptionVector.contains(exceptionName)){
-                        Exception generatedException = ((ExceptionAdapter)result).originalException ;
-                        if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
-                            throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-                    }
-                    else
-                        log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
                 }
-                else
+                else                 
                 {
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
                 return ois.readBoolean();
             }
             catch (ClassNotFoundException e4) {
@@ -1632,49 +1632,49 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-                String exceptionName = ((EcommerceException) e2).getClass().getName();
-                Vector<String> exceptionVector = new Vector<String>();
-                exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-                if (exceptionVector.contains(exceptionName)){
-                    Exception generatedException = e2;
-                    if (generatedException instanceof  EcommerceException){
-                        throw (EcommerceException) generatedException ;
-                    }
+					String exceptionName = ((EcommerceException) e2).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = e2;
+                     if (generatedException instanceof  EcommerceException){
+                          throw (EcommerceException) generatedException ;
+                      }
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", e2);
                 }
-                else
-                    log.error(" Exception during serialization ", e2);
-            }
-            else{
-                throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+	     else{
+	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
 
-            }
-        }
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return false;
     }
 
 
     @Override
-    public String translatePricingText (com.vizzavi.ecommerce.business.catalog.PricePoint[] pricePoints,String templateName,String languageCode,int RoamingType) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public String translatePricingText (com.vizzavi.ecommerce.business.catalog.PricePoint[] pricePoints,String templateName,String languageCode,int RoamingType) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1685,69 +1685,69 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("pricePoints",pricePoints);
             requestPayload.put("templateName",templateName);
             requestPayload.put("languageCode",languageCode);
-            requestPayload.put("RoamingType", new Integer(RoamingType) );
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+            requestPayload.put("RoamingType", new Integer(RoamingType) );  
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
-                    Vector<String> exceptionVector = new Vector<String>();
-                    exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-                    if (exceptionVector.contains(exceptionName)){
-                        Exception generatedException = ((ExceptionAdapter)result).originalException ;
-                        if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
-                            throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-                    }
-                    else
-                        log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
                 }
-                else
+                else                 
                 {
                     return (String)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1756,48 +1756,48 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-                String exceptionName = ((EcommerceException) e2).getClass().getName();
-                Vector<String> exceptionVector = new Vector<String>();
-                exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-                if (exceptionVector.contains(exceptionName)){
-                    Exception generatedException = e2;
-                    if (generatedException instanceof  EcommerceException){
-                        throw (EcommerceException) generatedException ;
-                    }
+					String exceptionName = ((EcommerceException) e2).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = e2;
+                     if (generatedException instanceof  EcommerceException){
+                          throw (EcommerceException) generatedException ;
+                      }
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", e2);
                 }
-                else
-                    log.error(" Exception during serialization ", e2);
-            }
-            else{
-                throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+	     else{
+	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
 
-            }
-        }
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     @Override
-    public boolean isUniquePromoPrecode (String precode)  {
+	public boolean isUniquePromoPrecode (String precode)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1806,53 +1806,53 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "isUniquePromoPrecode24";
             requestPayload.put("methodName",methodName);
             requestPayload.put("precode",precode);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
                 return ois.readBoolean();
             }
             catch (ClassNotFoundException e4) {
@@ -1862,35 +1862,35 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return false;
     }
-
+    
     @Override
-    public com.vizzavi.ecommerce.business.catalog.Tariff getTariff (String tariffName)  {
+	public com.vizzavi.ecommerce.business.catalog.Tariff getTariff (String tariffName)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -1899,59 +1899,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "getTariff25";
             requestPayload.put("methodName",methodName);
             requestPayload.put("tariffName",tariffName);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.Tariff)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -1960,36 +1960,36 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
 
     //MQC 5843
     @Override
-    public com.vizzavi.ecommerce.business.catalog.PurchaseOptionsAuthorization findPackagesWithServiceEx (String msisdn,com.vizzavi.ecommerce.business.catalog.CatalogService serv,com.vizzavi.ecommerce.business.charging.PurchaseAttributes purchaseAttributes)  {
+	public com.vizzavi.ecommerce.business.catalog.PurchaseOptionsAuthorization findPackagesWithServiceEx (String msisdn,com.vizzavi.ecommerce.business.catalog.CatalogService serv,com.vizzavi.ecommerce.business.charging.PurchaseAttributes purchaseAttributes)  {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -2000,59 +2000,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("msisdn",msisdn);
             requestPayload.put("serv",serv);
             requestPayload.put("purchaseAttributes",purchaseAttributes);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (com.vizzavi.ecommerce.business.catalog.PurchaseOptionsAuthorization)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -2061,41 +2061,41 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
-
-
-
+    
+    
+    
     /* CR1789
 	 * @see com.vizzavi.ecommerce.business.catalog.CatalogApi#oneStep(String[], String, boolean)
 	 */
-    @Override
-    public Hashtable<String, OneStepData> findPackagesByServiceIdOneStep(String[] serviceId, String msisdn) {
+	@Override
+	public Hashtable<String, OneStepData> findPackagesByServiceIdOneStep(String[] serviceId, String msisdn) {
 
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -2104,60 +2104,60 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             String methodName = "findPackagesByServiceIdOneStep29";
             requestPayload.put("methodName",methodName);
             requestPayload.put("serviceId",serviceId);
-            requestPayload.put("msisdn",msisdn);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+            requestPayload.put("msisdn",msisdn);  
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
                     return (java.util.Hashtable)result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -2166,37 +2166,37 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
+    
+	}
 
-    }
-
-    //CR1923 Partner Trading Limit
-    @Override
-    public com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit[] getPartnerTradingLimits() {
+	//CR1923 Partner Trading Limit
+	@Override
+	public com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit[] getPartnerTradingLimits() {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        boolean state = true;
+	boolean state = true;
         PostMethod method = null ;
 
         try {
@@ -2204,59 +2204,59 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
             requestPayload.put("locale", locale);
             String methodName = "getPartnerTradingLimits27";
             requestPayload.put("methodName",methodName);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
 
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
             try {
-                long beforeReadObject = System.currentTimeMillis() ;
+            	long beforeReadObject = System.currentTimeMillis() ;
                 Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
                 log.debug("Result object type: " + result.getClass().getName());
                 if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
                 }
-                else
+                else                 
                 {
-                    return (com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit[])result;
+                	return (com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit[])result;
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
+                log.error("Primitive data in stream");              
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -2265,133 +2265,133 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         catch (IOException e2) {
             log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
             if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
+                }
+	     else{
+	     }
+        } 
         finally {
-            try {
+	   try {
                 if (oos != null) {
                     oos.close();
                 }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
         return null;
     }
+	
+	//CR1923 Partner Trading Limit
+	@Override
+	public com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit getPartnerTradingLimit(String partnerId) {
+	       ObjectOutputStream oos = null;
+	        ObjectInputStream ois = null;
+		boolean state = true;
+	        PostMethod method = null ;
 
-    //CR1923 Partner Trading Limit
-    @Override
-    public com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit getPartnerTradingLimit(String partnerId) {
-        ObjectOutputStream oos = null;
-        ObjectInputStream ois = null;
-        boolean state = true;
-        PostMethod method = null ;
+	        try {
+	            HashMap<String, Serializable> requestPayload = new HashMap<String, Serializable>();
+	            requestPayload.put("locale", locale);
+	            String methodName = "getPartnerTradingLimit28";
+	            requestPayload.put("methodName",methodName);
+	            requestPayload.put("partnerId",partnerId);
+		    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
-        try {
-            HashMap<String, Serializable> requestPayload = new HashMap<String, Serializable>();
-            requestPayload.put("locale", locale);
-            String methodName = "getPartnerTradingLimit28";
-            requestPayload.put("methodName",methodName);
-            requestPayload.put("partnerId",partnerId);
-            String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+		   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+			try{
+				if(httpConnectionManager == null ){
+					createConnectionManager();
+				}
+				log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+				HttpClient httpclient = new HttpClient(httpConnectionManager);
 
-            if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-                try{
-                    if(httpConnectionManager == null ){
-                        createConnectionManager();
-                    }
-                    log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-                    HttpClient httpclient = new HttpClient(httpConnectionManager);
+		        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+				method = new PostMethod( getDelegateUrl() );
+				method.addRequestHeader("Content-Type", "application/octet-stream");
+			        // Serialize to a byte array
+				 byte[] buf = super.serializedPayload(requestPayload);
+				 method.setRequestBody(new ByteArrayInputStream(buf));
+				 httpclient.executeMethod(method);
 
-                    httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-                    method = new PostMethod( getDelegateUrl() );
-                    method.addRequestHeader("Content-Type", "application/octet-stream");
-                    // Serialize to a byte array
-                    byte[] buf = super.serializedPayload(requestPayload);
-                    method.setRequestBody(new ByteArrayInputStream(buf));
-                    httpclient.executeMethod(method);
-
-                    ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-                }
-                catch(IOException ie ){
-                    ie.printStackTrace();
-                }
-            }
-            else {
-                URLConnection conn = null;
-                conn = getConnection();
-                oos = getObjectOutputStream(conn);
-                oos.writeObject(requestPayload);
-                oos.flush();
-                oos.close();
-                ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-            }
-            try {
-                long beforeReadObject = System.currentTimeMillis() ;
-                Object result = ois.readObject();
-                log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-                if (result == null)
-                {
-                    log.debug("Encountered NULL from the Input Stream. Returning...");
-                    return null;
-                }
-                log.debug("Result object type: " + result.getClass().getName());
-                if (result instanceof ExceptionAdapter) {
-                    log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
-                }
-                else
-                {
-                    return (com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit)result;
-                }
-            }
-            catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");
-            }
-            catch (ClassNotFoundException e4) {
-                log.error("Exception during deserialization", e4);
-            }
-        }
-        catch (IOException e2) {
-            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
-            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-            }
-            else{
-            }
-        }
-        finally {
-            try {
-                if (oos != null) {
-                    oos.close();
-                }
-                if (ois != null) {
-                    ois.close();
-                }
-                if (method != null ){
-                    log.debug("Releasing http connection" );
-                    method.releaseConnection();
-                }
-            }
-            catch (Exception e3) {
-                log.error("Error closing connection", e3);
-            }
-        }
-        return null;
-    }
-
-    public URLConnection getConnection() throws IOException {
+				ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+				}
+				catch(IOException ie ){
+				     ie.printStackTrace();
+				}
+		        }
+			else {
+			     URLConnection conn = null;
+			     conn = getConnection();
+			    oos = getObjectOutputStream(conn);
+			    oos.writeObject(requestPayload);
+			    oos.flush();
+			    oos.close();
+			    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+		     }
+	            try {
+	            	long beforeReadObject = System.currentTimeMillis() ;
+	                Object result = ois.readObject();
+	              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+	                   if (result == null)
+	                    {
+	                      log.debug("Encountered NULL from the Input Stream. Returning...");
+	                      return null;
+	                    }
+	                log.debug("Result object type: " + result.getClass().getName());
+	                if (result instanceof ExceptionAdapter) {
+						log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
+	                }
+	                else                 
+	                {
+	                    return (com.vizzavi.ecommerce.business.catalog.PartnerTradingLimit)result;
+	                }
+	            }
+	            catch (OptionalDataException e1) {
+	                log.error("Primitive data in stream");              
+	            }
+	            catch (ClassNotFoundException e4) {
+	                log.error("Exception during deserialization", e4);
+	            }
+	        }
+	        catch (IOException e2) {
+	            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+	            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
+	                }
+		     else{
+		     }
+	        } 
+	        finally {
+		   try {
+	                if (oos != null) {
+	                    oos.close();
+	                }
+		        if (ois != null) {
+		            ois.close();
+		       }
+	       		if (method != null ){
+	       		log.debug("Releasing http connection" );  
+		     	  method.releaseConnection();
+			}
+		   }
+		   catch (Exception e3) {
+		       log.error("Error closing connection", e3);
+		   }
+		}
+	        return null;
+	    }
+	
+	public URLConnection getConnection() throws IOException {
         String url = getDelegateUrl();
 
-        URL server = null;
+        URL server = null;     
         server = new URL(url);
         URLConnection conn = server.openConnection();
         conn.setDoOutput(true);
@@ -2400,30 +2400,30 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         return conn;
     }
 
-    protected String getDelegateUrl() {
-        final String filename = "env.properties";
-        Properties props = new Properties();
-        String url = "";
-        try {
-            InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
+	protected String getDelegateUrl() {
+		final String filename = "env.properties";
+		Properties props = new Properties();
+		String url = "";
+		try {
+			InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
 
-            System.out.println("Input stream " + in);
-            props.load(in);
+			System.out.println("Input stream " + in);
+			props.load(in);
 
-        } catch (IOException ioEx) {
-            log.warn("Unable to load properties from file system - could not find filename: " + filename
-                    + " Will use system defaults."
-            );
-        }
+		} catch (IOException ioEx) {
+			log.warn("Unable to load properties from file system - could not find filename: " + filename
+					+ " Will use system defaults."
+			);
+		}
 
-        final String serverHost = props.getProperty("ecom.proxy.host", "127.0.0.1");
-        int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
-        url = "http://" + serverHost + ":" + serverPort + "/delegates/CatalogApi";
+		final String serverHost = props.getProperty("ecom.proxy.host", "127.0.0.1");
+		int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
+		url = "http://" + serverHost + ":" + serverPort + "/delegates/CatalogApi";
 
-        log.info("ER delegate connection URL: " + url);
+		log.info("ER delegate connection URL: " + url);
 
-        return url;
-    }
+		return url;
+	}
 
     private Properties loadFileProperties(String filename) {
 //       InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
@@ -2435,47 +2435,47 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
         return oos;
     }
 
-    @Override
-    public PromotionsResult checkPromotionSummary(PromotionData data) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public PromotionsResult checkPromotionSummary(PromotionData data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public OverallGoodwillCreditLimits getOverallGoodwillCreditLimits() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    @Override
-    public FindExpressPackagesResponseDTO findFullExpressPackagesByServiceId(
-            String[] serviceId, String msisdn,
-            ExpressDisplayAttribute expressAttribute) {
-        return null;
-    }
+	@Override
+	public OverallGoodwillCreditLimits getOverallGoodwillCreditLimits() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public FindExpressPackagesResponseDTO findFullExpressPackagesByServiceId(
+			String[] serviceId, String msisdn,
+			ExpressDisplayAttribute expressAttribute) {
+		return null;
+	}
 
-    @Override
-    public DefaultGoodwillCreditLimits getDefaultGoodwillCreditLimits() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public DefaultGoodwillCreditLimits getDefaultGoodwillCreditLimits() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public DefaultSpendLimits getDefaultPartnerSpendLimits() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public DefaultSpendLimits getDefaultPartnerSpendLimits() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public DefaultSpendLimits getDefaultMsisdnSpendLimits() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public DefaultSpendLimits getDefaultMsisdnSpendLimits() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    //MQC7712
-    @Override
-    public List<String> getVersions(){
-        return null;
-    }
+        //MQC7712
+        @Override
+        public List<String> getVersions(){
+            return null;
+        }
 
 
 }

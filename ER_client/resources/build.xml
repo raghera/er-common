@@ -5,7 +5,7 @@
   
 
     <path id="project.class.path">
-       <fileset dir="../../../working/LIBS_er">
+       <fileset dir="../../../static/LIBS_er">
             <include name="*.jar"/>
         </fileset>
        <fileset dir="../../../static/BUILD/lib/">
@@ -16,16 +16,11 @@
 
 
     
-<!--    
-	<taskdef
+    <taskdef
         name="templatedoclet"
         classname="xdoclet.DocletTask"
         classpathref="project.class.path"
-    />-->
-	<taskdef
-        name="templatedoclet"
-        classname="org.xdoclet.plugin.plugin.PluginPlugin"
-        classpathref="project.class.path"/>
+    />
   
   
     <target name="templatedoclet">

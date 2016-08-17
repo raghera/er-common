@@ -1119,7 +1119,7 @@ public class ChargingApiStub  extends HttpClientConnector implements ChargingApi
 //		return url;
 
 		final String filename = "env.properties";
-        final String apiName = "ChargingApi";
+		final String apiName = "ChargingApi";
 		Properties props = new Properties();
 		String url = "";
 		try {
@@ -1143,8 +1143,6 @@ public class ChargingApiStub  extends HttpClientConnector implements ChargingApi
 		return url;
 
 	}
-
-
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
         return oos;
