@@ -1,6 +1,7 @@
 package com.vodafone.global.er.decoupling.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.vizzavi.ecommerce.business.common.AccountNotFoundException;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
-import com.vizzavi.ecommerce.business.common.TransactionNotFoundException;
 import com.vizzavi.ecommerce.util.FileUtils;
 import com.vodafone.application.util.CommonConfig;
 import com.vodafone.global.er.common.ErCoreErrorId;
@@ -26,7 +26,6 @@ import com.vodafone.global.er.decoupling.PayloadConstants;
 import com.vodafone.global.er.decoupling.binding.request.ErRequest;
 import com.vodafone.global.er.decoupling.binding.request.ObjectFactory;
 import com.vodafone.global.er.decoupling.binding.response.Error;
-import com.vodafone.global.er.http.HttpHeader;
 import com.vodafone.global.er.http.HttpHeaderAware;
 
 abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
@@ -41,20 +40,20 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	/**
 	 * headers added by the client using {@link HttpHeaderAware#setHeaders}()
 	 */
-	private final List<Header> userHeaders = new ArrayList<>();
+	private final List<Header> userHeaders = new ArrayList<Header>();
 	/**the set of all locales for which we have instantiated any decoupling api impls*/
-	protected static final Set<Locale> allLocales = new HashSet<>();
+	protected static final Set<Locale> allLocales = new HashSet<Locale>();
 	private static final Logger	logger = LoggerFactory.getLogger(BaseErApiDecouplingImpl.class);
 
-	protected  static final String date= "$Date: 2015/10/06 10:15:21 $";
-	protected static final String version="$Revision: 1.4 $";
+	protected  static final String date= "$Date: 2013/10/30 11:18:11 $";
+	protected static final String version="$Revision: 1.26 $";
 
 	public BaseErApiDecouplingImpl(Locale locale, String clientId)	{
 		if (stubbed)	{
 			System.err.println("ER core is STUBBED!  This client will not work properly in prod");
 			System.err.println("           ^^^^^^^");
 		}	
-		logger.info("BaseErApiDecouplingImpl "+version+" dated "+date);
+
 		this.locale= locale;
 		_factory_ = new DecouplingMessageFactory();
 		_client = new DecouplingClient(this.locale, clientId);
@@ -77,43 +76,21 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	 * IOException talking to ER, or ER responds with an empty response
 	 */
 	protected <T> T  sendRequestAndGetResponse(int requestTypeId, Object request, Class<T> expectedResponse, String clientId) throws EcommerceException	{
-		return sendRequestAndGetResponse(requestTypeId, request,
-				expectedResponse, clientId, 1);
-	}
-
-
-	/**
-	 * <p>Assembles the request, sends it to ER, and then returns the response type object expected.  Checks that the response is of the correct type, and not null.</p>
-	 * In other words, combines {@link DecouplingMessageFactory#buildEnvelope}, DecouplingClient.getPayload(), and getResultFromPayload()
-	 * <p>If the response is an Error, assembles an EcommerceException from the Error.  If it's null, or not the expected response type, throws an EcommerceException..</p>
-	 * @see #getResultFromPayload
-	 * @param requestTypeId eg {@link PayloadConstants.MODIFY_MSISDN}
-	 * @param request a jaxb object, eg {@link com.vodafone.global.er.decoupling.binding.request.SelfcareFullSubscriptions}, with all necessary fields populated
-	 * @param expectedResponse 
-	 * @param clientId for the  client-application-id field in the request - can be null
-	 * @param requestVersion TODO
-	 * @return a jaxb response object, eg {@link com.vodafone.global.er.decoupling.binding.request.SelfcareFullSubscriptions}
-	 * @throws EcommerceException if the response object doesn't match what was expected, or a jaxb exception is encountered assembling the request, or there is an 
-	 * IOException talking to ER, or ER responds with an empty response
-	 */
-	protected <T> T  sendRequestAndGetResponse(int requestTypeId, Object request, Class<T> expectedResponse, String clientId, int requestVersion) throws EcommerceException	{
 		Object payload = null;
 		final ErRequest element = _factory_.buildEnvelope(requestTypeId, request, clientId);
-		if (requestVersion>1)
-			element.setVersion(requestVersion);
 		//TODO improve / replace this basic stub framework
 		File stubFile=null;
 		if (stubbed)	{
 			stubFile = new File(requestTypeId+".xml");	//ideally we add msisdn or something in this filename
 			logger.error("stub enabled - looking for response in file "+stubFile.getAbsolutePath());
 		}
-		if (stubbed && stubFile!=null && stubFile.canRead())	{
+		if (stubbed && stubFile!=null && stubFile.exists() && stubFile.canRead())	{
 			try {
 				String xml = FileUtils.getFile(stubFile.getAbsolutePath());
 				logger.error("response xml FROM STUB FILE:\n {}", xml);
-				payload= _client.getResponseObject(xml);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
+				payload= _client.getResponseObject(xml);	
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}	else
 			payload = _client.getPayload(element, getHeaders(request));
@@ -127,32 +104,13 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	 * @see #getResultFromPayload
 	 * @param requestTypeId eg {@link PayloadConstants.MODIFY_MSISDN}
 	 * @param request a jaxb object, eg {@link com.vodafone.global.er.decoupling.binding.request.SelfcareFullSubscriptions}, with all necessary fields populated
-	 * @param expectedResponse The expected class of the response 
+	 * @param expectedResponse TODO
 	 * @return a jaxb response object, eg {@link com.vodafone.global.er.decoupling.binding.response.SelfcareFullSubscriptions}
 	 * @throws EcommerceException if the response object doesn't match what was expected, or a jaxb exception is encountered assembling the request, or there is an 
 	 * IOException talking to ER, or ER responds with an empty response
 	 */
 	protected <T> T  sendRequestAndGetResponse(int requestTypeId, Object request, Class<T> expectedResponse) throws EcommerceException	{
-		return sendRequestAndGetResponse(requestTypeId, request,
-				expectedResponse, 1);
-	}
-
-
-	/**
-	 * <p>Assembles the request, sends it to ER, and then returns the response type object expected.  Checks that the response is of the correct type, and not null.</p>
-	 * In other words, combines {@link DecouplingMessageFactory#buildEnvelope}, {@link DecouplingClient#getPayload}, and {@link #getResultFromPayload}
-	 * <p>If the response is an Error, assembles an EcommerceException from the Error.  If it's null, or not the expected response type, throws an EcommerceException..</p>
-	 * @see #getResultFromPayload
-	 * @param requestTypeId eg {@link PayloadConstants.MODIFY_MSISDN}
-	 * @param request a jaxb object, eg {@link com.vodafone.global.er.decoupling.binding.request.SelfcareFullSubscriptions}, with all necessary fields populated
-	 * @param expectedResponse The expected class of the response 
-	 * @param version decoupling API version
-	 * @return a jaxb response object, eg {@link com.vodafone.global.er.decoupling.binding.response.SelfcareFullSubscriptions}
-	 * @throws EcommerceException if the response object doesn't match what was expected, or a jaxb exception is encountered assembling the request, or there is an 
-	 * IOException talking to ER, or ER responds with an empty response
-	 */
-	protected <T> T  sendRequestAndGetResponse(int requestTypeId, Object request, Class<T> expectedResponse, int version) throws EcommerceException	{
-		return sendRequestAndGetResponse(requestTypeId, request, expectedResponse, null, version);
+		return sendRequestAndGetResponse(requestTypeId, request, expectedResponse, null);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -167,7 +125,7 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	 * @return a list of http header objects ready to add to the http request
 	 */
 	protected List<Header> getHeaders(Object request)	{
-		final List<Header> headersToAdd = new ArrayList<>();
+		final List<Header> headersToAdd = new ArrayList<Header>();
 		try {
 			final Class<?> c = request.getClass();
 			final Method[] methods = c.getMethods();
@@ -270,12 +228,6 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 			anfe.setErrorId(errorId);
 			anfe.setErrorDescription(error.getDescription());
 			return anfe;
-		} else if (errorId == ErCoreErrorId.TRANSACTION_NULL.getCode())	{	//216446 transaction not found
-			TransactionNotFoundException tnfe = new TransactionNotFoundException(rv.toString());
-			tnfe.setSystemId(error.getSystemId());
-			tnfe.setErrorId(errorId);
-			tnfe.setErrorDescription(error.getDescription());
-			return tnfe;
 		} else	{
 			logger.info("errorId {} returned: {}", errorId, rv);
 			EcommerceException e = new EcommerceException(rv.toString());
@@ -294,7 +246,7 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 		//first clear the existing headers
 		userHeaders.clear() ;
 		for (String headerName: headers.keySet()){
-			userHeaders.add(new HttpHeader(headerName, headers.get(headerName)));
+			userHeaders.add(new BasicHeader(headerName, headers.get(headerName)));
 		}
 	}
 
@@ -309,10 +261,5 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 		for (Header header: headers){
 			userHeaders.add(header);
 		}
-	}
-	
-	public void addHeader(String name, String value)	{
-		//userHeaders.clear() ;
-		userHeaders.add(new HttpHeader(name, value));
 	}
 }

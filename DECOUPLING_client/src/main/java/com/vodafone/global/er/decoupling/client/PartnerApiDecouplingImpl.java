@@ -17,11 +17,12 @@ import com.vizzavi.ecommerce.business.selfcare.Transaction;
 import com.vodafone.global.er.decoupling.PayloadConstants;
 import com.vodafone.global.er.decoupling.binding.request.GetDetailsForExternalSubscriptionRequest;
 import com.vodafone.global.er.decoupling.binding.request.GetDetailsForExternalTransactionRequest;
-import com.vodafone.global.er.decoupling.binding.response.GetDetailsForExternalSubscriptionResponse;
-import com.vodafone.global.er.decoupling.binding.response.GetDetailsForExternalTransactionResponse;
+import com.vodafone.global.er.decoupling.binding.request.impl.GetDetailsForExternalSubscriptionRequestImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.GetDetailsForExternalTransactionRequestImpl;
+import com.vodafone.global.er.decoupling.binding.response.GetDetailsForExternalSubscriptionResponseType;
+import com.vodafone.global.er.decoupling.binding.response.GetDetailsForExternalTransactionResponseType;
 import com.vodafone.global.er.partner.B2BPartner;
 import com.vodafone.global.er.partner.PartnerApi;
-
 
 //this class needs to be public for the ecomapifactory.getPartnerApi call to work
 
@@ -34,21 +35,20 @@ public class PartnerApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 		super(locale, clientId);
 	}
 
-	//only called by ecomapifactory
 	public PartnerApiDecouplingImpl(Locale locale) {
-		this(locale, "ecom wrapper");
+		this(locale, null);
 	}
 	
 	@Override
 	public Transaction getDetailsForExternalTransaction(String externalTransactionId,
 			String partnerId) throws TransactionNotFoundException {
 		//checkNullParams(externalTransactionId, partnerId);
-		final GetDetailsForExternalTransactionRequest request = new GetDetailsForExternalTransactionRequest();
+		final GetDetailsForExternalTransactionRequest request = new GetDetailsForExternalTransactionRequestImpl();
 		request.setExternalTransId(externalTransactionId);
 		request.setPartnerId(partnerId);
-		GetDetailsForExternalTransactionResponse response;
+		GetDetailsForExternalTransactionResponseType response;
 		try {
-			response = sendRequestAndGetResponse(PayloadConstants.GET_DETAILS_FOR_EXTERNAL_TXN_REQUEST, request, GetDetailsForExternalTransactionResponse.class);
+			response = sendRequestAndGetResponse(PayloadConstants.GET_DETAILS_FOR_EXTERNAL_TXN_REQUEST, request, GetDetailsForExternalTransactionResponseType.class);
 		} catch (EcommerceException e) {
 			throw new TransactionNotFoundException(e);
 		}
@@ -80,11 +80,11 @@ public class PartnerApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	public Subscription getDetailsForExternalSubscription(String externalSubscriptionId,
 			String partnerId) throws SubscriptionNotFoundException {
 		//checkNullParams(externalSubscriptionId, partnerId);
-		final GetDetailsForExternalSubscriptionRequest request = new GetDetailsForExternalSubscriptionRequest();
+		final GetDetailsForExternalSubscriptionRequest request = new GetDetailsForExternalSubscriptionRequestImpl();
 		request.setExternalSubId(externalSubscriptionId);
 		request.setPartnerId(partnerId);
 		try {
-			final GetDetailsForExternalSubscriptionResponse response =sendRequestAndGetResponse(PayloadConstants.GET_DETAILS_FOR_EXTERNAL_SUB_REQUEST, request, GetDetailsForExternalSubscriptionResponse.class);
+			final GetDetailsForExternalSubscriptionResponseType response =sendRequestAndGetResponse(PayloadConstants.GET_DETAILS_FOR_EXTERNAL_SUB_REQUEST, request, GetDetailsForExternalSubscriptionResponseType.class);
 			return buildSubFromResponse(response);
 		} catch (EcommerceException e) {
 			throw new SubscriptionNotFoundException(e);
@@ -95,12 +95,12 @@ public class PartnerApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	public Subscription getDetailsForExternalSubscription(String msisdn,
 			String externalSubscriptionId, String partnerId) throws SubscriptionNotFoundException {
 		//checkNullParams(externalSubscriptionId, partnerId, msisdn);
-		final GetDetailsForExternalSubscriptionRequest request = new GetDetailsForExternalSubscriptionRequest();
+		final GetDetailsForExternalSubscriptionRequest request = new GetDetailsForExternalSubscriptionRequestImpl();
 		request.setExternalSubId(externalSubscriptionId);
 		request.setPartnerId(partnerId);
 		request.setMsisdn(msisdn);
 		try {
-			final GetDetailsForExternalSubscriptionResponse response =sendRequestAndGetResponse(PayloadConstants.GET_DETAILS_FOR_EXTERNAL_SUB_REQUEST, request, GetDetailsForExternalSubscriptionResponse.class);
+			final GetDetailsForExternalSubscriptionResponseType response =sendRequestAndGetResponse(PayloadConstants.GET_DETAILS_FOR_EXTERNAL_SUB_REQUEST, request, GetDetailsForExternalSubscriptionResponseType.class);
 			return buildSubFromResponse(response);
 		} catch (EcommerceException e) {
 			throw new SubscriptionNotFoundException(e);
@@ -115,7 +115,7 @@ public class PartnerApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	}
 
 	
-	private Subscription buildSubFromResponse(GetDetailsForExternalSubscriptionResponse response) throws SubscriptionNotFoundException	{	
+	private Subscription buildSubFromResponse(GetDetailsForExternalSubscriptionResponseType response) throws SubscriptionNotFoundException	{	
 
 		if (response.getReasonCode() !=null && !response.getReasonCode().equals(ReasonCode.OK))	{
 			throw new SubscriptionNotFoundException(response.getReasonCode().getName());

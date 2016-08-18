@@ -3,19 +3,18 @@ package com.vodafone.global.er.decoupling.client;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Element;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vizzavi.ecommerce.business.catalog.*;
 import com.vizzavi.ecommerce.business.charging.PurchaseAttributes;
+import com.vizzavi.ecommerce.business.common.Constants;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.common.PromotionData;
 import com.vizzavi.ecommerce.business.common.ReasonCode;
@@ -24,31 +23,30 @@ import com.vizzavi.ecommerce.common.Utils;
 import com.vodafone.config.ConfigProvider;
 import com.vodafone.global.er.business.catalog.BasePrice;
 import com.vodafone.global.er.decoupling.PayloadConstants;
-import com.vodafone.global.er.decoupling.binding.request.CatalogFullPackageRequest;
-import com.vodafone.global.er.decoupling.binding.request.CatalogFullServiceRequest;
-import com.vodafone.global.er.decoupling.binding.request.CheckPromotionsRequest;
-import com.vodafone.global.er.decoupling.binding.request.ExpressPackageRequest;
-import com.vodafone.global.er.decoupling.binding.request.FindPackagesWithServiceRequest;
-import com.vodafone.global.er.decoupling.binding.request.GetBasePricesRequest;
-import com.vodafone.global.er.decoupling.binding.request.GetPackagesRequest;
-import com.vodafone.global.er.decoupling.binding.request.GetPricepointRequest;
-import com.vodafone.global.er.decoupling.binding.request.OnestepPackageRequest;
+import com.vodafone.global.er.decoupling.binding.request.*;
+import com.vodafone.global.er.decoupling.binding.request.RatingAttributesType;
+import com.vodafone.global.er.decoupling.binding.request.impl.ExpressPackageRequestImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.FindPackagesWithServiceRequestImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.RatingAttributesTypeImpl;
 import com.vodafone.global.er.decoupling.binding.response.*;
-import com.vodafone.global.er.decoupling.binding.response.OnestepPackages.OnestepPackage;
+import com.vodafone.global.er.decoupling.binding.response.BasicServiceType;
+import com.vodafone.global.er.decoupling.binding.response.OnestepPackagesType.OnestepPackageType;
+import com.vodafone.global.er.decoupling.binding.response.BasicPackageType;
 
-public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements CatalogApi {
+class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements CatalogApi {
 
 	private static final Logger logger = LoggerFactory.getLogger(CatalogApiDecouplingImpl.class);
 
-	private static final String date= "$Date: 2015/09/14 13:19:12 $";
-	private static final String version="$Revision: 1.3 $";
+	private static final String date= "$Date: 2013/10/31 12:41:46 $";
+	private static final String version="$Revision: 1.18 $";
+
 	static final boolean sortByPackageName=ConfigProvider.getPropertyAsBoolean("er.decoupling.catalog.sort.package.name", true);
 
 	public CatalogApiDecouplingImpl(Locale locale, String clientId)	{
 		super(locale, clientId);
 	}
 
-
+	
 	@Override
 	public CatalogPackage[] findPackagesWithService(CatalogService catalogService) throws EcommerceRuntimeException
 	{
@@ -59,7 +57,7 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	public CatalogPackage getPackage(String packageId) throws EcommerceRuntimeException
 	{
 		checkNullParams(packageId);
-
+		
 		final CatalogFullPackageRequest request=createRequest(PayloadConstants.CATALOG_FULL_PACKAGE_REQUEST_PAYLOAD);
 		request.setId(packageId);
 		try {
@@ -68,8 +66,8 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 		} catch (EcommerceException e) {
 			throw new EcommerceRuntimeException(e);
 		}
-
-
+		
+		
 	}
 
 
@@ -81,12 +79,12 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	@Override
 	public CatalogPackage[] getPackages() throws EcommerceRuntimeException
 	{
-
+	
 		GetPackagesResponse packageResponse;
 		final GetPackagesRequest request = createRequest(PayloadConstants.GET_PACKAGES_REQUEST_PAYLOAD);
 		try	{
 			packageResponse= sendRequestAndGetResponse(PayloadConstants.GET_PACKAGES_REQUEST_PAYLOAD, request, GetPackagesResponse.class);
-
+			
 		}	catch (EcommerceException e) {
 			throw new EcommerceRuntimeException(e);
 		}
@@ -109,7 +107,7 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 		}
 
 		return packages;
-
+		
 	}
 
 	@Override
@@ -137,54 +135,76 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	}
 
 	@Override
-	public List<String> getVersions()	{
-		try	{
-			final JAXBElement<Object> request = createRequest(PayloadConstants.GET_VERSION_REQUEST_PAYLOAD);
-			final GetVersionResponse versionInfo = sendRequestAndGetResponse(PayloadConstants.GET_VERSION_REQUEST_PAYLOAD, request, GetVersionResponse.class);			
+	public List<String> getVersions()
+	{
+		//Object payload_ = null;
+		try
+		{
+			//final Object object_ = _factory_.createRequest(PayloadConstants.GET_VERSION_REQUEST_PAYLOAD);
+
+			final GetVersionRequest request = createRequest(PayloadConstants.GET_VERSION_REQUEST_PAYLOAD);
+				//	(GetVersionRequest)object_;
+
+//			final Element element_ = _factory_.buildEnvelope(PayloadConstants.GET_VERSION_REQUEST_PAYLOAD, request_, null);
+//			payload_ = _client.getPayload(element_);
+//			final GetVersionResponseImpl versionInfo_ = (GetVersionResponseImpl)payload_;
+//
+//			if (versionInfo_ == null) 
+//			{
+//				logger.error("Payload is Null");
+//				throw new EcommerceException("Payload is Null");
+//			}
+			final GetVersionResponse versionInfo = sendRequestAndGetResponse(PayloadConstants.GET_VERSION_REQUEST_PAYLOAD, request, GetVersionResponse.class);
+			
 			return versionInfo.getVersion();
+
+//		}
+//		catch(final ClassCastException ce)
+//		{
+//			final Error errorResponse_ = (Error)payload_;
+//			logger.error("ErrorResponse:ID:" + errorResponse_.getId());
+//			logger.error("ErrorResponse:Description:" + errorResponse_.getDescription());
+//			logger.error("ErrorResponse:Type:" + errorResponse_.getType());
+//			logger.error("ErrorResponse:SystemId:" + errorResponse_.getSystemId());
+//			logger.error("ErrorResponse:Cause:" + errorResponse_.getCause());
+//			return null;
 		}	catch(final Exception e)	{
 			logger.error("Problem in getVersion:" + e);
 			throw new EcommerceRuntimeException(e);
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@Override
-	public CatalogPackage[] findPackagesWithService (String msisdn, CatalogService serv, PurchaseAttributes purchaseAttributes) throws EcommerceRuntimeException	{
-		checkNullParams(serv, serv.getId());
+	public CatalogPackage[] findPackagesWithService (String msisdn, CatalogService serv, PurchaseAttributes purchaseAttributes) throws EcommerceRuntimeException
+	{
+		//CatalogPackage [] packs = null;
+		FindPackagesWithServiceResponse response=null;
 		//was actually calling UsageAuthRateCharge to get package list
-		final FindPackagesWithServiceRequest request = new FindPackagesWithServiceRequest();
-		// ET83: changes starts here
-		if(StringUtils.isBlank(msisdn)){
-			request.setMsisdn(null);
+		final FindPackagesWithServiceRequest request = new FindPackagesWithServiceRequestImpl();
+
+		if(msisdn == null || msisdn.equals("")){
+			request.setMsisdn("null");
 		}else{
 			request.setMsisdn(msisdn);
 		}
-		// ET83: changes ends here
 		request.setServiceId(serv.getId());
 
-		//		final RatingAttributesType attrs = new RatingAttributesType();
-		//
-		//		//Add any other required attributes here
-		//		if (purchaseAttributes != null){
-		//			attrs.setPromoCode(purchaseAttributes.getPromoCode());
-		//			//MQC 8284 - add channel
-		//			if (purchaseAttributes.getChannel() != Constants.INT_NOT_SET) {
-		//				attrs.setChannel(purchaseAttributes.getChannel());
-		//			}
-		//			// ET83: changes starts here
-		//			request.setRatingAttributes(attrs);
-		//			// ET83: changes ends here
-		//		}
-		request.setRatingAttributes(converter.buildRatingAttributes(purchaseAttributes));
-		//ET-302 - VF-ITALY - StartDate and ExpiryDate not visible to clients: Start
-		request.setPricepointStartEndDatesRequired(true);
-		//ET-302 - VF-ITALY - StartDate and ExpiryDate not visible to clients: End
+		final RatingAttributesType attrs = new RatingAttributesTypeImpl();
+
+		//Add any other required attributes here
+		if (purchaseAttributes != null){
+			attrs.setPromoCode(purchaseAttributes.getPromoCode());
+			//MQC 8284 - add channel
+			if (purchaseAttributes.getChannel() != Constants.INT_NOT_SET) {
+				attrs.setChannel(purchaseAttributes.getChannel());
+			}
+		}
+
+		request.setRatingAttributes(attrs);
 
 		try {
-			FindPackagesWithServiceResponse response = sendRequestAndGetResponse(PayloadConstants.GET_FIND_PACKAGES_WITH_SERVICE_REQUEST_PAYLOAD, request, FindPackagesWithServiceResponse.class);
+			response = sendRequestAndGetResponse(PayloadConstants.GET_FIND_PACKAGES_WITH_SERVICE_REQUEST_PAYLOAD, request, FindPackagesWithServiceResponse.class);
 			return converter.buildPackages(response.getPackages());
 
 		}
@@ -204,31 +224,33 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	 * com.vizzavi.ecommerce.business.catalog.CatalogApi#oneStep(String[], String, boolean)
 	 */
 	@Override
-	public Map<String, OneStepData> findPackagesByServiceIdOneStep(String[] serviceId,
+	public Hashtable<String, OneStepData> findPackagesByServiceIdOneStep(String[] serviceId,
 			String msisdn) throws EcommerceRuntimeException {
 		try {
 
 			final OnestepPackageRequest request = reqObjFactory.createOnestepPackageRequest();
+			//new OnestepPackageRequestImpl();
 
-			if (StringUtils.isNotBlank(msisdn))
+			if (msisdn == null || msisdn.equals("")) {
+				request.setMsisdn("null");
+			} else {
 				request.setMsisdn(msisdn);
-			else
-				request.setMsisdn(null);
+			}
 
-			final OnestepPackageRequest.ServiceIds serviceIds = reqObjFactory.createOnestepPackageRequestServiceIds();
-
+			final OnestepPackageRequest.ServiceIdsType serviceIds = reqObjFactory.createOnestepPackageRequestTypeServiceIdsType();
+			//new OnestepPackageRequestImpl.ServiceIdsTypeImpl();
 			for (final String element : serviceId) {
 				serviceIds.getServiceId().add(element)	;
 			}
 			request.setServiceIds(serviceIds);
 			request.setMsisdn(msisdn);
-//			final ErRequest element_ = _factory_.buildEnvelope(PayloadConstants.FIND_PACKAGES_BY_SERVICE_ID_ONE_STEP_PAYLOAD, request);
-//			final OnestepPackages response = (OnestepPackages) _client.getPayload(element_, getHeaders(element_)); // MQC 9487
-			final OnestepPackages response = sendRequestAndGetResponse(PayloadConstants.FIND_PACKAGES_BY_SERVICE_ID_ONE_STEP_PAYLOAD, request, OnestepPackages.class);
-			
-			final Map<String, OneStepData> tb = new HashMap<String, OneStepData>();
-			for (final OnestepPackage impl: response.getOnestepPackage()){
+			final Element element_ = _factory_.buildEnvelope(PayloadConstants.FIND_PACKAGES_BY_SERVICE_ID_ONE_STEP_PAYLOAD, request);
+			final OnestepPackages response = (OnestepPackages) _client.getPayload(element_, getHeaders(element_)); // MQC 9487
+			//OnestepPackages response = 
+			final Hashtable<String, OneStepData> tb = new Hashtable<String, OneStepData>();
+			for (final Object ed: response.getOnestepPackage()){
 				final OneStepData dt = new OneStepData();
+				final OnestepPackageType impl = (OnestepPackageType) ed;
 				dt.setCreditsLeft(impl.getCreditsLeft());
 				dt.setPriceText(impl.getPriceText());
 				dt.setServiceId(impl.getServiceId());
@@ -252,6 +274,7 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 			throw new EcommerceRuntimeException(e);
 		}
 
+		//return null;
 	}
 
 
@@ -273,29 +296,33 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	}
 
 	/**
-	 * Checks for promotional pricepoints.
-	 * @param msisdn - customer's MSISDN
-	 * @param service - the service to match
-	 * @return PromotionsResult object
-	 * @since 5.1
-	 */
+	* Checks for promotional pricepoints.
+	* @param msisdn - customer's MSISDN
+	* @param service - the service to match
+	* @return PromotionsResult object
+	* @since 5.1
+	*/
 	@Override
 	public PromotionsResult checkPromotions(String msisdn, CatalogService service) throws EcommerceRuntimeException
 	{
-		checkNullParams(msisdn, service);
-		final CheckPromotionsRequest request = super.createRequest(PayloadConstants.CHECK_PROMOTIONS_REQUEST_PAYLOAD);	
+		PromotionsResult promoResult = null;
+
+		final CheckPromotionsRequestType request = super.createRequest(PayloadConstants.CHECK_PROMOTIONS_REQUEST_PAYLOAD);
+		
 		request.setMsisdn(msisdn);
 		request.setServiceId(service.getId());
 		try	{
-			final CheckPromotionsResponse response = sendRequestAndGetResponse(PayloadConstants.CHECK_PROMOTIONS_REQUEST_PAYLOAD, request, CheckPromotionsResponse.class); 
-			return this.converter.buildPromotionsObject(response);
+		    final CheckPromotionsResponseType response = sendRequestAndGetResponse(PayloadConstants.CHECK_PROMOTIONS_REQUEST_PAYLOAD, request, CheckPromotionsResponseType.class);
+		    
+		    promoResult = this.converter.buildPromotionsObject(response);
+	    
+	    }	catch(final EcommerceException e){
+	    	throw new EcommerceRuntimeException(e);
+	    }
 
-		}	catch(final EcommerceException e){
-			throw new EcommerceRuntimeException(e);
-		}
-
+		return promoResult;
 	}
-
+	
 	@Override
 	public Locale getLocale() {
 		return locale;
@@ -317,15 +344,15 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 		}
 		return auth;
 	}
-
-
+	
+	
 	@Override
-	public Map<String, ExpressData> findExpressPackagesByServiceId(String[] serviceId,
+	public Hashtable<String, ExpressData> findExpressPackagesByServiceId(String[] serviceId,
 			String msisdn, ExpressDisplayAttribute expressAttribute)  throws EcommerceRuntimeException {
 		FindExpressPackagesResponseDTO result = findFullExpressPackagesByServiceId(serviceId, msisdn, expressAttribute);
 		if(result == null) {
 			//If no result for whatever reason return an empty list
-			return new HashMap<String, ExpressData>();  
+			return new Hashtable<String, ExpressData>();  
 		}
 		return result.getServiceResultsTable();
 	}
@@ -334,19 +361,21 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	@Override
 	public FindExpressPackagesResponseDTO findFullExpressPackagesByServiceId(String[] serviceId,
 			String msisdn, ExpressDisplayAttribute expressAttribute) throws EcommerceRuntimeException {
-
+		
 		checkNullParams(serviceId, serviceId[0], msisdn);
-		ExpressPackageRequest request = new ExpressPackageRequest();
+		ExpressPackageRequest request = new ExpressPackageRequestImpl();
 		request.setMsisdn(msisdn);
 		request.setFullResponseRequired(true);	//otherwise we get ExpressPackagesImpl back instead of FullExpressPackages
 		request.setExpressDisplayAttributes(converter.convertExpressDisplayAttributes(expressAttribute, serviceId));
 		request.setServiceIds(converter.convertServices(serviceId));
 		try	{
 			FullExpressPackages result = sendRequestAndGetResponse(PayloadConstants.EXPRESS_PACKAGE_REQUEST_PAYLOAD, request, FullExpressPackages.class);
-
+			
 			FindExpressPackagesResponseDTO response = new FindExpressPackagesResponseDTOImpl();
-			Map<String, ExpressData> table = new HashMap<String, ExpressData>();
-			for (ExpressPackage express: result.getExpressPackage())	{	//com.vodafone.global.er.decoupling.binding.response.impl.FullExpressPackagesTypeImpl$ExpressPackageTypeImpl
+			Hashtable<String, ExpressData> table = new Hashtable<String, ExpressData>();
+			for (Object thing: result.getExpressPackage())	{	//com.vodafone.global.er.decoupling.binding.response.impl.FullExpressPackagesTypeImpl$ExpressPackageTypeImpl
+				logger.debug("adding {}", thing);
+				FullExpressPackagesType.ExpressPackageType express = (FullExpressPackagesType.ExpressPackageType) thing;
 				table.put(express.getServiceId(), converter.convertExpressData(express));
 			}
 			response.setServiceResultsTable(table);
@@ -357,11 +386,11 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	}
 
 
-
-
+	
+	
 	//BEGIN UNIMPLEMENTED METHODS
-
-
+	
+	
 	@Override
 	public Tax getTax(String name) {
 		// TODO Write this method!
@@ -372,15 +401,7 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	@Deprecated
 	public CatalogPackage getPackage(String packageId, String pricePointId, String tierId) {
 		// deprecated, no need to implement this method
-		CatalogPackage pack = getPackage(packageId);
-		for (PricePoint p: pack.getPricePoints())	{
-			if (p.getId().equals(pricePointId))	{
-				pack.setPricePoint(p);
-				break;
-			}
-		}
-		return pack;
-
+		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
 
 
@@ -388,10 +409,10 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	@Override
 	public CatalogService[] getServices() throws EcommerceRuntimeException{
 		GetAllServicesResponse serviceResponse;
-		final JAXBElement<Object> request = createRequest(PayloadConstants.GET_ALL_SERVICES_REQUEST_PAYLOAD);
+		final GetAllServicesRequest request = createRequest(PayloadConstants.GET_ALL_SERVICES_REQUEST_PAYLOAD);
 		try	{
 			serviceResponse= sendRequestAndGetResponse(PayloadConstants.GET_ALL_SERVICES_REQUEST_PAYLOAD, request, GetAllServicesResponse.class);
-
+			
 		}	catch (EcommerceException e) {
 			throw new EcommerceRuntimeException(e);
 		}
@@ -415,21 +436,21 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 
 		return services;
 	}
-
+	
 
 
 	@Override
-	public Map<String, ExpressData> findExpressPackagesByServiceId(String[] serviceId,
+	public Hashtable<String, ExpressData> findExpressPackagesByServiceId(String[] serviceId,
 			boolean headline) {
 		//to delegate to findFullExpressPackagesByServiceId, we need msisdn. If we pass in null it will fail.
-		//		ExpressDisplayAttribute expressAttribute = new ExpressDisplayAttribute();
-		//		expressAttribute.setHeadline(headline);
-		//		FindExpressPackagesResponseDTO result = findFullExpressPackagesByServiceId(serviceId, msisdn, expressAttribute);
-		//		if(result == null) {
-		//			//If no result for whatever reason return an empty list
-		//			return new HashMap<String, ExpressData>();  
-		//		}
-		//		return result.getServiceResultsTable();
+//		ExpressDisplayAttribute expressAttribute = new ExpressDisplayAttribute();
+//		expressAttribute.setHeadline(headline);
+//		FindExpressPackagesResponseDTO result = findFullExpressPackagesByServiceId(serviceId, msisdn, expressAttribute);
+//		if(result == null) {
+//			//If no result for whatever reason return an empty list
+//			return new Hashtable<String, ExpressData>();  
+//		}
+//		return result.getServiceResultsTable();
 		// TODO Write this method!
 		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
@@ -440,24 +461,11 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 
 	@Override
 	public BasePrice[] getBasePrices(String[] serviceId) throws EcommerceException {
-
-		final GetBasePricesRequest request = createRequest(PayloadConstants.GET_BASE_PRICES_REQUEST_PAYLOAD);
-		GetBasePricesResponse response=null;
-
-		try{
-			List<String> arrServiceId = request.getServiceId();
-			for (String element : serviceId) {
-				arrServiceId.add(element);
-			}
-			response = sendRequestAndGetResponse(PayloadConstants.GET_BASE_PRICES_RESPONSE_PAYLOAD, request, GetBasePricesResponse.class);
-		}
-		catch(EcommerceException ex){
-			throw new EcommerceRuntimeException();
-
-		}
-		return converter.buildBasePrices(response);	
+		// TODO Write this method!
+		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
-	
+
+
 	@Override
 	public boolean validateService(String id) throws EcommerceException {
 		// TODO Write this method!
@@ -502,29 +510,11 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	}
 
 
-
 	@Override
-	public PromotionsResult checkPromotionSummary(PromotionData promotionData) {
-
-		checkNullParams(promotionData);
-
-		final CheckPromotionsRequest request = createRequest(PayloadConstants.CHECK_PROMOTIONS_REQUEST_PAYLOAD);
-		CheckPromotionsResponse response;
-
-
-		try {
-			request.setMsisdn(promotionData.getMsisdn());
-			request.setServiceId(promotionData.getCatalogServiceId());
-			response = sendRequestAndGetResponse(PayloadConstants.CHECK_PROMOTIONS_REQUEST_PAYLOAD, request, CheckPromotionsResponse.class);
-		} 
-
-		catch (EcommerceException e) {
-			throw new EcommerceRuntimeException(e);
-		}
-
-		return converter.buildPromotionsObject(response);
+	public PromotionsResult checkPromotionSummary(PromotionData data) {
+		// TODO Write this method!
+		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
-
 
 
 	@Override
@@ -555,5 +545,5 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	}
 
 
-
+	
 }

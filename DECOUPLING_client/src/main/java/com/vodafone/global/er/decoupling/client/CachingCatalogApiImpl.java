@@ -40,33 +40,15 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 	/**a map of maps of services - eg .get("GB").get("myServiceId") returns a CatalogPackage object */
 	static final Map<String, Map<String, CatalogService>> fullServiceCache = Collections.synchronizedMap(new HashMap<String, Map<String, CatalogService>>());
 
+	//TODO add caching for services too - when a client actually needs it...
+
+
 
 
 	public CachingCatalogApiImpl(Locale locale, String clientId) {
 		super(locale, clientId);
 	}
 
-	public CatalogPackage  getSimplePackage(String packageId)	{
-			//calling getPackages() will initialize the cache
-		for(CatalogPackage cp : getPackages()){
-			//TODO this is not very efficient.  We should use a Map if this method will be used a lot
-			if (cp.getSimplePackageId().equals(packageId))	{
-				return cp;
-			}
-		}
-		return null;
-	}
-
-//	private void initializeSimplePackageCache() {
-//		//get from cache for this locale
-//		CatalogPackage[] packs = simplePackageCache.get(locale.getCountry());
-//		if (packs==null){
-//			//if there's nothing from the cache, get from ER
-//			logger.info("no packages found in cache - fetching from ER");
-//			packs = super.getPackages();
-//			simplePackageCache.put(locale.getCountry(), packs);
-//		}
-//	}
 
 	@Override
 	public CatalogPackage[] getPackages() throws EcommerceRuntimeException	{
@@ -101,7 +83,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 		CatalogPackage pack = null;
 		if (packageMap == null)	{
 			logger.debug("no full package cache for {} - creating a new cache", locale);
-			packageMap = new HashMap<>();
+			packageMap = new HashMap<String, CatalogPackage>();
 			fullPackageCache.put(locale.getCountry(), packageMap);
 		}		
 		//now we have a cache for that locale - let's see if the package we want is in there
@@ -132,7 +114,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 		CatalogService service = null;
 		if (serviceMap == null)	{
 			logger.debug("no full service cache for {} - creating a new cache", locale);
-			serviceMap = new HashMap<>();
+			serviceMap = new HashMap<String, CatalogService>();
 			fullServiceCache.put(locale.getCountry(), serviceMap);
 		}		
 		//now we have a cache for that locale - let's see if the service we want is in there
@@ -168,20 +150,18 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 
 	static void clearAllCaches()	{
 		for (Locale locale: allLocales){
-			logger.info("clearing catalog api cache for {}", locale);
 			clearCachesForLocale(locale.getCountry());
 		}
 	}
 
 	static {	//a background thread to clear the cache every few minutes
 		logger.warn("starting cache cleaner thread");
-
-		Thread cacheCleaner = new Thread("DecouplingCatalogApiCacheCleaner"){
+		ThreadUtil.startJob(new Runnable(){
 
 			@Override
 			public void run() {
 				while (true)	{
-					//logger.info("cache cleaner thread {} sleeping {} secs", Thread.currentThread().getName(), cacheRefreshTimeSeconds);
+					logger.info("cache cleaner thread {} sleeping {} secs", Thread.currentThread().getName(), cacheRefreshTimeSeconds);
 					try {
 						Thread.sleep(cacheRefreshTimeSeconds*1000);
 					} catch (InterruptedException e) {
@@ -190,9 +170,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 					clearAllCaches();
 				}
 			}
-		};
-		cacheCleaner.setDaemon(true);
-		ThreadUtil.startJob(cacheCleaner);
+		});
 	}
 
 

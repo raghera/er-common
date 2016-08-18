@@ -1,12 +1,10 @@
- package com.vodafone.global.er.decoupling.client;
+package com.vodafone.global.er.decoupling.client;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,25 +15,26 @@ import com.vizzavi.ecommerce.business.charging.*;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.common.EcommerceRuntimeException;
 import com.vodafone.global.er.decoupling.PayloadConstants;
-import com.vodafone.global.er.decoupling.binding.request.GoodwillCreditRequest;
-import com.vodafone.global.er.decoupling.binding.request.ModifyTariffRequest;
+import com.vodafone.global.er.decoupling.binding.request.ErRequest;
+import com.vodafone.global.er.decoupling.binding.request.ErVersionInfoRequest;
+import com.vodafone.global.er.decoupling.binding.request.GoodwillCreditRequestType;
 import com.vodafone.global.er.decoupling.binding.request.Purchase;
 import com.vodafone.global.er.decoupling.binding.request.PurchaseAttributesType;
 import com.vodafone.global.er.decoupling.binding.request.RatingAttributesType;
 import com.vodafone.global.er.decoupling.binding.request.RenewPurchasePackageRequest;
+import com.vodafone.global.er.decoupling.binding.request.impl.GoodwillCreditRequestImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.RatingAttributesTypeImpl;
 import com.vodafone.global.er.decoupling.binding.response.ErVersionInfoResponse;
-import com.vodafone.global.er.decoupling.binding.response.GoodwillCreditResponse;
-import com.vodafone.global.er.decoupling.binding.response.ModifyTariffAuthorisation;
+import com.vodafone.global.er.decoupling.binding.response.GoodwillCreditResponseType;
 import com.vodafone.global.er.decoupling.binding.response.RenewPurchaseAuthorisation;
-import com.vodafone.global.er.decoupling.binding.response.UsageAuthorisation;
-
+import com.vodafone.global.er.decoupling.binding.response.UsageAuthorisationType;
 
 /**
  * 
  * @author matt
  *
  */
-public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implements PurchaseApi {
+class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implements PurchaseApi {
 
 	private static final Logger logger = LoggerFactory.getLogger(PurchaseApiDecouplingImpl.class);
 
@@ -69,15 +68,15 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 				
 			request.setRatingAttributes(ratingAtt);
 
-			UsageAuthorisation usageAuthorizationType_;
+			UsageAuthorisationType usageAuthorizationType_;
 			try {
-//				final ErRequest element = _factory_.buildEnvelope(PayloadConstants.PURCHASE_REQUEST_PAYLOAD, request, null);
-//				element.setClientApplicationId(clientApplicationId);
-//				Object payload = _client.getPayload(element, getHeaders(request));
-//				usageAuthorizationType_ = getResultFromPayload(payload, UsageAuthorisation.class);
-				usageAuthorizationType_ = sendRequestAndGetResponse(PayloadConstants.PURCHASE_REQUEST_PAYLOAD, request, UsageAuthorisation.class, clientApplicationId);
+				//usageAuthorizationType_ = sendRequestAndGetResponse(PayloadConstants.PURCHASE_REQUEST_PAYLOAD, request);
+				//can't use above line because we have to hack the envelope to put the client id in there
+				final ErRequest element = _factory_.buildEnvelope(PayloadConstants.PURCHASE_REQUEST_PAYLOAD, request, null);
+				element.setClientApplicationId(clientApplicationId);
+				Object payload = _client.getPayload(element, getHeaders(request));
+				usageAuthorizationType_ = getResultFromPayload(payload, UsageAuthorisationType.class);
 			} catch (EcommerceException e) {
-				logger.warn(e.getMessage());
 				throw new PurchaseAuthorizationException(e);
 
 			}
@@ -94,9 +93,9 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 			checkNullParams(packageSubscriptionId, msisdn, clientApplicationId);
 			//TODO use converter.buildRatingAttributes(purchaseAttributes);
 			//Rating Attributes
-			com.vodafone.global.er.decoupling.binding.request.RatingAttributesType ratingAtt = null;
+			RatingAttributesType ratingAtt = null;
 			if (purchaseAttributes != null) {
-				ratingAtt = new RatingAttributesType();
+				ratingAtt = new RatingAttributesTypeImpl();
 				ratingAtt.setPaymentInformation(purchaseAttributes.getPaymentInformation());
 				if(purchaseAttributes.getShortPackageId() != null) {
 					ratingAtt.setShortPackageId(purchaseAttributes.getShortPackageId());
@@ -107,12 +106,6 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 				if(purchaseAttributes.getPreRate()>=0)
 					ratingAtt.setPreRate(purchaseAttributes.getPreRate());
 				ratingAtt.setPreRatePriceIsGross(purchaseAttributes.isPreRatePriceGross());
-
-				//CR - Add Invoice Text to goodwill credit request
-				ratingAtt.setInvoiceText(purchaseAttributes.getInvoiceText());
-				
-				//JIRAET81 - Add Asset Id
-				ratingAtt.setAssetId(purchaseAttributes.getAssetID());
 			}
 			request.setPurchaseAttributes(ratingAtt);
 			request.setClientId(clientApplicationId);
@@ -125,7 +118,6 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 			try {
 				renewAuthResponse = sendRequestAndGetResponse(PayloadConstants.RENEW_PURCHASE_PACKAGE_RESPONSE_PAYLOAD, request, RenewPurchaseAuthorisation.class);
 			} catch (EcommerceException e) {
-				logger.warn(e.getMessage());
 				throw new PurchaseAuthorizationException(e);
 			}
 
@@ -147,23 +139,27 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 	}
 
 
-
-	//CR - Add Invoice Text to goodwill credit request - consolidated attributes into GoodwillCreditAttributes class
-	public GoodwillCreditAuthorization goodwillCredit( String msisdn, GoodwillCreditAttributes goodwillCreditAttributes) throws GoodwillCreditAuthorizationException {
+	@Override
+	public GoodwillCreditAuthorization goodwillCredit(
+			String clientId,
+			String msisdn,
+			String partnerId,
+			String merchantId,
+			String packageId,
+			double preRate) throws GoodwillCreditAuthorizationException {
 		
 		
-		final GoodwillCreditRequest goodwillCreditRequest = new GoodwillCreditRequest();
+		final GoodwillCreditRequestType goodwillCreditRequest = new GoodwillCreditRequestImpl();
 
 		goodwillCreditRequest.setMsisdn(msisdn);
-		goodwillCreditRequest.setPackageId(goodwillCreditAttributes.getPackageId());
-		goodwillCreditRequest.setPreRate(goodwillCreditAttributes.getPreRate());
-		goodwillCreditRequest.setPartnerId(goodwillCreditAttributes.getPartnerId());
-		goodwillCreditRequest.setMerchantId(goodwillCreditAttributes.getMerchantId());
-		goodwillCreditRequest.setInvoiceText(goodwillCreditAttributes.getInvoiceText());
+		goodwillCreditRequest.setPackageId(packageId);
+		goodwillCreditRequest.setPreRate(preRate);
+		goodwillCreditRequest.setPartnerId(partnerId);
+		goodwillCreditRequest.setMerchantId(merchantId);
 
-    	GoodwillCreditResponse response;
+    	GoodwillCreditResponseType response;
 		try {
-			response = sendRequestAndGetResponse(PayloadConstants.GOODWILL_CREDIT_REQUEST_ID, goodwillCreditRequest, GoodwillCreditResponse.class);
+			response = sendRequestAndGetResponse(PayloadConstants.GOODWILL_CREDIT_REQUEST_ID, goodwillCreditRequest, GoodwillCreditResponseType.class);
 		} catch (EcommerceException e) {
 			throw new GoodwillCreditAuthorizationException(e);
 		}
@@ -206,23 +202,8 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 	@Override
 	public ModifyTariffAuthorization modifyTariff(String msisdn,
 			ModifyTariffAttributes modifyTariffAttributes) throws EcommerceException {
-		final ModifyTariffRequest request = createRequest(PayloadConstants.GET_MODIFY_TARIFF_REQUEST_PAYLOAD);
-		request.setMsisdn(msisdn);
-		request.setAction(modifyTariffAttributes.getAction());
-		request.setClientId(modifyTariffAttributes.getClientId());
-		request.setDestinationTariff(modifyTariffAttributes.getDestinationTariff());
-		request.setReason(modifyTariffAttributes.getReason());
-		request.setSourceTariff(modifyTariffAttributes.getSourceTariff());
-		
-		ModifyTariffAuthorisation modifyTariffAuthorisation=null;
-		try {
-			modifyTariffAuthorisation = sendRequestAndGetResponse(PayloadConstants.GET_MODIFY_TARIFF_REQUEST_PAYLOAD, request, ModifyTariffAuthorisation.class);
-		} catch (EcommerceException e) {
-			logger.warn(e.getMessage());
-			throw new EcommerceException(e);
-		}
-		
-		return converter.buildModifyTariffAuthrization(modifyTariffAuthorisation);
+		// TODO Write this method!
+		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
 
 	/**
@@ -233,7 +214,7 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 	 * @return
 	 */
 	public Map<String, String> getVersionInfo() {
-		final JAXBElement<Object> request = createRequest(PayloadConstants.ER_VERSION_INFO_REQUEST_PAYLOAD);
+		final ErVersionInfoRequest request = createRequest(PayloadConstants.ER_VERSION_INFO_REQUEST_PAYLOAD);
 
 		
 		Map<String, String> result = new HashMap<String, String>();

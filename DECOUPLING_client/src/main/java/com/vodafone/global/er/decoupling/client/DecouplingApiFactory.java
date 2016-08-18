@@ -10,7 +10,6 @@ import com.vizzavi.ecommerce.business.selfcare.CustcareApi;
 import com.vizzavi.ecommerce.business.selfcare.SelfcareApi;
 import com.vodafone.application.util.CommonConfig;
 import com.vodafone.global.er.http.HttpHeaderAware;
-import com.vodafone.global.er.opcodata.OpcoDataApi;
 import com.vodafone.global.er.partner.PartnerApi;
 
 /**
@@ -36,8 +35,8 @@ public class DecouplingApiFactory {
 	}
 
 	/**
-	 * an implementation of CatalogApi which uses decoupling.  By default, this implementation will cache some calls to ER for performance.  The default cache timeout is 5 minutes and can be adjusted by setting <code>decoupling.catalog.cache.time</code> (seconds).
-	 * To disable caching altogether, set <code>er.decoupling.cache.enabled</code> to false.  <br/>The cache is also cleared when a getService or getPackage request returns no corresponding service from ER (which indicates the priceplan may have changed).
+	 * an implementation of CatalogApi which caches some calls to ER for performance.  The default cache timeout is 5 minutes and can be adjusted by setting <code>decoupling.catalog.cache.time</code> (seconds).
+	 * To disable caching altogether, set <code>er.decoupling.cache.enabled</code> to false.  The cache is also cleared when a getService or getPackage request returns no corresponding service from ER.
 	 * @param locale
 	 * @param clientId
 	 * @return
@@ -87,10 +86,6 @@ public class DecouplingApiFactory {
 	
 	public static CustcareApi getCustcareApi(Locale locale, String clientId)	{
 		return new CustCareApiDecouplingImpl(locale, clientId);
-	}
-	
-	public static OpcoDataApi getOpcoDataApi(Locale locale, String clientId)	{
-		return new OpcoDataApiDecouplingImpl(locale, clientId);
 	}
 	
 	/**

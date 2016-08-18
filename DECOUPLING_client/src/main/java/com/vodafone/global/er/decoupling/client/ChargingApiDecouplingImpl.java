@@ -15,21 +15,23 @@ import com.vizzavi.ecommerce.business.charging.UsageAuthorizationException;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vodafone.global.er.business.charging.UsageCompleteAttributes;
 import com.vodafone.global.er.decoupling.PayloadConstants;
+import com.vodafone.global.er.decoupling.binding.request.ErRequest;
 import com.vodafone.global.er.decoupling.binding.request.RatingAttributesType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAttributesType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateChargeRequestType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateRequestType;
+import com.vodafone.global.er.decoupling.binding.request.UsageAuthRate;
+import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateCharge;
 import com.vodafone.global.er.decoupling.binding.request.UsageComplete;
+import com.vodafone.global.er.decoupling.binding.request.UsageCompleteType.UsageCompleteAttributesType;
+import com.vodafone.global.er.decoupling.binding.request.impl.UsageAttributesTypeImpl;
 import com.vodafone.global.er.decoupling.binding.response.PurchaseOptions;
 import com.vodafone.global.er.decoupling.binding.response.UsageAuthorisation;
-
+import com.vodafone.global.er.decoupling.binding.response.UsageAuthorisationType;
 
 /**
  * a <b>partial</b> implementation of the ChargingApi via decoupling
  * @author matt
  *
  */
-public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implements ChargingApi {
+class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implements ChargingApi {
 
 	private static final Logger logger = LoggerFactory.getLogger(ChargingApiDecouplingImpl.class);
 
@@ -42,6 +44,15 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 		super(locale, clientId);
 	}
 
+//	/**
+//	 * 
+//	 * @param locale
+//	 * @deprecated use {@link #ChargingApiDecouplingImpl(Locale, String)} 
+//	 */
+//	@Deprecated
+//	public ChargingApiDecouplingImpl(Locale locale) {
+//		super(locale, "ChargingApiDecouplingImpl");
+//	}
 	
 	/**
 	 * {@inheritDoc}<br/>
@@ -63,11 +74,11 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 			String serviceId, UsageAttributes usageAttributes) throws EcommerceException {
 
 		checkNullParams(msisdn, serviceId);
-		UsageAuthRateRequestType uar = createRequest(PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD);
+		UsageAuthRate uar = createRequest(PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD);
 		uar.setMsisdn(msisdn);
 		uar.setServiceId(serviceId);
 		//Usage Attributes
-		final com.vodafone.global.er.decoupling.binding.request.UsageAttributesType usAttrType = new UsageAttributesType(); 
+		final com.vodafone.global.er.decoupling.binding.request.UsageAttributesType usAttrType = new UsageAttributesTypeImpl(); 
 		usAttrType.setForcePurchase(usageAttributes.getForcePurchaseFlag());
 		uar.setUsageAttributes(usAttrType);
 
@@ -78,15 +89,14 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 		
 		Object responsePayload = null;
 		try {
-//			ErRequest erRequest = new DecouplingMessageFactory().buildEnvelope(PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD, uar, clientApplicationId);
-//			responsePayload = new DecouplingClient(locale).getPayload(erRequest, getHeaders(erRequest)); // MQC 9487 - set headers
-			responsePayload = sendRequestAndGetResponse(PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD, uar, Object.class, clientApplicationId);
+			ErRequest erRequest = new DecouplingMessageFactory().buildEnvelope(PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD, uar, clientApplicationId);
+			responsePayload = new DecouplingClient(locale).getPayload(erRequest, getHeaders(erRequest)); // MQC 9487 - set headers
 		} catch (final EcommerceException e) {
 			logger.info("problem talking to er? {}", e.getMessage());
 			throw new UsageAuthorizationException(e);
 		}
 		
-		if (responsePayload instanceof UsageAuthorisation)	{
+		if (responsePayload instanceof UsageAuthorisationType)	{
 			UsageAuthorisation jaxbAuth = getResultFromPayload(responsePayload, UsageAuthorisation.class);
 			return converter.buildUsageAuthObj(jaxbAuth);
 		}	else {	// if (responsePayload instanceof PurchaseOptions)	{
@@ -109,13 +119,13 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 			throw new RuntimeException("msisdn and serviceId can't be null");
 
 
-		final UsageAuthRateChargeRequestType request = createRequest(PayloadConstants.USAGE_AUTH_RATE_CHARGE_REQUEST_PAYLOAD);
+		final UsageAuthRateCharge request = createRequest(PayloadConstants.USAGE_AUTH_RATE_CHARGE_REQUEST_PAYLOAD);
 
 		request.setMsisdn(msisdn);
 		request.setServiceId(serviceId);
 
 		//Usage Attributes
-		final UsageAttributesType usAttrType = new UsageAttributesType();
+		final UsageAttributesTypeImpl usAttrType = new UsageAttributesTypeImpl();
 		if (usageAttributes.getForcePurchaseFlag())
 			usAttrType.setForcePurchase(true);
 		if(usageAttributes.isReIssueFlagPresent()) 
@@ -130,10 +140,10 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 
 		Object responsePayload = null;
 		try {
-//			ErRequest erRequest = new DecouplingMessageFactory().buildEnvelope(PayloadConstants.USAGE_AUTH_RATE_CHARGE_REQUEST_PAYLOAD, request, clientApplicationId);
-//			responsePayload = new DecouplingClient(locale).getPayload(erRequest);
-			responsePayload = sendRequestAndGetResponse(PayloadConstants.USAGE_AUTH_RATE_CHARGE_REQUEST_PAYLOAD, request, Object.class, clientApplicationId);
-			if (responsePayload instanceof UsageAuthorisation)	{
+			ErRequest erRequest = new DecouplingMessageFactory().buildEnvelope(PayloadConstants.USAGE_AUTH_RATE_CHARGE_REQUEST_PAYLOAD, request, clientApplicationId);
+			responsePayload = new DecouplingClient(locale).getPayload(erRequest);
+	
+			if (responsePayload instanceof UsageAuthorisationType)	{
 				UsageAuthorisation jaxbAuth = getResultFromPayload(responsePayload, UsageAuthorisation.class);
 				return converter.buildUsageAuthObj(jaxbAuth);
 			}	else {	// if (responsePayload instanceof PurchaseOptions)	{
@@ -153,7 +163,8 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 		checkNullParams(eventReservationId);
 		UsageComplete request = createRequest(PayloadConstants.USAGE_COMPLETE_REQUEST_PAYLOAD);
 		request.setReservationId(eventReservationId);
-		UsageComplete.UsageCompleteAttributes attrs = new UsageComplete.UsageCompleteAttributes();
+		UsageCompleteAttributesType attrs = //new com.vodafone.global.er.decoupling.binding.request.impl.UsageCompleteAttributesTypeImpl();
+		new com.vodafone.global.er.decoupling.binding.request.impl.UsageCompleteTypeImpl.UsageCompleteAttributesTypeImpl();
 		attrs.setDeliveryStatus(deliveryStatus);
 		request.setUsageCompleteAttributes(attrs);
 		try	{

@@ -3,8 +3,7 @@ package com.vodafone.global.er.decoupling.client;
 
 
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
+import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +12,8 @@ import com.vodafone.global.er.decoupling.PayloadConstants;
 import com.vodafone.global.er.decoupling.binding.request.ErRequest;
 import com.vodafone.global.er.decoupling.binding.request.ObjectFactory;
 import com.vodafone.global.er.decoupling.binding.request.PayloadType;
-import com.vodafone.global.er.decoupling.binding.request.ProvisionUpdateRequestType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateChargeRequestType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateRequestType;
-import com.vodafone.global.er.decoupling.util.xml.QnameMapper;
+import com.vodafone.global.er.decoupling.binding.request.impl.ErRequestImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.PayloadTypeImpl;
 
 /**
  * Copyright VODAFONE - 2010
@@ -43,15 +40,15 @@ class DecouplingMessageFactory
 	 * @param payloadConstant
 	 * @return
 	 */
-	public Object createRequest(int payloadConstant) 
+	public javax.xml.bind.Element createRequest(int payloadConstant) 
 	{
-//		try
-//		{
+		try
+		{
 //			_log.debug("Request for creating payload message of type: {}" , payloadConstant);
 
 			switch(payloadConstant)	{
-			case  PayloadConstants.GET_VERSION_REQUEST_PAYLOAD : return _objFactory.createGetVersionRequest(null);
-			case  PayloadConstants.USAGE_AUTH_RATE_CHARGE_REQUEST_PAYLOAD : return _objFactory.createUsageAuthRateChargeRequestType();
+			case  PayloadConstants.GET_VERSION_REQUEST_PAYLOAD : return _objFactory.createGetVersionRequest();
+			case  PayloadConstants.USAGE_AUTH_RATE_CHARGE_REQUEST_PAYLOAD : return _objFactory.createUsageAuthRateCharge();
 			case  PayloadConstants.INACTIVATE_SUBSCRIPTION_REQUEST_PAYLOAD : return _objFactory.createInactivateSubscription();
 			case  PayloadConstants.RENEW_PURCHASE_PACKAGE_REQUEST_PAYLOAD : return _objFactory.createRenewPurchasePackageRequest();
 			case  PayloadConstants.GET_SUPERCREDIT_BALANCES_REQUEST_PAYLOAD : return _objFactory.createGetSupercreditBalancesRequest();
@@ -61,11 +58,11 @@ class DecouplingMessageFactory
 			case  PayloadConstants.GET_FULL_ACCOUNT_PAYLOAD : return _objFactory.createGetFullAccount();
 			case  PayloadConstants.GET_BALANCES_REQUEST_PAYLOAD : return _objFactory.createGetBalancesRequest();
 			case  PayloadConstants.GET_PACKAGES_REQUEST_PAYLOAD : return _objFactory.createGetPackagesRequest();
-			case  PayloadConstants.PROVISION_FULL_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD : return _objFactory.createProvisionUpdateRequestType();
-			case  PayloadConstants.PROVISION_SIMPLE_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD : return _objFactory.createProvisionUpdateRequestType();
+			case  PayloadConstants.PROVISION_FULL_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD : return _objFactory.createProvisionFullUpdateServiceStatusRequest();
+			case  PayloadConstants.PROVISION_SIMPLE_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD : return _objFactory.createProvisionSimpleUpdateServiceStatusRequest();
 			case  PayloadConstants.CATALOG_FULL_PACKAGE_REQUEST_PAYLOAD : return _objFactory.createCatalogFullPackageRequest();
-			case  PayloadConstants.CATALOG_FULL_PACKAGES_REQUEST_PAYLOAD : return _objFactory.createCatalogFullPackagesRequest(null);
-			case  PayloadConstants.CATALOG_LITTLE_PACKAGES_REQUEST_PAYLOAD : return _objFactory.createCatalogLittlePackagesRequest(null);
+			case  PayloadConstants.CATALOG_FULL_PACKAGES_REQUEST_PAYLOAD : return _objFactory.createCatalogFullPackagesRequest();
+			case  PayloadConstants.CATALOG_LITTLE_PACKAGES_REQUEST_PAYLOAD : return _objFactory.createCatalogLittlePackagesRequest();
 			case  PayloadConstants.CATALOG_FULL_SERVICE_REQUEST_PAYLOAD : return _objFactory.createCatalogFullServiceRequest();
 			case  PayloadConstants.CATALOG_FULL_PRICEPOINT_REQUEST_PAYLOAD : return _objFactory.createCatalogFullPricepointRequest();
 			case  PayloadConstants.SELFCARE_TRANSACTIONS_REQUEST_PAYLOAD : return _objFactory.createSelfcareTransactionsRequest();
@@ -84,20 +81,20 @@ class DecouplingMessageFactory
 			case  PayloadConstants.GET_PRICEPOINT_REQUEST_PAYLOAD : return _objFactory.createGetPricepointRequest();
 			case  PayloadConstants.CHECK_PROMOTIONS_REQUEST_PAYLOAD : return _objFactory.createCheckPromotionsRequest();
 			case  PayloadConstants.USAGE_COMPLETE_REQUEST_PAYLOAD : return _objFactory.createUsageComplete();
-			case  PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD : return _objFactory.createUsageAuthRateRequestType();
+			case  PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD : return _objFactory.createUsageAuthRate();
 			case  PayloadConstants.GET_DETAILS_FOR_EXTERNAL_SUB_REQUEST	:return _objFactory.createGetDetailsForExternalSubscriptionRequest();
 			case  PayloadConstants.GET_DETAILS_FOR_EXTERNAL_TXN_REQUEST :return _objFactory.createGetDetailsForExternalTransactionRequest();
 			case  PayloadConstants.MODIFY_SUBSCRIPTION_REQUEST_PAYLOAD : return _objFactory.createModifySubscriptionRequest();
 			//case  PayloadConstants.ER_CONSTANTS_REQUEST_PAYLOAD : return _objFactory.create  ;
-			case  PayloadConstants.ER_VERSION_INFO_REQUEST_PAYLOAD : return _objFactory.createErVersionInfoRequest(null)  ;
+			case  PayloadConstants.ER_VERSION_INFO_REQUEST_PAYLOAD : return _objFactory.createErVersionInfoRequest()  ;
 			//case  PayloadConstants.EXPRESS_PACKAGE_REQUEST_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.FIND_PACKAGES_BY_SERVICE_ID_ONE_STEP_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.GET_ALL_SERVICES_PARTNERS_REQUEST_PAYLOAD : return _objFactory.create  ;
-			case  PayloadConstants.GET_ALL_SERVICES_REQUEST_PAYLOAD : return _objFactory.createGetAllServicesRequest(null)  ;
+			case  PayloadConstants.GET_ALL_SERVICES_REQUEST_PAYLOAD : return _objFactory.createGetAllServicesRequest()  ;
 			//case  PayloadConstants.GET_APPLICATION_CONFIG_REQUEST_PAYLOAD : return _objFactory.create  ;
-			case  PayloadConstants.GET_BASE_PRICES_REQUEST_PAYLOAD : return _objFactory.createGetBasePricesRequest()  ;
+			//case  PayloadConstants.GET_BASE_PRICES_REQUEST_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.GET_FIND_PACKAGES_WITH_SERVICE_REQUEST_PAYLOAD : return _objFactory.create  ;
-			case  PayloadConstants.GET_MODIFY_TARIFF_REQUEST_PAYLOAD : return _objFactory.createModifyTariffRequest();
+			//case  PayloadConstants.GET_MODIFY_TARIFF_REQUEST_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.GET_PACKAGE_REQUEST_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.GET_PARENT_TRANSACTION_REQUEST_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.GET_PARTNERS_WITH_TRADING_LIMIT_REQUEST_PAYLOAD : return _objFactory.create  ;
@@ -133,24 +130,15 @@ class DecouplingMessageFactory
 			//case  PayloadConstants.VALIDATE_MSISDN_REQUEST_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.VALIDATE_PROMO_CODE_REQUEST_PAYLOAD : return _objFactory.create  ;
 			//case  PayloadConstants.VALIDATE_SERVICE_REQUEST_PAYLOAD : return _objFactory.create  ;
-			case PayloadConstants.GET_USER_GROUPS_REQUEST_PAYLOAD :return _objFactory.createGetUserGroups();
-			case PayloadConstants.MODIFY_ACCOUNT_SEND_COURTESY_NOTIFICATIONS_REQ : return _objFactory.createModifyAccount();
-			//JIRA ET196 Get account subscription promo-codes info
-			case PayloadConstants.GET_ACCOUNT_SUBSCRIPTION_PROMO_CODES_REQUEST : return _objFactory.createGetAccountSubscriptionPromoCodes();
 			
-			case PayloadConstants.INACTIVATE_SUBSCRIPTION_PROMO_CODE_REQUEST : return _objFactory.createInactivateSubscriptionPromoCode();
-			case PayloadConstants.MODIFY_BARRING_STATUS_REQUEST : return _objFactory.createModifyBarringStatusRequest();
-			case PayloadConstants.GET_BARRING_STATUS_REQUEST : return _objFactory.createGetBarringStatus();
-			//JIRA ET-238 - new get service offers call
-			case PayloadConstants.GET_SERVICE_OFFERS_REQUEST : return _objFactory.createGetServiceOffers();
 			default : 	_log.info("UNKNOWN PAYLOAD CONSTANT " + payloadConstant + "- will return null");
 						throw new RuntimeException("DecouplingMessageFactory: unknown payload constant "+payloadConstant);
 			}
 
-//		}   catch(final JAXBException jaxbe)   {
-//			_log.error("problem creating payload message:" , jaxbe);
-//			throw new RuntimeException(jaxbe);
-//		}
+		}   catch(final JAXBException jaxbe)   {
+			_log.error("problem creating payload message:" , jaxbe);
+			throw new RuntimeException(jaxbe);
+		}
 
 	}
 
@@ -175,34 +163,10 @@ class DecouplingMessageFactory
 	public ErRequest buildEnvelope(int id, Object obj, String clientId) {
 
 		_log.debug("build Envelope with id - {} - {}", id , obj.getClass().getSimpleName());
-		final ErRequest er = new ObjectFactory().createErRequest();
+		final ErRequest er = new ErRequestImpl();
 		er.setId(id);
-		final PayloadType pt = new PayloadType();
-		//If we a have a UsageAuthRateChargeRequestType object, it could correspond to a usage-auth-rate-charge, or a usage-auth-rate-charge-plus
-		//since both of those use the same complex type.
-		//without the if statement below, you will see the following exception on marshal:
-		/*  com.sun.istack.SAXException2: unable to marshal type
-		 *  "com.vodafone.global.er.decoupling.binding.request.UsageAuthRateChargeRequestType" 
-		 *  as an element because it is missing an @XmlRootElement annotation]*/
-		
-		//TODO do this a better way.  We don't want to use instanceof like this
-		//fix in conjunction with AbstractProcess.getPayload
-
-		if (obj instanceof UsageAuthRateChargeRequestType)	{
-			QName elementName = QnameMapper.getQname(id);
-			JAXBElement<UsageAuthRateChargeRequestType> jaxbObject = new JAXBElement<UsageAuthRateChargeRequestType>(elementName, UsageAuthRateChargeRequestType.class, (UsageAuthRateChargeRequestType)obj);
-			pt.setAny(jaxbObject);
-		}	else if (obj instanceof UsageAuthRateRequestType)	{
-			QName elementName = QnameMapper.getQname(id);
-			JAXBElement<UsageAuthRateRequestType> jaxbObject = new JAXBElement<UsageAuthRateRequestType>(elementName, UsageAuthRateRequestType.class, (UsageAuthRateRequestType)obj);
-			pt.setAny(jaxbObject);
-		} 	else if (obj instanceof ProvisionUpdateRequestType)	{
-			QName elementName = QnameMapper.getQname(id);
-			JAXBElement<ProvisionUpdateRequestType> jaxbObject = new JAXBElement<ProvisionUpdateRequestType>(elementName, ProvisionUpdateRequestType.class, (ProvisionUpdateRequestType)obj);
-			pt.setAny(jaxbObject);
-		}	else	{
-			pt.setAny(obj);
-		}
+		final PayloadType pt = new PayloadTypeImpl();
+		pt.setAny(obj);
 		er.setPayload(pt);
 		if (clientId!=null)
 			er.setClientApplicationId(clientId);

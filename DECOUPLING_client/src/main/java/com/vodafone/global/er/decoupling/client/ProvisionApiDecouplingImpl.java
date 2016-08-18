@@ -11,12 +11,11 @@ import com.vizzavi.ecommerce.business.provision.ProvisionAuthorization;
 import com.vizzavi.ecommerce.business.provision.ProvisionException;
 import com.vizzavi.ecommerce.business.provision.UpdateServiceStatusAuthorization;
 import com.vodafone.global.er.decoupling.PayloadConstants;
-import com.vodafone.global.er.decoupling.binding.request.ProvisionUpdateRequestType;
+import com.vodafone.global.er.decoupling.binding.request.ProvisionFullUpdateServiceStatusRequest;
 import com.vodafone.global.er.decoupling.binding.response.ProvisionFullUpdateServiceStatus;
-import com.vodafone.global.er.decoupling.binding.response.ProvisionSimpleUpdateServiceStatus;
 import com.vodafone.global.er.decoupling.binding.response.UpdateServiceStatusAuthorisationFullType;
 
-public class ProvisionApiDecouplingImpl extends BaseErApiDecouplingImpl implements ProvisionApi {
+class ProvisionApiDecouplingImpl extends BaseErApiDecouplingImpl implements ProvisionApi {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProvisionApiDecouplingImpl.class);
 	
@@ -50,23 +49,25 @@ public class ProvisionApiDecouplingImpl extends BaseErApiDecouplingImpl implemen
 	@Override
 	public boolean updateServiceStatus(String provisioningId, int serviceStatus,
 			int provisionStatus, String provisioningTag) throws ProvisionException {
-		// JIRA ET-30 this is a ER XML API different call to updateServiceStatusAuth
-		try
-		{
-			final ProvisionUpdateRequestType request = createRequest(PayloadConstants.PROVISION_SIMPLE_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD);
-
-			request.setProvisioningId(provisioningId);
-			request.setServiceStatus(serviceStatus);
-			request.setProvisioningStatus(provisionStatus);
-
-			if(StringUtils.isNotBlank(provisioningTag))
-				request.setProvisioningTag(provisioningTag);
-
-			final ProvisionSimpleUpdateServiceStatus result = sendRequestAndGetResponse(PayloadConstants.PROVISION_SIMPLE_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD, request, ProvisionSimpleUpdateServiceStatus.class);
-			return result.isSuccess();		
-		}	catch(Exception e)	{
-			throw new ProvisionException(e);
-		}
+		//TODO - what's the difference between this method and updateServiceStatusAuth ?
+//		try
+//		{
+//			final ProvisionFullUpdateServiceStatusRequest request = createRequest(PayloadConstants.PROVISION_FULL_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD);
+//
+//			request.setProvisioningId(provisioningId);
+//			request.setServiceStatus(serviceStatus);
+//			request.setProvisioningStatus(provisionStatus);
+//
+//			if(StringUtils.isNotBlank(provisioningTag))
+//				request.setProvisioningTag(provisioningTag);
+//
+//			final ProvisionFullUpdateServiceStatus result = sendRequestAndGetResponse(PayloadConstants.PROVISION_FULL_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD, request, ProvisionFullUpdateServiceStatus.class);
+//			return result.getUpdateServiceStatusAuthorisation().isIsSuccess();		
+//		
+//		}	catch(Exception e)	{
+//			throw new ProvisionException(e);
+//		}
+		return updateServiceStatusAuth(provisioningId, serviceStatus, provisionStatus, provisioningTag).isSuccess();
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class ProvisionApiDecouplingImpl extends BaseErApiDecouplingImpl implemen
 
 		try
 		{
-			final ProvisionUpdateRequestType request = createRequest(PayloadConstants.PROVISION_FULL_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD);
+			final ProvisionFullUpdateServiceStatusRequest request = createRequest(PayloadConstants.PROVISION_FULL_UPDATE_SERVICE_STATUS_REQUEST_PAYLOAD);
 
 			request.setProvisioningId(provisioningId);
 			request.setServiceStatus(serviceStatus);

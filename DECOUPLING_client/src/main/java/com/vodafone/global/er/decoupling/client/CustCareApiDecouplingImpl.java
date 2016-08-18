@@ -1,9 +1,11 @@
 package com.vodafone.global.er.decoupling.client;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import javax.xml.bind.Element;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,21 +19,29 @@ import com.vizzavi.ecommerce.business.charging.SubscriptionAttributes;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.common.ReasonCode;
-import com.vizzavi.ecommerce.business.selfcare.*;
-import com.vizzavi.ecommerce.business.selfcare.Bar;
 import com.vizzavi.ecommerce.business.selfcare.BasicAccount;
+import com.vizzavi.ecommerce.business.selfcare.CustcareApi;
+import com.vizzavi.ecommerce.business.selfcare.CustcareAttributes;
 import com.vizzavi.ecommerce.business.selfcare.ModifySubscriptionAuthorization;
+import com.vizzavi.ecommerce.business.selfcare.SpendLimits;
+import com.vizzavi.ecommerce.business.selfcare.Transaction;
+import com.vizzavi.ecommerce.business.selfcare.ValidateMsisdnAttributes;
 import com.vodafone.global.er.decoupling.PayloadConstants;
 import com.vodafone.global.er.decoupling.binding.request.*;
 import com.vodafone.global.er.decoupling.binding.request.RefundAttributesType;
 import com.vodafone.global.er.decoupling.binding.request.SimpleChargingResourceType;
 import com.vodafone.global.er.decoupling.binding.request.SubscriptionAttributesType;
-import com.vodafone.global.er.decoupling.binding.request.Usergroups;
+import com.vodafone.global.er.decoupling.binding.request.impl.InactivateSubscriptionImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.ModifyBanImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.ModifyMsisdnImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.ModifySpendLimitsRequestImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.ModifyUsergroupImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.SimpleChargingResourceTypeImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.UsergroupsImpl;
+import com.vodafone.global.er.decoupling.binding.request.impl.ValidateMsisdnRequestImpl;
 import com.vodafone.global.er.decoupling.binding.response.*;
-import com.vodafone.global.er.decoupling.binding.response.InactivateSubscriptionPromoCodeAuthorisationType;
 import com.vodafone.global.er.decoupling.binding.response.ReasonCodeType;
 import com.vodafone.global.er.decoupling.binding.response.RefundAuthorisationFullType;
-
 
 
 /**
@@ -39,45 +49,31 @@ import com.vodafone.global.er.decoupling.binding.response.RefundAuthorisationFul
  * @author matt
  *
  */
-public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl implements CustcareApi {
+class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl implements CustcareApi {
 
 
 	private static final Logger log = LoggerFactory.getLogger(CustCareApiDecouplingImpl.class);
 
 
-	private static final String date= "$Date: 2016/06/08 16:08:28 $";
-	private static final String version="$Revision: 1.4.6.1 $";
+	private static final String date= "$Date: 2013/10/31 12:41:46 $";
+	private static final String version="$Revision: 1.23 $";
 
 	public CustCareApiDecouplingImpl(Locale locale, String clientId)	{
 		super(locale, clientId);
 	}
 
 
-
-
-	/* (non-Javadoc)
-	 * @see com.vizzavi.ecommerce.business.selfcare.CustcareApi#getBasicAccount(java.lang.String, java.lang.String, int, boolean)
-	 */
-	@Override
-	public BasicAccount getBasicAccount(String clientId, String msisdn,
-			boolean forceRefresh) throws EcommerceException {
-		
-		checkNullParams(msisdn);
-		final GetFullAccount request = createRequest(PayloadConstants.GET_FULL_ACCOUNT_PAYLOAD);
-		request.setMsisdn(msisdn);
-		request.setForceRefreshCustomer(forceRefresh);
-		final FullAccount jaxbAccount = sendRequestAndGetResponse(PayloadConstants.GET_FULL_ACCOUNT_PAYLOAD, request, FullAccount.class, clientId);
-		return converter.buildAccount(jaxbAccount);
-	}
-
-
-	/* (non-Javadoc)
-	 * @see com.vizzavi.ecommerce.business.selfcare.CustcareApi#getBasicAccount(java.lang.String, java.lang.String, int)
-	 */
 	@Override
 	public BasicAccount getBasicAccount(String clientId, String msisdn, int accessDevice) throws EcommerceException
 	{
-		return getBasicAccount(clientId, msisdn, false);
+		checkNullParams(msisdn);
+		
+		final GetFullAccount request = createRequest(PayloadConstants.GET_FULL_ACCOUNT_PAYLOAD);
+		request.setMsisdn(msisdn);
+		request.setAccessDevice(accessDevice);
+
+		final FullAccountType jaxbAccount = sendRequestAndGetResponse(PayloadConstants.GET_FULL_ACCOUNT_PAYLOAD, request, FullAccountType.class, clientId);
+		return converter.buildAccount(jaxbAccount);
 		
 	}
 
@@ -86,18 +82,12 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 	{
 		checkNullParams(msisdn, custcareAttributes, custcareAttributes.getPackageSubId());
 
-		final InactivateSubscription request_ = createRequest(PayloadConstants.INACTIVATE_SUBSCRIPTION_REQUEST_PAYLOAD);
+		final InactivateSubscriptionImpl request_ = createRequest(PayloadConstants.INACTIVATE_SUBSCRIPTION_REQUEST_PAYLOAD);
 
 		request_.setMsisdn(msisdn);
 		request_.setSubscriptionId(custcareAttributes.getPackageSubId());
 		request_.setReason(custcareAttributes.getReason());
 		request_.setCsrId(custcareAttributes.getCsrId());
-		//JIRAET127 - set the penalty charge
-		request_.setApplyPenaltyCharge(custcareAttributes.isApplyPenaltyCharge());
-		
-		if (StringUtils.isNotBlank(custcareAttributes.getContext())) {
-			request_.setContext(custcareAttributes.getContext());
-		}
 		final InactivateSubscriptionResponse inactivateSubscription_ = //getResultFromPayload(payload_, InactivateSubscriptionResponse.class);
 				sendRequestAndGetResponse(PayloadConstants.INACTIVATE_SUBSCRIPTION_REQUEST_PAYLOAD, request_, InactivateSubscriptionResponse.class);
 
@@ -114,7 +104,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		custcareAttributes_.setPackageSubId(subscriptionId);
 		custcareAttributes_.setCsrId(csrId);
 		custcareAttributes_.setReason(reason);
-		return this.inactivateSubscription(clientId, msisdn, 0, custcareAttributes_);
+		return this.inactivateSubscription("", msisdn, 0, custcareAttributes_);
 	
 	}
 
@@ -131,10 +121,10 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 
 		request_.setMsisdn(refundAttributes.getMsisdn());
 
-		final RefundAttributesType refundAttributesType_ = new RefundAttributesType();
+		final RefundAttributesType refundAttributesType_ = new com.vodafone.global.er.decoupling.binding.request.impl.RefundAttributesTypeImpl();
 		ChargingResource chargingResource_ = refundAttributes.getChargingResource();
 
-		final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceType();
+		final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceTypeImpl();
 		
 		if (chargingResource_ != null)		{
 			chargingResourceType_.setCode(chargingResource_.getCode());
@@ -153,7 +143,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			refundAttributesType_.setPaymentTransactionId(refundAttributes.getPaymentTransactionId());
 		refundAttributesType_.setReason(refundAttributes.getReason());
 		refundAttributesType_.setRefundCreditAmount(refundAttributes.getRefundCreditAmount());
-//		refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
+		refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
 		refundAttributesType_.setSubscriptionId(refundAttributes.getSubscriptionId());
 		request_.setRefundAttributes(refundAttributesType_);
 
@@ -227,9 +217,9 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		request_.setTransactionId(transactionId);
 		request_.setDiscount(discount);
 
-		final RefundAttributesType refundAttributesType_ = new RefundAttributesType();
+		final RefundAttributesType refundAttributesType_ = new com.vodafone.global.er.decoupling.binding.request.impl.RefundAttributesTypeImpl();
 
-		final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceType();
+		final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceTypeImpl();
 		final ChargingResource chargingResource_ = refundAttributes.getChargingResource();
 		if(chargingResource_ != null)
 		{
@@ -249,11 +239,11 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			refundAttributesType_.setPaymentTransactionId(refundAttributes.getPaymentTransactionId());
 		refundAttributesType_.setReason(refundAttributes.getReason());
 		refundAttributesType_.setRefundCreditAmount(refundAttributes.getRefundCreditAmount());
-//		refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
+		refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
 		refundAttributesType_.setSubscriptionId(refundAttributes.getSubscriptionId());
 		request_.setRefundAttributes(refundAttributesType_);
 	
-		final CustcareFullRefundDiscount cfrd_=	sendRequestAndGetResponse(PayloadConstants.CUSTCARE_FULL_REFUND_DISCOUNT_REQUEST_PAYLOAD, request_, CustcareFullRefundDiscount.class);
+		final CustcareFullRefundDiscountType cfrd_=	sendRequestAndGetResponse(PayloadConstants.CUSTCARE_FULL_REFUND_DISCOUNT_REQUEST_PAYLOAD, request_, CustcareFullRefundDiscountType.class);
 		final RefundAuthorisationFullType refundAuthorizationType_ = cfrd_.getRefundAuthorisation();
 		final ReasonCodeType reasonCodeType_ = refundAuthorizationType_.getReasonCode();
 		final ReasonCode reasonCode_ = converter.convertReasonCode(reasonCodeType_);
@@ -311,11 +301,18 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		request.setTransactionId(transactionId);
 
 		//NOTE the data type in the type is int and in this method it's a long
-		request.setExtensiondays((int)numberOfDaysToExtend);
+//		try
+//		{
+			request.setExtensiondays((int)numberOfDaysToExtend);
+//		}
+//		catch(final ClassCastException cce)
+//		{
+//			throw new EcommerceException("number of days to extend "+numberOfDaysToExtend+" too big"); 
+//		}
 
-		final RefundAttributesType refundAttributesType_ = new RefundAttributesType();
+		final RefundAttributesType refundAttributesType_ = new com.vodafone.global.er.decoupling.binding.request.impl.RefundAttributesTypeImpl();
 
-		final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceType();
+		final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceTypeImpl();
 		final ChargingResource chargingResource_ = refundAttributes.getChargingResource();
 		if(chargingResource_ != null)
 		{
@@ -335,10 +332,15 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			refundAttributesType_.setPaymentTransactionId(refundAttributes.getPaymentTransactionId());
 		refundAttributesType_.setReason(refundAttributes.getReason());
 		refundAttributesType_.setRefundCreditAmount(refundAttributes.getRefundCreditAmount());
-//		refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
+		refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
 		refundAttributesType_.setSubscriptionId(refundAttributes.getSubscriptionId());
 		request.setRefundAttributes(refundAttributesType_);
 
+
+//		final Element element_ = _factory_.buildEnvelope(PayloadConstants.CUSTCARE_FULL_REFUND_ENLARGEMENT_REQUEST_PAYLOAD, request_, null);
+//		payload_ = _client.getPayload(element_);
+//		final CustcareFullRefundEnlargement cfre_ = //(CustcareFullRefundEnlargement)payload_;
+//				getResultFromPayload(payload_, CustcareFullRefundEnlargement.class);
 		final CustcareFullRefundEnlargement cfre_ = sendRequestAndGetResponse(PayloadConstants.CUSTCARE_FULL_REFUND_ENLARGEMENT_REQUEST_PAYLOAD, request, CustcareFullRefundEnlargement.class);
 
 		final RefundAuthorisationFullType refundAuthorizationType_ = cfre_.getRefundAuthorisation();
@@ -406,7 +408,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 
 		if(chargingResource != null)
 		{
-			final SimpleChargingResourceType mainChargingResourceType_ = new SimpleChargingResourceType();
+			final SimpleChargingResourceType mainChargingResourceType_ = new SimpleChargingResourceTypeImpl();
 
 			if(chargingResource.getName() != null)
 				mainChargingResourceType_.setName(chargingResource.getName());
@@ -422,15 +424,15 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		if(refundAttributes != null)
 		{
 
-			final RefundAttributesType refundAttributesType_ = new RefundAttributesType();
+			final RefundAttributesType refundAttributesType_ = new com.vodafone.global.er.decoupling.binding.request.impl.RefundAttributesTypeImpl();
 
-			final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceType();
+			final SimpleChargingResourceType chargingResourceType_ = new SimpleChargingResourceTypeImpl();
 			final ChargingResource chargingResource_ = refundAttributes.getChargingResource();
 			if(chargingResource_ != null)
 			{
 				chargingResourceType_.setCode(chargingResource_.getCode());
 				chargingResourceType_.setName((chargingResource_.getName() != null?chargingResource_.getName():""));
-				refundAttributesType_.setChargingResource(chargingResourceType_);
+				refundAttributesType_.setChargingResource((chargingResourceType_ != null?chargingResourceType_:null));
 			}
 			refundAttributesType_.setCsrId(refundAttributes.getCsrId());
 			refundAttributesType_.setDeprovFlag(refundAttributes.getDeprovisionFlag());
@@ -443,7 +445,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			refundAttributesType_.setPaymentTransactionId((refundAttributes.getPaymentTransactionId() != null?refundAttributes.getPaymentTransactionId():""));
 			refundAttributesType_.setReason((refundAttributes.getReason() != null?refundAttributes.getReason():""));
 			refundAttributesType_.setRefundCreditAmount(refundAttributes.getRefundCreditAmount());
-//			refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
+			refundAttributesType_.setRefundRoamingCharge(refundAttributes.needRefundRoamingCharge());
 			refundAttributesType_.setSubscriptionId((refundAttributes.getSubscriptionId() != null?refundAttributes.getSubscriptionId():""));
 			request_.setRefundAttributes(refundAttributesType_);
 		}
@@ -514,7 +516,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		rv.setSuccess(false);
 		request.setMsisdn(msisdn);
 
-		final ModifySpendLimitsRequest.SpendLimits spendLimitsType = new ModifySpendLimitsRequest.SpendLimits();
+		final ModifySpendLimitsRequest.SpendLimitsType spendLimitsType = new ModifySpendLimitsRequestImpl.SpendLimitsTypeImpl();
 		spendLimitsType.setPerDayLimit(limits.getPerDayLimit());
 		spendLimitsType.setPerMonthLimit(limits.getPerMonthLimit());
 		spendLimitsType.setPerTxLimit(limits.getPerTxLimit());
@@ -523,7 +525,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 
 		request.setCsrId(csrId);
 
-		final ModifySpendLimitsResponse modifySpendLimitsResponse = sendRequestAndGetResponse(PayloadConstants.MODIFY_SPEND_LIMITS_REQUEST_ID, request, ModifySpendLimitsResponse.class, clientId);//CR2241 added clientId (may be null)
+		final ModifySpendLimitsResponseType modifySpendLimitsResponse = sendRequestAndGetResponse(PayloadConstants.MODIFY_SPEND_LIMITS_REQUEST_ID, request, ModifySpendLimitsResponseType.class, clientId);//CR2241 added clientId (may be null)
 
 		rv.setAccountNotfound(!modifySpendLimitsResponse.isIsSuccess());
 		rv.setSuccess(modifySpendLimitsResponse.isIsSuccess());
@@ -556,7 +558,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			String csrId,
 			String reason) throws EcommerceException
 			{
-		InactivateAccount method = createRequest(PayloadConstants.INACTIVATE_ACCOUNT_REQUEST_PAYLOAD);
+		InactivateAccountType method = createRequest(PayloadConstants.INACTIVATE_ACCOUNT_REQUEST_PAYLOAD);
 		method.setMsisdn(msisdn);
 		method.setValidateAccount(Boolean.toString(validateAccount));
 
@@ -570,7 +572,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			method.setReason(clientId);
 		else
 			method.setReason(reason);
-		InactivateAccountResponse result = sendRequestAndGetResponse(PayloadConstants.INACTIVATE_ACCOUNT_REQUEST_PAYLOAD, method, InactivateAccountResponse.class);
+		InactivateAccountResponseType result = sendRequestAndGetResponse(PayloadConstants.INACTIVATE_ACCOUNT_REQUEST_PAYLOAD, method, InactivateAccountResponseType.class);
 		return result.isSuccess();
 			}
 
@@ -581,20 +583,20 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			String msisdn, List<String> usergroup, String csrId, String reason, String action)
 					throws EcommerceException {
 
-		final ModifyUsergroup method = new ModifyUsergroup();
+		final ModifyUsergroupType method = new ModifyUsergroupImpl();
 		method.setMsisdn(msisdn);
 		method.setCsrId(csrId);
 		method.setReason(reason);
 		method.setAction(action);
 
-		final Usergroups userGroups = new Usergroups();
+		final UsergroupsImpl userGroups = new UsergroupsImpl();
 		for(final String group: usergroup){
 			userGroups.getUsergroup().add(group);
 		}
 
 		method.setUsergroups(userGroups);
 	
-		ModifyUsergroupReponse response = sendRequestAndGetResponse(PayloadConstants.MODIFY_USERGROUP_PAYLOAD, method, ModifyUsergroupReponse.class);
+		ModifyUsergroupReponseType response = sendRequestAndGetResponse(PayloadConstants.MODIFY_USERGROUP_PAYLOAD, method, ModifyUsergroupReponseType.class);
 		final ModifyAuthorisation modAuth = new ModifyAuthorisation();
 		modAuth.setSuccess(response.isSuccess());
 
@@ -612,7 +614,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			String csrId,
 			String reason) throws EcommerceException
 			{
-		final ModifyBan method = new ModifyBan();
+		final ModifyBanType method = new ModifyBanImpl();
 
 		checkNullParams(msisdn, newBan);
 
@@ -632,10 +634,26 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 				method.setReason(reason);
 		}
 
-		ModifyBanResponse jaxbObject = sendRequestAndGetResponse(PayloadConstants.MODIFY_BAN_REQUEST, method, ModifyBanResponse.class);
-		
+		//Object payload = rHelper.invokeApi(method,getHeaders());
+
+		final Element element_ = _factory_.buildEnvelope(PayloadConstants.MODIFY_BAN_REQUEST, method, null);
+		Object payload = null;
+		try {
+			payload = _client.getPayload(element_, getHeaders(element_)); // MQC 9487
+		} catch (final IOException e) {
+			throw new EcommerceException(e);
+		}
+
+		ModifyBanResponseType jaxbObject = null;
+
+		//we check the type of response is the expected one
+		if(payload instanceof ModifyBanResponseType)
+			jaxbObject = (ModifyBanResponseType)payload;
+		else
+			throw new RuntimeException("Bad response object, expecting: ModifyBanResponseTypeImpl, recieved: " + payload.getClass().getName());
+
 		return jaxbObject.isSuccess();
-	}
+			}
 
 	@Override
 	public boolean modifyMsisdn(String clientId,
@@ -644,7 +662,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 			String csrId,
 			String reason) throws EcommerceException	{
 		
-		final ModifyMsisdn request = new ModifyMsisdn();
+		final ModifyMsisdnType request = new ModifyMsisdnImpl();
 		if (msisdn ==null ||newMsisdn ==null)
 			throw new EcommerceException("both old and new msisdn must be non-null");
 		request.setMsisdn(msisdn);
@@ -660,7 +678,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		else
 			request.setReason(reason);
 
-		final ModifyMsisdnResponse jaxbObject = sendRequestAndGetResponse(PayloadConstants.MODIFY_MSISDN_REQUEST, request, ModifyMsisdnResponse.class);
+		final ModifyMsisdnResponseType jaxbObject = sendRequestAndGetResponse(PayloadConstants.MODIFY_MSISDN_REQUEST, request, ModifyMsisdnResponseType.class);
 		return jaxbObject.isSuccess();		
 
 	}
@@ -669,10 +687,10 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 	public ModifySubscriptionAuthorization modifySubscription(String clientApplicationId,
 			String msisdn, String subscriptionId, SubscriptionAttributes subscriptionAttributes)
 					throws EcommerceException {
-		ModifySubscriptionRequest request = createRequest(PayloadConstants.MODIFY_SUBSCRIPTION_REQUEST_PAYLOAD);
+		ModifySubscriptionRequestType request = createRequest(PayloadConstants.MODIFY_SUBSCRIPTION_REQUEST_PAYLOAD);
 		
 		SubscriptionAttributesType jaxbAttrs = converter.buildSubscriptionAttributes(subscriptionAttributes);
-			
+		
 		request.setSubscriptionAttributes(jaxbAttrs);
 		request.setMsisdn(msisdn);
 		request.setSubscriptionId(subscriptionId);
@@ -694,17 +712,15 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 	@Override
 	public AccountValidationAuthorization validateMsisdnAccount(String msisdn,
 			ValidateMsisdnAttributes attrs) throws EcommerceException {
-		checkNullParams(msisdn);
-		ValidateMsisdnRequest request = new ValidateMsisdnRequest();
+		checkNullParams(msisdn, attrs);
+		ValidateMsisdnRequest request = new ValidateMsisdnRequestImpl();
 		request.setMsisdn(msisdn);
-		if (attrs!=null)	{
-			if (StringUtils.isNotBlank(attrs.getPartnerId()))
-				request.setPartnerId(attrs.getPartnerId());
-			if (StringUtils.isNotBlank(attrs.getServiceId()))
-				request.setServiceId(attrs.getServiceId());
-			if (StringUtils.isNotBlank(attrs.getVendorId()))
-				request.setVendorId(attrs.getVendorId());
-		}
+		if (StringUtils.isNotBlank(attrs.getPartnerId()))
+			request.setPartnerId(attrs.getPartnerId());
+		if (StringUtils.isNotBlank(attrs.getServiceId()))
+			request.setServiceId(attrs.getServiceId());
+		if (StringUtils.isNotBlank(attrs.getVendorId()))
+			request.setVendorId(attrs.getVendorId());
 		ValidateMsisdnResponse response = sendRequestAndGetResponse(PayloadConstants.VALIDATE_MSISDN_REQUEST_PAYLOAD, request, ValidateMsisdnResponse.class);
 		
 		AccountValidationAuthorization rv = converter.buildAccountValidation(response);
@@ -721,27 +737,24 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 	}
 
 
-
-//ET-153 remove the time zone code |start
-	/*@Override
-//	@Override
-//	public boolean notificationSubscribe(Locale locale1, String url, String name)
-//			throws EcommerceException {
-//		// TODO Write this method!
-//		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
-//	}
+	@Override
+	public boolean notificationSubscribe(Locale locale1, String url, String name)
+			throws EcommerceException {
+		// TODO Write this method!
+		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
+	}
 
 	@Override
 	public ModifyAuthorisation modifyTimezone(String clientId, String msisdn, String timezone,
-			String csrId, String reason) throws EcommerceException {
+			String csrId, String reason) throws EcommerceException, ClassNotFoundException {
 		// TODO Write this method!
 		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
-	}*/
+	}
 
-	//ET-153 remove the time zone code |end
+
 	@Override
 	public ModifyAuthorisation modifyBillingCycle(String clientId, String msisdn, int billingCycle,
-			String csrId, String reason) throws EcommerceException {
+			String csrId, String reason) throws EcommerceException, ClassNotFoundException {
 		// TODO Write this method!
 		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
@@ -749,163 +762,43 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 
 	@Override
 	public ModifyAuthorisation modifyAccountSpId(String clientId, String msisdn, String spId)
-			throws EcommerceException {
+			throws EcommerceException, ClassNotFoundException {
 		// TODO Write this method!
 		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
 
 	@Override
 	public ModifyAuthorisation modifyAccountIsPrepay(String clientId, String msisdn, String isPrepay)
-			throws EcommerceException {
+			throws EcommerceException, ClassNotFoundException {
 		// TODO Write this method!
 		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
 
 
-//	@Override
-//	public RefundAuthorization refundRollbackTransactionMonetary(String clientId, String msisdn,
-//			String subscriptionId, RefundAttributes attributes) throws EcommerceException {
-//		// TODO Write this method!
-//		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
-//	}
+	@Override
+	public RefundAuthorization refundRollbackTransactionMonetary(String clientId, String msisdn,
+			String subscriptionId, RefundAttributes attributes) throws EcommerceException {
+		// TODO Write this method!
+		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
+	}
 
 
 
 	@Override
 	public ModifyAuthorisation modifyAccountChildSpId(String clientId, String msisdn,
-			String childSpId) throws EcommerceException {
+			String childSpId) throws EcommerceException, ClassNotFoundException {
 		// TODO Write this method!
 		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
 
 	@Override
 	public ModifyAuthorisation modifyAccountSpType(String clientId, String msisdn, String spType)
-			throws EcommerceException {
+			throws EcommerceException, ClassNotFoundException {
 		// TODO Write this method!
 		throw new UnsupportedOperationException("method not supported in this version: "+version+" dated "+date);
 	}
 	//end CustCareApi unsupported methods
 
 
-	 /**
-     * JIRA ET148 Add SMS blacklist flag to opt out of courtesy SMS notifications
-	 * @param clientId
-     * @param custcareAttrs
-     * @throws EcommerceException
-     */
-	@Override
-	public ModifyAuthorisation modifyAccount(String clientId,
-			CustcareAttributes custcareAttrs) throws EcommerceException {
-		final ModifyAuthorisation rv = new ModifyAuthorisation();
 
-		final ModifyAccount request = createRequest(PayloadConstants.MODIFY_ACCOUNT_SEND_COURTESY_NOTIFICATIONS_REQ);
-		rv.setSuccess(false);
-		request.setMsisdn(custcareAttrs.getMsisdn());
-		request.setSuppressCourtesyNotifications(custcareAttrs.getSuppressCourtesyNotifications());
-		request.setCsrId(custcareAttrs.getCsrId());//ET-161 introduced the csr-id
-
-		final ModifyAccountResponse modifyAccountResponse = sendRequestAndGetResponse(PayloadConstants.MODIFY_ACCOUNT_SEND_COURTESY_NOTIFICATIONS_REQ, request, ModifyAccountResponse.class, clientId);
-
-		rv.setSuccess(modifyAccountResponse.isSuccess());
-		if(modifyAccountResponse.getReasonCode()!=null)
-			rv.setReasonCode(converter.convertReasonCode(modifyAccountResponse.getReasonCode()));
-		
-		return rv;
-	}
-
-
-	@Override
-	public Bar modifyBar(String barName, String msisdn, String clientId, boolean newValue)
-			throws EcommerceException {
-		Bar barItem = null;
-		final ModifyBarringStatusRequest request = createRequest(PayloadConstants.MODIFY_BARRING_STATUS_REQUEST);
-		request.setMsisdn(msisdn);
-		request.setClientId(clientId);
-		request.setValue(newValue);
-		request.setBarName(barName);
-		
-		final ModifyBarringStatusResponse response = sendRequestAndGetResponse(PayloadConstants.MODIFY_BARRING_STATUS_REQUEST, request, ModifyBarringStatusResponse.class);
-		
-		if(response!=null && response.getBar() != null){
-			barItem = new Bar();
-			
-			barItem.setDescription(response.getBar().getDescription());
-			barItem.setName(response.getBar().getName());
-			barItem.setActive(response.getBar().isStatus());
-			
-		}
-		
-		return barItem;
-	}
-
-
-	@Override
-	public List<Bar> getBars(String msisdn, String clientId) throws EcommerceException {
-		List<Bar> barList = null;
-		final GetBarringStatus request = createRequest(PayloadConstants.GET_BARRING_STATUS_REQUEST);
-		request.setMsisdn(msisdn);
-		request.setClientId(clientId);
-		
-		final GetBarringStatusResponse response = sendRequestAndGetResponse(PayloadConstants.GET_BARRING_STATUS_REQUEST, request, GetBarringStatusResponse.class);
-		
-		if(response!=null && response.getBars()!=null){
-			barList = new ArrayList<Bar>();
-			
-			for(com.vodafone.global.er.decoupling.binding.response.Bar bar: response.getBars()){
-				Bar barItem = new Bar();
-				barItem.setDescription(bar.getDescription());
-				barItem.setName(bar.getName());
-				barItem.setActive(bar.isStatus());
-				
-				barList.add(barItem);
-			}
-		}
-		
-		return barList;
-	}
-
-	 /**
-     * JIRA ET196 Inactivate subscription promo-code
-     * @param msisdn
-	 * @param clientId
-     * @param subscriptionId
-     * @param packageId
-     * @return List<InactivateSubscriptionPromoCodeAuthorization>
-     * @throws EcommerceException
-     */
-	@Override
-	public List<InactivateSubscriptionPromoCodeAuthorization> inactivateSubscriptionPromoCode(
-			String msisdn, String clientId, InactivateSubscriptionPromoCodeAttributes inactivateSubPromoAttrs) throws EcommerceException {
-		
-		List<InactivateSubscriptionPromoCodeAuthorization> inactivesubscriptionPromoCodesAuths = null;
-		
-		checkNullParams(msisdn, clientId);
-		
-		final InactivateSubscriptionPromoCode request = createRequest(PayloadConstants.INACTIVATE_SUBSCRIPTION_PROMO_CODE_REQUEST);
-		request.setMsisdn(msisdn);
-		request.setClientId(clientId);
-		if (inactivateSubPromoAttrs != null) {
-			request.setSubscriptionId(inactivateSubPromoAttrs.getSubscriptionId());
-			request.setPackageId(inactivateSubPromoAttrs.getPackageId());
-			request.setReason(inactivateSubPromoAttrs.getReason());
-		}
-		
-		final InactivateSubscriptionPromoCodeResponse inactivateSubPromoCodeType_ =sendRequestAndGetResponse(PayloadConstants.INACTIVATE_SUBSCRIPTION_PROMO_CODE_REQUEST, request, InactivateSubscriptionPromoCodeResponse.class);
-		
-		if (inactivateSubPromoCodeType_.getInactivateSubscriptionPromoCodeAuthorisation() != null && inactivateSubPromoCodeType_.getInactivateSubscriptionPromoCodeAuthorisation().size() >0) {
-			inactivesubscriptionPromoCodesAuths = new ArrayList<InactivateSubscriptionPromoCodeAuthorization>();
-			for (InactivateSubscriptionPromoCodeAuthorisationType inactivateSubPromoCodeType : inactivateSubPromoCodeType_.getInactivateSubscriptionPromoCodeAuthorisation() ) {
-				InactivateSubscriptionPromoCodeAuthorization inactivateSubPromoCode = new InactivateSubscriptionPromoCodeAuthorization();
-					inactivateSubPromoCode.setSuccess(inactivateSubPromoCodeType.isIsSuccess());
-					if (StringUtils.isNotBlank(inactivateSubPromoCodeType.getSubscriptionId())) {
-						inactivateSubPromoCode.setSubscriptionId(new Long(inactivateSubPromoCodeType.getSubscriptionId()).longValue());
-					}
-					inactivateSubPromoCode.setPackageId(inactivateSubPromoCodeType.getPackageId());
-					inactivateSubPromoCode.setReasonCode(converter.convertReasonCode(inactivateSubPromoCodeType.getReasonCode()));
-					inactivesubscriptionPromoCodesAuths.add(inactivateSubPromoCode);
-			}
-		}
-		
-		return inactivesubscriptionPromoCodesAuths;
-	}
 }
