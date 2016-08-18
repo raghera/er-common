@@ -1,0 +1,1345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://localhost:8080/decoupling/schemas/common"  elementFormDefault="unqualified">
+	<xs:import namespace="http://localhost:8080/decoupling/schemas/common" schemaLocation="../common/pa_common.xsd"/>
+	<!--
+	An er-request encapsulates all request packets that are sent to
+	 ER's REST interface.
+	-->
+	<xs:element name="er-request">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- 
+				A generic payload will have wrap all xml fragments that are sent
+				to the REST interface. The payload type defines this generic payload.
+				-->
+				<xs:element name="payload" type="common:payloadType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>				
+			</xs:sequence>
+			<xs:attribute name="id" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:int"/>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="client-application-id" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="purchase_locale" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="language_locale" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="client-domain" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="domain-translator-context" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:attribute>
+			<!--
+				id, client-application-id and purchase-locale are mandatory for all calls to the
+				REST interface and are therefore defined as attributes on the
+				er-request schema. Alll requests made to the REST interface will
+				 have these attributes available.
+			-->
+			<!-- 	
+				The two attributes below may be used if we decide to embed actions
+				in the response xml. An action is literally a url that facilitaes the
+				purchase workflow as seen in the link element of the WPI implementation.
+					
+				-	client-domain represents the domain from which the REST interface is called.
+
+				-	domain-translator-context defines the context of the web component which is
+					responsible for the REST communication on the Client side of the fence. 
+			-->
+		</xs:complexType>
+	</xs:element>
+	<!--
+		Begin Express Package Request Definition
+	-->
+	<xs:element name="express-package-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="service-ids">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="service-id" type="xs:string" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+                                <xs:element name="full-response-required" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="express-display-attributes">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="is-headline" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-option" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="true-options" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="service-id" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Express Package Request Definition
+	-->
+	
+<!-- CR1789 FindPackagesByServiceIdOneStep START -->
+	<xs:element name="onestep-package-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="service-ids">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="service-id" type="xs:string" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+<!-- CR1789 FindPackagesByServiceIdOneStep END -->
+	
+	
+	<!--
+		The Inactivate Subscription maps to the inactivateSubscription
+		method available on the CustcareApi. It's response can be found
+		in the inactivate-subscription-response schema.
+	-->
+	<xs:element name="inactivate-subscription">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="subscription-id" type="xs:string"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+
+                <!-- MQC6976 -->
+                <xs:element name="apply-penalty-charge" type="xs:boolean" minOccurs="0"/>
+                <!-- MQC 7622-->
+                <xs:element name="override-disallow-flag" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Inactivate Subscription
+	-->
+	<!--
+		Modify Subscription Charging Method maps to the 
+		modifySubscriptionChargingMethod method available 
+		on the SelfcareApi. It's response can be found
+		in the modify-subscription-charging-method-response schema.
+	-->
+	<xs:element name="modify-subscription-charging-method">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="subscription-id" type="xs:string"/>
+				<xs:element name="charging-method" type="xs:int"/>
+				<xs:element name="device-type" type="xs:int" minOccurs="0"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+                <!-- MQC6976 -->
+                <xs:element name="apply-penalty-charge" type="xs:boolean" minOccurs="0"/>
+                <!-- MQC9420 flag to immediately inactive a subscription if it is in grace or suspended status-->
+                <xs:element name="inactivate-grace-or-suspended-sub" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Modify Subscription Charging Method
+	-->
+	<!--
+        A puchase represents the request payload that is sent to the REST interface
+         to facilitate a purchase. Once again all purchase attributes have been mapped
+        in the xml although the Gap Analysis suggests that not all of these are required
+        by the purchase application. Is is prudent to map them all?
+    -->
+	<xs:element name="purchase">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="package-id" type="xs:string" minOccurs="0"/>
+				<!-- MD 19/4/12 - purchase attributes are common to some other calls so are moved to pa_common.xsd -->
+				<!-- external-sub-id is in purchaseAttributesType -->				
+				<xs:element name="purchase-attributes" type="common:purchaseAttributesType" minOccurs="0"/>
+				<!-- pre-rate, external-trans-id and partner-id are in ratingAttributesType -->
+				<xs:element name="rating-attributes" type="common:ratingAttributesType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Purchase
+	-->
+	<!--
+		Begin Selfcare Subscriptions Definition
+	-->
+	<xs:element name="selfcare-subscriptions-request">
+		<xs:complexType>
+		<xs:sequence>
+			<xs:element name="msisdn" type="xs:string"/>
+			<xs:element name="device" type="xs:int" minOccurs="0" />
+			<xs:element name="subscription-filter" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="subscription-id" type="xs:string" minOccurs="0"/>
+						<xs:element name="pre-order" type="xs:int" minOccurs="0"/>
+						<xs:element name="charging-method" type="xs:int" minOccurs="0"/>
+						<xs:element name="subscription-status" type="xs:int" minOccurs="0"/>
+						<xs:element name="recurring-events-only" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="non-recurring-events-only" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="start-date" type="xs:dateTime" minOccurs="0"/>
+						<xs:element name="end-date" type="xs:dateTime" minOccurs="0"/>
+						<xs:element name="subscription-end-date-start-value" type="xs:dateTime" minOccurs="0"/>
+						<xs:element name="subscription-end-date-end-value" type="xs:dateTime" minOccurs="0"/>
+						<xs:element name="transactions-not-required" type="xs:string" minOccurs="0"/> <!-- no - sends trans (default), yes - does not send trans -->
+						<xs:element name="add-services" type="xs:boolean" minOccurs="0"/> 
+						<xs:element name="client-id" type="xs:string" minOccurs="0"/>
+						<xs:element name="max-events" type="xs:int" minOccurs="0"/>
+							<!-- CR1209 - Filter subscriptions by Package Class -->
+						<xs:element name="package-class" type="xs:string" minOccurs="0"/>
+						<!-- <xs:element name="is-using-local-date" type="xs:boolean" minOccurs="0"/> -->
+						<!-- MQC 6519 - add flag to indicate whether to limit the number of transactions returned
+						for each subscription to max_events, the order of transactions returned will youngest first -->
+						<xs:element name="use-max-events-for-trans" type="xs:boolean" minOccurs="0"/>
+						<!-- CR 1970 - Mobile Protect additions -->
+						<xs:element name="package-id" type="xs:string" minOccurs="0"/>
+						<xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+		        	<!-- MQC 5985 -->
+					<xs:element name="enable-disallow-cancellations" type="xs:boolean" minOccurs="0"/>
+					<!-- CR2255 return b2b partner info if required -->
+					<xs:element name="b2b-partner-info-required" type="xs:boolean" minOccurs="0"/>
+		      </xs:sequence>
+		</xs:complexType> 
+			
+	</xs:element>
+	<!--
+		End Selfcare Subscriptions Definition
+	-->
+	<!--
+		Begin Selfcare Micro Services Request Definition
+	-->
+	<xs:element name="selfcare-micro-services-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="device" type="xs:int" minOccurs="0"/>
+				<xs:element name="micro-service-filter">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="subscription-id" type="xs:long"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Selfcare Micro Services Request Definition
+	-->
+	<!-- 
+		Begin Selfcare Transactions Definition
+	-->
+	<xs:element name="selfcare-transactions-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<!-- REMEDY 6922 - Make optional -->
+				<xs:element name="device" type="xs:int" minOccurs="0"/>
+				<!--	
+					MQC 6569 - Added to return extra attributes if they are required.
+					Choose whether to  have some additional transaction attributes returned or not.
+				-->
+				<xs:element name="transaction-attributes-required" type="xs:boolean" minOccurs="0"/>						
+
+				<xs:element name="transactions-filter" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="active-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-no-zero-cost-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-monetry-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-modify-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-refund-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-refund-payments-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-all-events" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="transaction-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="subscription-id" type="xs:string" minOccurs="0"/>
+							<!-- REMEDY 6509 - added start and end date -->
+							<xs:element name="start-date" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="end-date" type="xs:dateTime" minOccurs="0"/>
+							<!-- MQC 4858 -->
+							<xs:element name="max-events" type="xs:int" minOccurs="0"/>
+							<!-- //CR 1029 ACR - add partner id to transaction filter -->
+							<xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+				<!-- 
+					MQC 6834 - If the property API_PRICEPOINT_RETURN_RATE_AS_STRING_NET is set to true
+					the purchase rate returned is a net price, set this field to true to return an 
+					additional field purchase rate gross in the response. 
+				-->
+				<xs:element name="purchase-rate-gross-required" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+		End Selfcare Transactions Definition
+	-->
+	<!--
+      	 the service usage instance is only used for volume rating
+    -->
+
+    <xs:complexType name="usageAuthRequestType">
+		<xs:sequence>
+			<xs:element name="msisdn" type="xs:string"/>
+			<xs:element name="service-id" type="xs:string"/>
+			<xs:element name="usage-attributes" type="common:usageAttributesType" minOccurs="0"/>
+			<xs:element name="rating-attributes" type="common:ratingAttributesType" minOccurs="0"/>
+			<!-- CR1231 -->
+			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			<!-- CR1803 Unique Pricepoint Identifier -->
+			<xs:element name="pricepoint_custom_fields_required" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+		
+
+	<xs:element name="usage-auth-rate" type="usageAuthRequestType"/>
+
+	<!-- like a usage-auth-rate but will have a more verbose response
+	 and it doesn't take an external subId -->
+	<xs:element name="usage-auth-rate-plus" type="usageAuthRequestType"/>
+	
+	
+	
+	<!-- based on usageAuthRequestType but with one more element at the end -->
+	<xs:complexType name="usageAuthChargeRequestType">
+		  <xs:complexContent>
+		    <xs:extension base="usageAuthRequestType">
+		      <xs:sequence>
+		        	<xs:element name="external-sub-id" type="xs:string" minOccurs="0" />
+		      </xs:sequence>
+		    </xs:extension>
+		  </xs:complexContent>
+		</xs:complexType> 
+
+	<xs:element name="usage-auth-rate-charge" type="usageAuthChargeRequestType" />
+
+	<!--
+        just like a UARC except the response is more verbose, and it doesn't take an external subId
+        TODO extract the complex type and have one inherit the other
+       	 the service usage instance is only used for volume rating
+       	 
+    -->
+	<xs:element name="usage-auth-rate-charge-plus" type="usageAuthRequestType" />
+	
+
+	<!--
+		This payload is sent to fulfill a usage complete in the case of a 2 phase purchase.
+	 -->
+	<xs:element name="usage-complete">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="reservation-id" type="xs:string"/>
+				<xs:element name="usage-complete-attributes">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="delivery-status" type="xs:int"/>
+							<xs:element name="event-units" type="xs:double" minOccurs="0"/>
+                            <!-- CR-0869 start-->
+                            <xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+                            <xs:element name="aggregator-id" type="xs:string" minOccurs="0"/>
+                            <!-- CR-0869 end-->
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Usage Complete
+	-->
+	<!--
+		This payload is sent to fulfill a get base prices.
+	 -->
+	<xs:element name="get-base-prices-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="service-id" type="xs:string" maxOccurs="unbounded"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		get base prices
+	-->
+	<!--
+		This payload is sent to retreive a single package based on it's id.
+	 -->
+	<xs:element name="get-package-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:string"/>
+				<!-- MQC 7458 - flag to indicate package notification category is returned in the response -->
+				<xs:element name="notification-category-required" type="xs:boolean" minOccurs="0"/>
+				<!-- MQC 7733 - flag to indicate package status is returned in the response -->
+				<xs:element name="status-required" type="xs:boolean" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Get Package Request
+	-->
+	<!--
+	payload is sent to validate a service based on given service id.
+	-->
+	<xs:element name="validate-service-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+    End validate Service Request
+    -->
+	<!--
+        Validate Promo Code Request
+    -->
+	<xs:element name="validate-promo-code-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="service-id" type="xs:string"/>
+				<xs:element name="promo-code" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+	    End - Validate Promo-code request
+	-->
+	<!-- 
+	    Get Services For MSISDN Request
+	-->
+	<xs:element name="get-services-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="device" type="xs:int"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+	    End Get Services For MSISDN Request
+	-->
+	<!--
+		This payload is sent to fulfill a get balances request.
+	 -->
+	<xs:element name="get-balances-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="client-id" type="xs:string"/>
+				<xs:element name="device-id" type="xs:int"/>
+				<xs:element name="balace-filter" type="common:Balance-filter" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		get base prices
+	-->
+	<!--
+		This payload is sent to fulfill a get pricepoint request.
+	 -->
+	<xs:element name="get-pricepoint-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pricepoint-id" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		get pricepoint
+	-->
+
+	<xs:element name="get-packages-request">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- MQC 7733 - flag to indicate package status is returned in the response -->
+				<xs:element name="status-required" type="xs:boolean" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End - get packages request
+	-->
+	<!--
+		This payload is sent to fulfill a get all services request.
+	 -->
+	<xs:element name="get-all-services-request"/>
+	<!--
+		End - get all services request
+	-->
+	<!--
+		This payload is sent to fulfill a get service request.
+	 -->
+	<xs:element name="get-service-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="service-id" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End - get service request
+	-->
+	<!--
+		This payload is sent to fulfill a get next payment amount request.
+	 -->
+	<xs:element name="get-next-payment-amount-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="subscription-id" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End - get next payment amount request
+	-->
+	<!--
+		This payload is sent to fulfill a is unique promo precode request.
+	 -->
+	<xs:element name="is-unique-promo-precode-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="precode" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End - is unique promo precode request
+	-->
+	<!--
+		This payload is sent to fulfill a check promotions request.
+	 -->
+	<xs:element name="check-promotions-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="service-id" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		check promotions request
+	-->
+	<!--
+		This payload is sent to fulfill a get supercredit balances request.
+	 -->
+	<xs:element name="get-supercredit-balances-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="clientId" type="xs:string"/>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="device" type="xs:int"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		get supercredit balances 
+	-->
+	<!--
+	Renew package. This call allows the renewal of a subscription
+    -->
+	<xs:element name="renew-purchase-package-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="client-id" type="xs:string"/>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="subscription-id" type="xs:string"/>
+				<!-- pre-rate, external-trans-id and partner-id are in ratingAttributesType -->
+				<xs:element name="purchase-attributes" type="common:ratingAttributesType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+				<!-- CR2237 flag for adding error-id to renew -->
+				<xs:element name="error-id-required" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Renew package
+	-->
+	<!--
+	Rate Package. 
+    -->
+	<xs:element name="rate-package-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="client-id" type="xs:string"/>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="package-id" type="xs:string"/>
+				<xs:element name="purchase-attributes" type="common:ratingAttributesType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End Rate package
+	-->
+	<!--
+		This payload is sent to fulfill a get version request.
+	 -->
+	<xs:element name="get-version-request"/>
+	<!--
+		End - get version request
+	-->
+	
+	<xs:element name="er-version-info-request"/>
+	
+	<!--
+		This payload is sent to fulfill a get tax request.
+	 -->
+	<xs:element name="get-tax-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End - get tax request
+	-->
+	<!--
+		This payload is sent to fulfill a get parent transaction request.
+	 -->
+	<xs:element name="get-parent-transaction-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="client-id" type="xs:string"/>
+				<xs:element name="parent-transaction-id" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End - get parent transaction request
+	-->
+	<!--
+		This payload is sent to fulfill a get reason codes request.
+	 -->
+	<xs:element name="get-reason-codes-request"/>
+	<!--
+		End - get reason codes request
+	-->
+	<!--
+		This payload is sent to fulfill a find packages with service request.
+	 -->
+	<xs:element name="find-packages-with-service-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="service-id" type="xs:string"/>
+				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
+				<!-- MD 19/4/12 - purchase attributes are common to some other calls so are moved to pa_common.xsd -->
+				<!-- external-sub-id is in purchaseAttributesType -->
+				<xs:element name="purchase-attributes" type="common:purchaseAttributesType" minOccurs="0"/>
+				<!-- pre-rate, external-trans-id and partner-id are in ratingAttributesType -->
+				<xs:element name="rating-attributes" type="common:ratingAttributesType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<!-- MQC 7458 - flag to indicate whether pricepoint start and end dates are returned in the response -->
+				<xs:element name="pricepoint-start-end-dates-required" type="xs:boolean" minOccurs="0"/>
+				<!-- MQC 7458 - flag to indicate whether pricepoint user groups are returned in the response -->
+				<xs:element name="pricepoint-user-groups-required" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		End - find packages with service request
+	-->
+	<!-- REMEDY 6779 -->
+	<!-- Refund Monetary -->
+	<xs:element name="refund-monetary-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="transaction-id" type="xs:string"/>
+				<!-- CR2082 Google DCB3, change the amount and charging resource from mandatory top optional.
+				In case where no amount is passed in, the full transaction amount will be refunded.
+				In case where no charging resource is passed in, the charging resource of the original
+				transaction will be used -->
+				<xs:element name="amount" type="xs:double" minOccurs="0"/>
+				<xs:element name="chargingResource" type="common:simple-charging-resourceType" minOccurs="0"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Refund Enlargement -->
+	<xs:element name="refund-enlargement-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="transaction-id" type="xs:string"/>
+				<xs:element name="extensiondays" type="xs:int"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Refund Discount -->
+	<xs:element name="refund-discount-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="transaction-id" type="xs:string"/>
+				<xs:element name="discount" type="xs:double"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Refund Credit -->
+	<xs:element name="refund-credit-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- END REMEDY 6779 -->
+	<!-- REMEDY 6780 and 6778, Bruno Meseguer, missing decoupling API -->
+	<xs:element name="get-basic-account">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="access-device" type="xs:int"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="notification-subscribe">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="url" type="xs:string"/>
+				<xs:element name="name" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="inactivate-account">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="validate-account" type="xs:string" minOccurs="0"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="modify-ban">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="new-ban" type="xs:string"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="modify-msisdn">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="new-msisdn" type="xs:string"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>	
+	
+	<!-- END REMEDY 6780  and 6778 -->
+	
+	<!-- 
+	CR-0978 Location Services 
+	Modify Tariff API
+	action can only have the value NEW or CHANGE or TERMINATE
+	e.g. use cases
+	For NEW - purchase all pricepoints with tariff A
+	
+		action = NEW
+		sourceTariff = *
+		destinationTariff = A
+	
+	
+	For CHANGE - inactivate all subscriptins to tariff A & purchase all pricepoints with tariff B
+	
+		action = CHANGE
+		sourceTariff = A
+		destinationTariff = B
+	
+	
+	For TERMINATE inactivate all subscriptins to tariff B
+	
+		action = TERMINATE
+		sourceTariff = B
+		destinationTariff = *
+	-->
+	
+	<xs:element name="modify-tariff-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="action" type="xs:string"/>
+				<xs:element name="sourceTariff" type="xs:string" minOccurs="0"/>
+				<xs:element name="destinationTariff" type="xs:string" minOccurs="0"/>
+				<xs:element name="client-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	
+	<xs:element name="get-tariff-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="tariff-name" type="xs:string"/>
+				<!-- CR1231 -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- END CR-0978 Location Services -->
+
+	<!-- 
+		CR1528 - Begin Selfcare Lite Transactions Definition
+	-->
+	<xs:element name="selfcare-lite-transactions-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="partner-id" type="xs:string"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+				<!-- CR2270 set this to true to retrieve content-name, merchant-name and asset-id on the response -->
+				<xs:element name="additional-attributes-required" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+		End Selfcare Lite Transactions Definition
+	-->
+	<!-- CR1564-utc timezone for diff region in country -->
+	
+	<xs:element name="modify-timezone">
+	<xs:complexType>
+	        <xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="timezone" type="common:utcTimezoneOffset"/>
+			    <xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+           </xs:sequence>
+         </xs:complexType>
+	</xs:element>
+	<!-- Billlingcycle -->
+   <xs:element name="modify-billingcycle">
+   		<xs:complexType>
+   			<xs:sequence>
+     			<xs:element name="msisdn" type="xs:string" />
+     			<xs:element name="billingcycle" type="common:billingcycle"/>
+     			<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+	 			<xs:element name="reason" type="xs:string" minOccurs="0"/>
+	 			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+   			</xs:sequence>
+   		</xs:complexType>
+   </xs:element>	
+	<!-- Usergroups -->
+	<!-- 
+	CR-2229 Add action to Modify Usergroup
+	action can only have the value ADD or REMOVE or OVERWRITE
+	
+	For ADD - all usergroups specified are added to the user account, if they dont exist. An empty usergroup list will mean that the user account usergroups will be unchanged
+	
+	For REMOVE - all usergroups specified are removed from the user account if they exist. An empty usergroup list will mean that the user account usergroups will be unchanged
+	
+	For OVERWRITE -  all usergroups are replaced with the ones specified from the user account. An empty usergroup list will mean all usergroups will be deleted from the user account
+	
+	If no action is specified, then this will default to the OVERWRITE use case
+		
+	-->
+	<xs:element name="modify-usergroup">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="usergroups" type="common:usergroups"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="action" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- CR1564-end -->
+	<!--
+		CR 1564 - Begin Selfcare Full Subscriptions Definition. Replicate selfcare-subscriptions-request and
+		extend to include in subscription-filter, "is-using-local-date"
+	-->
+	<xs:element name="selfcare-full-subscriptions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="device" type="xs:int" minOccurs="0" />
+				<xs:element name="subscription-filter" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="subscription-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="pre-order" type="xs:int" minOccurs="0"/>
+							<xs:element name="charging-method" type="xs:int" minOccurs="0"/>
+							<xs:element name="subscription-status" type="xs:int" minOccurs="0"/>
+							<xs:element name="recurring-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="non-recurring-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="start-date" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="end-date" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="subscription-end-date-start-value" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="subscription-end-date-end-value" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="transactions-not-required" type="xs:string" minOccurs="0"/> <!-- no - sends trans (default), yes - does not send trans -->
+							<xs:element name="add-services" type="xs:boolean" minOccurs="0"/> 
+							<xs:element name="client-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="max-events" type="xs:int" minOccurs="0"/>
+							<xs:element name="package-class" type="xs:string" minOccurs="0"/>
+							<xs:element name="is-using-local-date" type="xs:boolean" minOccurs="0"/>
+							<!-- MQC 6519 - add flag to indicate whether to limit the number of transactions returned
+							for each subscription to max_events, the order of transactions returned will youngest first -->
+							<xs:element name="use-max-events-for-trans" type="xs:boolean" minOccurs="0"/>
+							<!-- CR 1970 - Mobile Protect additions -->
+							<xs:element name="package-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		CR 1564 - End Selfcare Full Subscriptions Definition
+		
+	-->
+	<!-- 
+		CR 1564 - Begin Selfcare Full Transactions Definition
+	-->
+	<xs:element name="selfcare-full-transactions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="device" type="xs:int" minOccurs="0"/>
+				<xs:element name="transactions-filter" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="active-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-no-zero-cost-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-monetry-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-modify-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-refund-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-refund-payments-events-only" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="is-all-events" type="xs:boolean" minOccurs="0"/>
+							<xs:element name="transaction-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="subscription-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="start-date" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="end-date" type="xs:dateTime" minOccurs="0"/>
+							<xs:element name="max-events" type="xs:int" minOccurs="0"/>
+							<xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+							<!-- <xs:element name="is-using-local-date" type="xs:boolean" minOccurs="0"/> -->
+							<!-- MQC 6628 - filter by usage credit transactions, add transaction type and descending order -->
+							<xs:element name="transaction-type" type="xs:string" minOccurs="0"/>
+							<xs:element name="descending-order" type="xs:boolean" minOccurs="0"/>
+							 <!--CR2241 START-->
+							<xs:element name="external-field1" type="xs:string" minOccurs="0"/>
+							<xs:element name="external-field2" type="xs:string" minOccurs="0"/>
+							<xs:element name="external-trans-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="transaction-id-long" type="xs:long" minOccurs="0"/>
+							<xs:element name="ascending-order" type="xs:boolean" minOccurs="0"/>
+							 <!--CR2241 END-->
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+		CR 1564 - End Selfcare Full Transactions Definition
+	-->
+	<!-- 
+		CR 1564 - Begin Get Full Account Definition
+	-->
+	<xs:element name="get-full-account">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="access-device" type="xs:int"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+		CR 1564 - End Get Full Account Definition
+	-->
+
+	<!-- CR 1791 Modify Subscription Start-->
+	<xs:element name="modify-subscription-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="subscription-id" type="xs:string" />
+				<xs:element name="subscription-attributes" type="common:subscription-attributesType"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	 	
+	 	<!-- CR1791  Modify Subscription End -->
+
+
+        <!-- 
+                CR 1619 - Return application configuration - no content required
+        -->
+        <xs:element name="get-application-config">
+
+
+        </xs:element>
+
+	<!-- 
+		CR 1643 - Pre-Pay Post-Pay Split
+		'modify-sp-id' is used to pass the SP-ID (Service Provider ID) to ER
+	-->
+	<xs:element name="modify-sp-id">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="sp-id" type="xs:string"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- 
+		'modify-prepay-flag' is used to set the IS-PREPAY flag in ER
+		The expected values are: 'Pre', 'Post' or NULL
+	-->
+	<xs:element name="modify-prepay-flag">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="is-prepay" type="common:isPrepay"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- 
+		CR 1643 - Ends
+	-->
+
+	<!-- 
+	CR1759 - UpdateServiceStatus
+	-->
+	
+	
+	<xs:complexType name="provisionUpdateRequestType">
+			<xs:sequence>
+				<xs:element name="provisioning-id" type="xs:string"/>
+				<xs:element name="service-status" type="xs:int"/>
+				<xs:element name="provisioning-status" type="xs:int"/>
+				<xs:element name="provisioning-tag" type="xs:string" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	
+		<xs:element name="provision-full-update-service-status-request" type="provisionUpdateRequestType"/>
+	
+	<xs:element name="provision-simple-update-service-status-request" type="provisionUpdateRequestType"/>
+	<!-- 
+	End 1759
+	-->
+	
+	<!-- CR1759 - start -->
+	<xs:element name="catalog-full-pricepoint-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="pricepoint-id" type="xs:string"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="catalog-full-package-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:string"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="catalog-full-packages-request"/>
+  
+  <!-- MQC 7353-->
+  <xs:element name="catalog-little-packages-request"/>
+  <!-- MQC 7353-->
+  
+  <xs:element name="custcare-full-refund-monetary-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="msisdn" type="xs:string"/>
+        <xs:element name="transaction-id" type="xs:string"/>
+        <xs:element name="amount" type="xs:double" minOccurs="0"/>
+        <xs:element name="chargingResource" type="common:simple-charging-resourceType" minOccurs="0"/>
+        <xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="custcare-full-refund-enlargement-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="msisdn" type="xs:string"/>
+        <xs:element name="transaction-id" type="xs:string"/>
+        <xs:element name="extensiondays" type="xs:int"/>
+        <xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="custcare-full-refund-discount-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="msisdn" type="xs:string"/>
+        <xs:element name="transaction-id" type="xs:string"/>
+        <xs:element name="discount" type="xs:double"/>
+        <xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="custcare-full-refund-credit-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="msisdn" type="xs:string"/>
+        <xs:element name="refund-attributes" type="common:refundAttributesType"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="catalog-full-service-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="service-id" type="xs:string" minOccurs="0"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="selfcare-full-balances-request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="msisdn" type="xs:string"/>
+        <xs:element name="client-id" type="xs:string"/>
+        <xs:element name="device-id" type="xs:int"/>
+        <xs:element name="balance-filter" type="common:Balance-filter" minOccurs="0"/>
+        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+	<!-- CR1759 - end -->
+  <!-- CR1923 - start -->
+  <xs:element name="get-partners-with-trading-limit"/>
+	
+  <xs:element name="get-partner-trading-limit">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="partner-id" type="xs:string"/>
+          <xs:element name="log-id" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <!-- CR1923 - end -->
+  
+	<!--
+		CR2068 This payload is sent to fulfill a get all services with partners request.
+		This will return all serviceids with a list of there associated partner information
+	 -->
+	<xs:element name="get-all-services-partners-request"/>
+	<!--
+		CR2068 End
+	-->
+
+  <!-- 
+  	CR2082 This payload is sent to fulfill a validate msisdn request.
+  	This will make a validation call to the opco ERIF and return the result. 
+  -->
+  <xs:element name="validate-msisdn-request">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="msisdn" type="xs:string"/>
+          <xs:element name="service-id" type="xs:string" minOccurs="0"/>
+          <xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+          <!-- CR2134 add vendor id -->
+          <xs:element name="vendor-id" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+  <!--
+	CR2082 End
+  -->
+  
+  <!-- CR2040 MPAY Goodwill credit request -->
+  <xs:element name="goodwill-credit-request">
+	<xs:complexType>
+		<xs:sequence>
+ 			<xs:element name="msisdn" type="xs:string"/> <!-- customer's MSISDN -->
+			<xs:element name="package-id" type="xs:string"/> <!-- fully qualified package ID (price point) -->
+			<xs:element name="pre-rate" type="xs:double"/> <!-- pre-rated amount to be credited -->
+			<xs:element name="partner-id" type="xs:string"/> <!-- aggregator's ID -->
+			<xs:element name="merchant-id" type="xs:string"/> <!-- merchant's ID -->
+			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+  </xs:element>
+  <!-- CR2040 MPAY Goodwill credit request End -->
+  
+  <!-- CR2040 MPAY Modify spend limits -->
+  <xs:element name="modify-spend-limits-request">
+	<xs:complexType>
+		<xs:sequence>
+ 			<xs:element name="msisdn" type="xs:string"/> <!-- customer's MSISDN -->
+			<xs:element name="spend-limits"> <!-- NEW spend limits -->
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="per-tx-limit" type="xs:double" minOccurs="0"/> <!-- per transaction spend limit -->
+						<xs:element name="per-day-limit" type="xs:double" minOccurs="0"/> <!--   per day spend limit -->
+						<xs:element name="per-month-limit" type="xs:double" minOccurs="0"/> <!-- per month spend limit -->
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+<!-- CR2040 MPAY Modify spend limits End -->
+ 
+ 	<!-- CR2198 Add Child Service Provider Id to Account -->
+	<xs:element name="modify-child-sp-id">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="child-sp-id" type="xs:string"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- CR2198 Add Service Provider Type to Account -->
+	<xs:element name="modify-sp-type">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="sp-type" type="xs:string"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

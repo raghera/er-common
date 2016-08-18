@@ -123,12 +123,13 @@ public class PayloadConstants {
     //MQC7353
     public static final int CATALOG_LITTLE_PACKAGES_REQUEST_PAYLOAD      		= 110003;
     // CR2040 MPAY replacement.
-
+    //MQC8355 - only use the unique id, node name should no longer be used
+    //public static final String GOODWILL_CREDIT_REQUEST							= "goodwill-credit-request";
+    //public static final String MODIFY_SPEND_LIMITS_REQUEST						= "modify-spend-limits-request";
     public static final int GOODWILL_CREDIT_REQUEST_ID							= 120000;
     public static final int MODIFY_SPEND_LIMITS_REQUEST_ID						= 120002;
     
-    //JIRA ET86 get user groups list from the core DB
-    public static final int GET_USER_GROUPS_REQUEST_PAYLOAD 					= 120004;
+
     
 	/**
 	 * Response payload identifiers.
@@ -141,7 +142,6 @@ public class PayloadConstants {
 	public static final int PURCHASE_OPTIONS_RESPONSE_PAYLOAD				= 100005;
 	public static final int SELFCARE_SUBSCRIPTIONS_RESPONSE_PAYLOAD			= 100006;
 	public static final int SELFCARE_TRANSACTIONS_RESPONSE_PAYLOAD			= 100007;
-	/**also used for purchase auth*/
 	public static final int USAGE_AUTHORISATION_RESPONSE_PAYLOAD			= 100008;
 	public static final int ER_CONSTANTS_RESPONSE_PAYLOAD					= 100009;
 	public static final int GET_PACKAGE_RESPONSE_PAYLOAD					= 100010;
@@ -229,7 +229,16 @@ public class PayloadConstants {
     public static final int SELFCARE_FULL_BALANCES_RESPONSE_PAYLOAD      	= 100071;
     //CR-1759 - End
 
-
+	//Remedy 6780 and 6778, Bruno Meseguer, missing decoupling API
+	//new operations are identified by node name instead of id attribute
+	//TP 10112010 - new operations MUST only be identified by the id attribute, node name
+	//must no longer be used.
+    //MQC8355 - only use the unique id, node name should no longer be used
+	//public static final String GET_BASIC_ACCOUNT_PAYLOAD					= "get-basic-account";
+	//public static final String NOTIFICATION_SUBSCRIBE_PAYLOAD				= "notification-subscribe";
+	//public static final String INACTIVATE_ACCOUNT_PAYLOAD					= "inactivate-account";
+	//public static final String MODIFY_BAN_PAYLOAD							= "modify-ban";
+	//public static final String MODIFY_MSISDN_PAYLOAD						= "modify-msisdn";
     
     //CR1564 -Utctimezone for diff region in country
 	public static final int MODIFY_USERGROUP_PAYLOAD 					= 100053;
@@ -267,54 +276,10 @@ public class PayloadConstants {
     //MQC7353
     public static final int CATALOG_LITTLE_PACKAGES_RESPONSE_PAYLOAD      	= 100080;
     // CR2040 MPAY replacement.
-
+    //MQC8355 - only use the unique id, node name should no longer be used
+    //public static final String GOODWILL_CREDIT_RESPONSE							= "goodwill-credit-response";
+    //public static final String MODIFY_SPEND_LIMITS_RESPONSE						= "modify-spend-limits-response";
     public static final int GOODWILL_CREDIT_RESPONSE_ID							= 120001;
     public static final int MODIFY_SPEND_LIMITS_RESPONSE_ID						= 120003;
-	
-    //JIRA ET86 get user groups list from the core DB
-    public static final int GET_USER_GROUPS_RESPONSE_PAYLOAD 					= 120005;
-    
-    //JIRA ET148 Add SMS blacklist flag to opt out of courtesy SMS notifications
-    public static final int MODIFY_ACCOUNT_SEND_COURTESY_NOTIFICATIONS_REQ		= 120006;
-    public static final int MODIFY_ACCOUNT_SEND_COURTESY_NOTIFICATIONS_RES		= 120007;
-    
-    //JIRA ET196 Get account subscription promo-codes info
-    public static final int GET_ACCOUNT_SUBSCRIPTION_PROMO_CODES_REQUEST		= 120008;
-    public static final int GET_ACCOUNT_SUBSCRIPTION_PROMO_CODES_RESPONSE		= 120009;
-    
-    //JIRA ET196 Inactivate subscription promo-code
-    public static final int INACTIVATE_SUBSCRIPTION_PROMO_CODE_REQUEST			= 120010;
-    public static final int INACTIVATE_SUBSCRIPTION_PROMO_CODE_RESPONSE			= 120011;
-    
-    //PPMID113010 ET197 DE CTB Migration.  
-    public static final int GET_BARRING_STATUS_REQUEST							=120050;
-    public static final int GET_BARRING_STATUS_RESPONSE							=120051;
-    public static final int MODIFY_BARRING_STATUS_REQUEST						=120052;
-    public static final int MODIFY_BARRING_STATUS_RESPONSE						=120053;
-
-    public static final int SELFCARE_FULL_SUBSCRIPTIONS_RESPONSE_PAYLOAD_V2		= 2001;
-    public static final int SELFCARE_FULL_TRANSACTIONS_RESPONSE_PAYLOAD_V2		= 2002;
-    
-    //JIRA ET-238 - new get service offers call
-    public static final int GET_SERVICE_OFFERS_REQUEST							=120054;
-    public static final int GET_SERVICE_OFFERS_RESPONSE							=120055;
-    
-    //JIRA-ET451 - add get sibling accounts api
-    public static final int GET_SIBLING_ACCOUNTS_REQUEST						=120056;
-    public static final int GET_SIBLING_ACCOUNTS_RESPONSE						=120057;
-    
-    //JIRA-ET464 - add get sibling accounts using BAN api
-    public static final int GET_FULL_ACCOUNTS_REQUEST			=120058;
-    public static final int GET_FULL_ACCOUNTS_RESPONSE			=120059;
-    
-    //MQC 13714 - Re-triggering provisioning requests api
-    public static final int REPROVISION_SUBSCRIPTION_REQUEST	=120060;
-    public static final int REPROVISION_SUBSCRIPTION_RESPONSE	=120061;
-    
-    //ET-521
-    public static final int VALIDATE_ACCOUNT_REQUEST_PAYLOAD		=120062;
-    
-    public static final int VALIDATE_ACCOUNT_RESPONSE_PAYLOAD   = 120063;
-    
     
 }

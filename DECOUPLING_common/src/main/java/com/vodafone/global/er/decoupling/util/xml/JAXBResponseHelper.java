@@ -1,61 +1,105 @@
 package com.vodafone.global.er.decoupling.util.xml;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
-
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.xml.sax.InputSource;
 
 import com.vodafone.config.ConfigProvider;
-import com.vodafone.global.er.decoupling.binding.response.ErResponse;
-
 
 /**
- * only marshals and unmarshalls {@link ErResponse} objects
+ * only marshals and unmarshalls response objects; i.e. objects from the  <pre>com.vodafone.global.er.decoupling.binding.response</pre> package
  *
  */
-public class JAXBResponseHelper extends JAXBHelper<ErResponse> {
+public class JAXBResponseHelper {
 	
-	private static final Logger logger = LoggerFactory.getLogger(JAXBResponseHelper.class);
+	private static final String	ENCODING	= "utf-8";
+
+	private static JAXBContext jc = null;
 	
-	private static JAXBResponseHelper theInstance ;
+	static final Logger logger = LoggerFactory.getLogger(JAXBResponseHelper.class);
 	
-	
-	JAXBResponseHelper()	{
-		try {
-			jc = JAXBContext.newInstance(
-					"com.vodafone.global.er.decoupling.binding.response:com.vodafone.global.er.decoupling.binding.response.v2"
-					);
-		} catch (JAXBException e) {
+	static {
+		try
+		{
+			jc = JAXBContext.newInstance("com.vodafone.global.er.decoupling.binding.response" );
+		}
+		catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public static JAXBResponseHelper getInstance()	{
-		if (theInstance==null)
-			theInstance = new JAXBResponseHelper();
-		theInstance.useStax = ConfigProvider.getPropertyAsBoolean("er.core.decoupling.xml.use.stax", true);
-		return theInstance;
-	}
-	
-	@Override
-	void validate(Unmarshaller um) throws JAXBException {
-		um.setEventHandler(new ValidationEventHandler()		{
-			//this event handler ignores unexpected elements in the xml, but will return false on any other event
-			@Override
-			public boolean handleEvent(ValidationEvent evt) 
-			{
-				logger.info("Event Info: {}",evt);
-				if(evt.getMessage().toLowerCase().contains("unexpected element"))
-					return true;
-				return false;
-			}
-		});		
+	public static byte[] toByteArray(Object obj) {
+		return toByteStream(obj).toByteArray();
 	}
 
+	public static String toString(Object obj) {
+		return toByteStream(obj).toString();
+	}
+	
+	public static ByteArrayOutputStream toByteStream(Object obj){
+
+		ByteArrayOutputStream os = null;
+		
+		try {
+	        Marshaller m = jc.createMarshaller();
+	        m.setEventHandler(new ValidationEventHandler(){
+
+				@Override
+				public boolean handleEvent(ValidationEvent evt) {
+					logger.warn("validation error: {}", evt.getMessage());
+					return false;
+				}
+	        	
+	        });
+        	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, ConfigProvider.getPropertyAsBoolean("er.decoupling.format.xml", true));
+	        os = new ByteArrayOutputStream();
+	        m.marshal(obj, os);
+		}
+		catch (JAXBException e) {
+			throw new RuntimeException(e);
+		}
+		
+		return os;
+	}
+	
+	public static Object bind(File xml) throws JAXBException{
+		return jc.createUnmarshaller().unmarshal(xml);
+	}
+	
+	public static Object bind(InputSource xml) throws JAXBException{
+		return jc.createUnmarshaller().unmarshal(xml);
+	}
+	
+	public static Object bind(InputStream xml) throws JAXBException{
+		Unmarshaller um = jc.createUnmarshaller();
+		//um.setValidating(true);
+		return um.unmarshal(xml);
+	}
+	
+	public static Object bind(String xml) throws JAXBException{
+		try {
+			return bind(new ByteArrayInputStream(xml.getBytes(ENCODING)));
+		} catch (UnsupportedEncodingException e) {
+			throw new JAXBException(e);
+		}
+	}
+	
+	public static Object bind(byte[] xml) throws JAXBException{
+		return bind(new ByteArrayInputStream(xml));
+	}
+
+	
 }

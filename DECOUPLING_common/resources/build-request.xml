@@ -1,0 +1,46 @@
+<project name="ERRequest" default="compilexjc" basedir=".">
+  <target name="init">
+      <tstamp/>
+  </target>
+
+  <!-- Configure the context path for this application -->
+  <property name="appname" value="WPI" />
+  <property name="apppath" value="." />
+  <property name="path" value="${apppath}"/>
+
+  <property name="tmp" value="../tmp_request"/>
+
+  <!-- Configure properties to access the Manager application -->
+  <property file="build.properties"/>
+
+
+  <path id="classpath">
+    <fileset dir="${LIBS_JARPATH}" includes="*.jar" />
+    <fileset dir="${JAXB_LIB}" includes="*.jar" />
+  </path>
+
+  <!-- Configure the custom Ant tasks for the Manager application -->
+  <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+    <classpath refid="classpath" />
+  </taskdef>
+
+  <!-- Executable Targets -->
+
+  <!--compile Java source files-->
+  <target name="compilexjc" description="Generate Java source files from XSD">
+    <mkdir dir="${tmp}"/>
+    <echo message="Compiling the schema..." />
+    <xjc target="${tmp}" package="com.vodafone.global.er.decoupling.binding.request">
+        <schema dir="../schemas">
+            <include name="request/request.xsd"/>
+            <include name="request/partner_request.xsd"/>
+        </schema>
+        <produces dir="${tmp}" includes="**/*.java"/>
+    </xjc>
+    <copy todir="${tmp}">
+        <fileset dir="${tmp}">
+            <include name="**/*.properties"/>
+        </fileset>
+    </copy>
+  </target>
+</project>

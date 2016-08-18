@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:common="http://localhost:8080/decoupling/schemas/common"
+	xmlns:volume="http://catalog.alternate.business.ecommerce.vizzavi.com"
+	elementFormDefault="unqualified">
+
+	<xs:element name="get-details-for-external-transaction-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="external-trans-id" type="xs:string" />
+				<xs:element name="partner-id" type="xs:string" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="get-details-for-external-subscription-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string" minOccurs="0" />
+				<xs:element name="partner-id" type="xs:string" />
+				<xs:element name="external-sub-id" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+</xs:schema>
