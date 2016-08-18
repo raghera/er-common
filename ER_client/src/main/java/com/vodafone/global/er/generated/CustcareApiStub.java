@@ -4,7 +4,6 @@ import com.vizzavi.ecommerce.business.charging.*;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.selfcare.*;
 import com.vodafone.config.ConfigProvider;
-import com.vodafone.global.er.subsmngmnt.SubsManagementException;
 import com.vodafone.global.er.util.ExceptionAdapter;
 import com.vodafone.global.er.util.HttpClientConnector;
 import org.apache.commons.httpclient.HttpClient;
@@ -1554,15 +1553,9 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
 	}
         return false;
     }
-
-	@Override
-	public BasicAccount getBasicAccount (String clientId,String msisdn,int accessDevice) throws EcommerceException {
-		return getBasicAccount(clientId, msisdn, false);
-	}
     
     @Override
-//	public BasicAccount getBasicAccount (String clientId,String msisdn,int accessDevice) throws com.vizzavi.ecommerce.business.common.EcommerceException {
-	public BasicAccount getBasicAccount(String clientId, String msisdn, boolean forceRefresh) throws EcommerceException {
+	public BasicAccount getBasicAccount (String clientId,String msisdn,int accessDevice) throws com.vizzavi.ecommerce.business.common.EcommerceException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
 	boolean state = true;
@@ -1575,7 +1568,7 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
             requestPayload.put("methodName",methodName);
             requestPayload.put("clientId",clientId);
             requestPayload.put("msisdn",msisdn);
-//            requestPayload.put("accessDevice", new Integer(accessDevice) );
+            requestPayload.put("accessDevice", new Integer(accessDevice) );  
 	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
 	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
@@ -1918,121 +1911,122 @@ public class CustcareApiStub  extends HttpClientConnector implements CustcareApi
         return false;
     }
 
-//    @Override
-//	public boolean notificationSubscribe (java.util.Locale locale1,String url,String name) throws com.vizzavi.ecommerce.business.common.EcommerceException {
-//        ObjectOutputStream oos = null;
-//        ObjectInputStream ois = null;
-//	PostMethod method = null ;
-//
-//        try {
-//            HashMap requestPayload = new HashMap();
-//            requestPayload.put("locale", locale);
-//            String methodName = "notificationSubscribe17";
-//            requestPayload.put("methodName",methodName);
-//            requestPayload.put("locale1",locale1);
-//            requestPayload.put("url",url);
-//            requestPayload.put("name",name);
-//	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
-//
-//	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-//		try{
-//			if(httpConnectionManager == null ){
-//				createConnectionManager();
-//			}
-//			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-//			HttpClient httpclient = new HttpClient(httpConnectionManager);
-//
-//	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-//			method = new PostMethod( getDelegateUrl() );
-//			method.addRequestHeader("Content-Type", "application/octet-stream");
-//		        // Serialize to a byte array
-//			 byte[] buf = super.serializedPayload(requestPayload);
-//			 method.setRequestBody(new ByteArrayInputStream(buf));
-//			 httpclient.executeMethod(method);
-//
-//			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-//			}
-//			catch(IOException ie ){
-//			     ie.printStackTrace();
-//			}
-//	        }
-//		else {
-//		     URLConnection conn = null;
-//		     conn = getConnection();
-//		    oos = getObjectOutputStream(conn);
-//		    oos.writeObject(requestPayload);
-//		    oos.flush();
-//		    oos.close();
-//		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-//	     }
-//            try {
-//            	long beforeReadObject = System.currentTimeMillis() ;
-//                Object result = ois.readObject();
-//              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-//                log.debug("Result object type: " + result.getClass().getName());
-//                if (result instanceof ExceptionAdapter) {
-//					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
-//					Vector exceptionVector = new Vector();
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
-//                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
-//                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
-//                }
-//                else
-//                {
-//                }
-//            }
-//            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");
-//                return ois.readBoolean();
-//            }
-//            catch (ClassNotFoundException e4) {
-//                log.error("Exception during deserialization", e4);
-//            }
-//        }
-//        catch (IOException e2) {
-//            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
-//            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-//					String exceptionName = ((EcommerceException) e2).getClass().getName();
-//					Vector exceptionVector = new Vector();
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = e2;
-//                     if (generatedException instanceof  EcommerceException){
-//                          throw (EcommerceException) generatedException ;
-//                      }
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", e2);
-//                }
-//	     else{
-//	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
-//
-//	     }
-//        }
-//        finally {
-//	   try {
-//                if (oos != null) {
-//                    oos.close();
-//                }
-//	        if (ois != null) {
-//	            ois.close();
-//	       }
-//       		if (method != null ){
-//       		log.debug("Releasing http connection" );
-//	     	  method.releaseConnection();
-//		}
-//	   }
-//	   catch (Exception e3) {
-//	       log.error("Error closing connection", e3);
-//	   }
-//	}
-//        return false;
-//    }
+    @Override
+	public boolean notificationSubscribe (java.util.Locale locale1,String url,String name) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+	boolean state = true;
+        PostMethod method = null ;
+
+        try {
+            HashMap requestPayload = new HashMap();
+            requestPayload.put("locale", locale);
+            String methodName = "notificationSubscribe17";
+            requestPayload.put("methodName",methodName);
+            requestPayload.put("locale1",locale1);
+            requestPayload.put("url",url);
+            requestPayload.put("name",name);
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
+
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
+
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
+            try {
+            	long beforeReadObject = System.currentTimeMillis() ;
+                Object result = ois.readObject();
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                log.debug("Result object type: " + result.getClass().getName());
+                if (result instanceof ExceptionAdapter) {
+					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+					Vector exceptionVector = new Vector();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+                }
+                else                 
+                {
+                }
+            }
+            catch (OptionalDataException e1) {
+                log.error("Primitive data in stream");              
+                return ois.readBoolean();
+            }
+            catch (ClassNotFoundException e4) {
+                log.error("Exception during deserialization", e4);
+            }
+        }
+        catch (IOException e2) {
+            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
+					String exceptionName = ((EcommerceException) e2).getClass().getName();
+					Vector exceptionVector = new Vector();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = e2;
+                     if (generatedException instanceof  EcommerceException){
+                          throw (EcommerceException) generatedException ;
+                      }
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", e2);
+                }
+	     else{
+	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+
+	     }
+        } 
+        finally {
+	   try {
+                if (oos != null) {
+                    oos.close();
+                }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
+        return false;
+    }
 
     @Override
 	public RefundAuthorization refundTransactionCredit (RefundAttributes refundAttr) throws com.vizzavi.ecommerce.business.common.EcommerceException {
@@ -3397,7 +3391,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
     }
 
     @Override
-	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws com.vizzavi.ecommerce.business.common.EcommerceException, java.rmi.RemoteException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
 	boolean state = true;
@@ -3644,131 +3638,131 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
         return false;
     }
 
-//    @Override
-//	public ResourceBalance[] getSuperCreditBalances (String clientId,String msisdn,int device) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
-//        ObjectOutputStream oos = null;
-//        ObjectInputStream ois = null;
-//	boolean state = true;
-//        PostMethod method = null ;
-//
-//        try {
-//            HashMap requestPayload = new HashMap();
-//            requestPayload.put("locale", locale);
-//            String methodName = "getSuperCreditBalances29";
-//            requestPayload.put("methodName",methodName);
-//            requestPayload.put("clientId",clientId);
-//            requestPayload.put("msisdn",msisdn);
-//            requestPayload.put("device", new Integer(device) );
-//	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
-//
-//	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-//		try{
-//			if(httpConnectionManager == null ){
-//				createConnectionManager();
-//			}
-//			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-//			HttpClient httpclient = new HttpClient(httpConnectionManager);
-//
-//	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-//			method = new PostMethod( getDelegateUrl() );
-//			method.addRequestHeader("Content-Type", "application/octet-stream");
-//		        // Serialize to a byte array
-//			 byte[] buf = super.serializedPayload(requestPayload);
-//			 method.setRequestBody(new ByteArrayInputStream(buf));
-//			 httpclient.executeMethod(method);
-//
-//			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-//			}
-//			catch(IOException ie ){
-//			     ie.printStackTrace();
-//			}
-//	        }
-//		else {
-//		     URLConnection conn = null;
-//		     conn = getConnection();
-//		    oos = getObjectOutputStream(conn);
-//		    oos.writeObject(requestPayload);
-//		    oos.flush();
-//		    oos.close();
-//		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-//	     }
-//            try {
-//            	long beforeReadObject = System.currentTimeMillis() ;
-//                Object result = ois.readObject();
-//              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-//                   if (result == null)
-//                    {
-//                      log.debug("Encountered NULL from the Input Stream. Returning...");
-//                      return null;
-//                    }
-//                log.debug("Result object type: " + result.getClass().getName());
-//                if (result instanceof ExceptionAdapter) {
-//					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
-//					Vector exceptionVector = new Vector();
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.AccountNotFoundException");
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
-//                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.AccountNotFoundException)
-//                          throw (com.vizzavi.ecommerce.business.common.AccountNotFoundException) generatedException ;
-//if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
-//                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
-//                }
-//                else
-//                {
-//                    return (ResourceBalance[])result;
-//                }
-//            }
-//            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");
-//            }
-//            catch (ClassNotFoundException e4) {
-//                log.error("Exception during deserialization", e4);
-//            }
-//        }
-//        catch (IOException e2) {
-//            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
-//            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-//					String exceptionName = ((EcommerceException) e2).getClass().getName();
-//					Vector exceptionVector = new Vector();
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.AccountNotFoundException");
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = e2;
-//                     if (generatedException instanceof  EcommerceException){
-//                          throw (EcommerceException) generatedException ;
-//                      }
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", e2);
-//                }
-//	     else{
-//	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
-//
-//	     }
-//        }
-//        finally {
-//	   try {
-//                if (oos != null) {
-//                    oos.close();
-//                }
-//	        if (ois != null) {
-//	            ois.close();
-//	       }
-//       		if (method != null ){
-//       		log.debug("Releasing http connection" );
-//	     	  method.releaseConnection();
-//		}
-//	   }
-//	   catch (Exception e3) {
-//	       log.error("Error closing connection", e3);
-//	   }
-//	}
-//        return null;
-//    }
+    @Override
+	public ResourceBalance[] getSuperCreditBalances (String clientId,String msisdn,int device) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+	boolean state = true;
+        PostMethod method = null ;
+
+        try {
+            HashMap requestPayload = new HashMap();
+            requestPayload.put("locale", locale);
+            String methodName = "getSuperCreditBalances29";
+            requestPayload.put("methodName",methodName);
+            requestPayload.put("clientId",clientId);
+            requestPayload.put("msisdn",msisdn);
+            requestPayload.put("device", new Integer(device) );  
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
+
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
+
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
+            try {
+            	long beforeReadObject = System.currentTimeMillis() ;
+                Object result = ois.readObject();
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
+                log.debug("Result object type: " + result.getClass().getName());
+                if (result instanceof ExceptionAdapter) {
+					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+					Vector exceptionVector = new Vector();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.AccountNotFoundException");
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.AccountNotFoundException)
+                          throw (com.vizzavi.ecommerce.business.common.AccountNotFoundException) generatedException ;
+if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+                }
+                else                 
+                {
+                    return (ResourceBalance[])result;
+                }
+            }
+            catch (OptionalDataException e1) {
+                log.error("Primitive data in stream");              
+            }
+            catch (ClassNotFoundException e4) {
+                log.error("Exception during deserialization", e4);
+            }
+        }
+        catch (IOException e2) {
+            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
+					String exceptionName = ((EcommerceException) e2).getClass().getName();
+					Vector exceptionVector = new Vector();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.AccountNotFoundException");
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = e2;
+                     if (generatedException instanceof  EcommerceException){
+                          throw (EcommerceException) generatedException ;
+                      }
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", e2);
+                }
+	     else{
+	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+
+	     }
+        } 
+        finally {
+	   try {
+                if (oos != null) {
+                    oos.close();
+                }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
+        return null;
+    }
 
     @Override
 	public ResourceBalance[] getBalances (String msisdn,String clientId,int deviceId,com.vodafone.global.er.business.selfcare.BalanceFilter filter) throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, com.vizzavi.ecommerce.business.common.EcommerceException {
@@ -4305,7 +4299,6 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 		log.info("ER delegate connection URL: " + url);
 
 		return url;
-
 	}
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
@@ -4428,9 +4421,9 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 //	}
 //        return modifyAuth;
 //    }
-  //ET-153 remove the time zone code |start
-   /* @Override
-	public ModifyAuthorisation modifyTimezone(String clientId,String msisdn,String timezone,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+   
+    @Override
+	public ModifyAuthorisation modifyTimezone(String clientId,String msisdn,String timezone,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException, ClassNotFoundException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
         ModifyAuthorisation state = new ModifyAuthorisation();
@@ -4546,11 +4539,10 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	   }
 	}
         return state;
-    }*/
-  //ET-153 remove the time zone code |end
+    }
     //BillingCycle update 
     @Override
-	public ModifyAuthorisation modifyBillingCycle(String clientId,String msisdn,int billingcycle,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public ModifyAuthorisation modifyBillingCycle(String clientId,String msisdn,int billingcycle,String csrId,String reason) throws com.vizzavi.ecommerce.business.common.EcommerceException, ClassNotFoundException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
         ModifyAuthorisation state = new ModifyAuthorisation();
@@ -4622,11 +4614,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
             }
             catch (OptionalDataException e1) {
                 log.error("Primitive data in stream");              
-                try {
-                    return (ModifyAuthorisation) ois.readObject();
-				} catch (ClassNotFoundException e) {
-					throw new EcommerceException(e);
-				}
+                return (ModifyAuthorisation) ois.readObject();
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
@@ -4673,6 +4661,124 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
     }
     //CR1564-end
 
+//	@Override
+//	public ModifyAuthorisation modifyBillingCycle(String clientId,
+//			String msisdn, int billingCycle) throws EcommerceException,
+//			ClassNotFoundException {
+//		ObjectOutputStream oos = null;
+//        ObjectInputStream ois = null;
+//        ModifyAuthorisation state = new ModifyAuthorisation();
+//        PostMethod method = null ;
+//
+//        try {
+//            HashMap requestPayload = new HashMap();
+//            requestPayload.put("locale", locale);
+//            String methodName = "modifyBillingCycle36";
+//            requestPayload.put("methodName",methodName);
+//            requestPayload.put("clientId",clientId);
+//            requestPayload.put("msisdn",msisdn);
+//            requestPayload.put("billingCycle",billingCycle);
+//	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+//
+//	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+//		try{
+//			if(httpConnectionManager == null ){
+//				createConnectionManager();
+//			}
+//			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+//			HttpClient httpclient = new HttpClient(httpConnectionManager);
+//
+//	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+//			method = new PostMethod( getDelegateUrl() );
+//			method.addRequestHeader("Content-Type", "application/octet-stream");
+//		        // Serialize to a byte array
+//			 byte[] buf = super.serializedPayload(requestPayload);
+//			 method.setRequestBody(new ByteArrayInputStream(buf));
+//			 httpclient.executeMethod(method);
+//
+//			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+//			}
+//			catch(IOException ie ){
+//			     ie.printStackTrace();
+//			}
+//	        }
+//		else {
+//		     URLConnection conn = null;
+//		     conn = getConnection();
+//		    oos = getObjectOutputStream(conn);
+//		    oos.writeObject(requestPayload);
+//		    oos.flush();
+//		    oos.close();
+//		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+//	     }
+//            try {
+//            	long beforeReadObject = System.currentTimeMillis() ;
+//                Object result = ois.readObject();
+//              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+//                log.debug("Result object type: " + result.getClass().getName());
+//                if (result instanceof ExceptionAdapter) {
+//					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+//					Vector exceptionVector = new Vector();
+//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+//					if (exceptionVector.contains(exceptionName)){
+//					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+//                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+//                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+//                     } 
+//                    else 
+//					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+//                }
+//                else                 
+//                {
+//                }
+//            }
+//            catch (OptionalDataException e1) {
+//                log.error("Primitive data in stream");              
+//                return (ModifyAuthorisation) ois.readObject();
+//            }
+//            catch (ClassNotFoundException e4) {
+//                log.error("Exception during deserialization", e4);
+//            }
+//        }
+//        catch (IOException e2) {
+//            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+//            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
+//					String exceptionName = ((EcommerceException) e2).getClass().getName();
+//					Vector exceptionVector = new Vector();
+//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+//					if (exceptionVector.contains(exceptionName)){
+//					 Exception generatedException = e2;
+//                     if (generatedException instanceof  EcommerceException){
+//                          throw (EcommerceException) generatedException ;
+//                      }
+//                     } 
+//                    else 
+//					  log.error(" Exception during serialization ", e2);
+//                }
+//	     else{
+//	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+//
+//	     }
+//        } 
+//        finally {
+//	   try {
+//                if (oos != null) {
+//                    oos.close();
+//                }
+//	        if (ois != null) {
+//	            ois.close();
+//	       }
+//       		if (method != null ){
+//       		log.debug("Releasing http connection" );  
+//	     	  method.releaseConnection();
+//		}
+//	   }
+//	   catch (Exception e3) {
+//	       log.error("Error closing connection", e3);
+//	   }
+//	}
+//        return state;
+//}
 
 	public ModifyAuthorisation modifyAccountStatus(String clientId,
 			String msisdn, int status, String csrId, String reason)
@@ -4802,7 +4908,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			throws EcommerceException {
 		ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
-        ModifyAuthorisation modAuth = new ModifyAuthorisation();
+        ModifyAuthorisation state = new ModifyAuthorisation();
         PostMethod method = null ;
 
         try {
@@ -4854,13 +4960,6 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
                 Object result = ois.readObject();
               	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
                 log.debug("Result object type: " + result.getClass().getName());
-
-                //Expected result
-                if (result != null && result instanceof ModifyAuthorisation) {
-                	 modAuth = (ModifyAuthorisation)result;
-                	log.debug("ModifyAuthorisation returned: {} ", modAuth );
-                }
-
                 if (result instanceof ExceptionAdapter) {
 					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
 					Vector exceptionVector = new Vector();
@@ -4926,10 +5025,129 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 	       log.error("Error closing connection", e3);
 	   }
 	}
-        return modAuth;
+        return state;
 	}
 
-
+//	@Override
+//	public ModifyAuthorisation modifyDIUserGroup(String clientId,
+//			String msisdn, List usergroup) throws EcommerceException {
+//	      	ObjectOutputStream oos = null;
+//	        ObjectInputStream ois = null;
+//	        ModifyAuthorisation state = new ModifyAuthorisation();
+//	        PostMethod method = null ;
+//
+//	        try {
+//	            HashMap requestPayload = new HashMap();
+//	            requestPayload.put("locale", locale);
+//	            String methodName = "modifyUserGroups38";
+//	            requestPayload.put("methodName",methodName);
+//	            requestPayload.put("clientId",clientId);
+//	            requestPayload.put("msisdn",msisdn);
+//	            requestPayload.put("usergroup",usergroup);
+//		    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+//
+//		   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+//			try{
+//				if(httpConnectionManager == null ){
+//					createConnectionManager();
+//				}
+//				log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+//				HttpClient httpclient = new HttpClient(httpConnectionManager);
+//
+//		        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+//				method = new PostMethod( getDelegateUrl() );
+//				method.addRequestHeader("Content-Type", "application/octet-stream");
+//			        // Serialize to a byte array
+//				 byte[] buf = super.serializedPayload(requestPayload);
+//				 method.setRequestBody(new ByteArrayInputStream(buf));
+//				 httpclient.executeMethod(method);
+//
+//				ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+//				}
+//				catch(IOException ie ){
+//				     ie.printStackTrace();
+//				}
+//		        }
+//			else {
+//			     URLConnection conn = null;
+//			     conn = getConnection();
+//			    oos = getObjectOutputStream(conn);
+//			    oos.writeObject(requestPayload);
+//			    oos.flush();
+//			    oos.close();
+//			    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+//		     }
+//	            try {
+//	            	long beforeReadObject = System.currentTimeMillis() ;
+//	                Object result = ois.readObject();
+//	              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+//	                log.debug("Result object type: " + result.getClass().getName());
+//	                if (result instanceof ExceptionAdapter) {
+//						String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+//						Vector exceptionVector = new Vector();
+//						exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+//						if (exceptionVector.contains(exceptionName)){
+//						 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+//	                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+//	                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+//	                     } 
+//	                    else 
+//						  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+//	                }
+//	                else                 
+//	                {
+//	                }
+//	            }
+//	            catch (OptionalDataException e1) {
+//	                log.error("Primitive data in stream");              
+//	                try {
+//						return (ModifyAuthorisation) ois.readObject();
+//					} catch (ClassNotFoundException e) {
+//						throw new EcommerceException(e1.getMessage(), e);
+//					}	            }
+//	            catch (ClassNotFoundException e4) {
+//	                log.error("Exception during deserialization", e4);
+//	            }
+//	        }
+//	        catch (IOException e2) {
+//	            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+//	            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
+//						String exceptionName = ((EcommerceException) e2).getClass().getName();
+//						Vector exceptionVector = new Vector();
+//						exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+//						if (exceptionVector.contains(exceptionName)){
+//						 Exception generatedException = e2;
+//	                     if (generatedException instanceof  EcommerceException){
+//	                          throw (EcommerceException) generatedException ;
+//	                      }
+//	                     } 
+//	                    else 
+//						  log.error(" Exception during serialization ", e2);
+//	                }
+//		     else{
+//		        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+//
+//		     }
+//	        } 
+//	        finally {
+//		   try {
+//	                if (oos != null) {
+//	                    oos.close();
+//	                }
+//		        if (ois != null) {
+//		            ois.close();
+//		       }
+//	       		if (method != null ){
+//	       		log.debug("Releasing http connection" );  
+//		     	  method.releaseConnection();
+//			}
+//		   }
+//		   catch (Exception e3) {
+//		       log.error("Error closing connection", e3);
+//		   }
+//		}
+//	        return state;
+//	}
 
 	
 	
@@ -4944,7 +5162,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
      * @throws ClassNotFoundException
 	 */
 	@Override
-	public ModifyAuthorisation modifyAccountSpId(String clientId, String msisdn, String spId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public ModifyAuthorisation modifyAccountSpId(String clientId, String msisdn, String spId) throws com.vizzavi.ecommerce.business.common.EcommerceException, ClassNotFoundException {
 		ObjectOutputStream oos	= null;
 		ObjectInputStream ois	= null;
 		boolean state			= true;
@@ -5019,11 +5237,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			}
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
-				try {
 				return (ModifyAuthorisation) ois.readUnshared();
-				} catch (ClassNotFoundException e) {
-					throw new EcommerceException(e);
-				}
 			}
 			catch (ClassNotFoundException e4) {
 				log.error("Exception during deserialization", e4);
@@ -5084,7 +5298,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
      * @throws ClassNotFoundException
 	 */
 	@Override
-	public ModifyAuthorisation modifyAccountIsPrepay(String clientId, String msisdn, String isPrepay) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public ModifyAuthorisation modifyAccountIsPrepay(String clientId, String msisdn, String isPrepay) throws com.vizzavi.ecommerce.business.common.EcommerceException, ClassNotFoundException {
 		ObjectOutputStream oos	= null;
 		ObjectInputStream ois	= null;
 		boolean state			= true;
@@ -5159,11 +5373,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			}
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
-				try {
-				    return (ModifyAuthorisation) ois.readUnshared();
-				} catch (ClassNotFoundException e) {
-					throw new EcommerceException(e);
-				}
+				return (ModifyAuthorisation) ois.readUnshared();
 			}
 			catch (ClassNotFoundException e4) {
 				log.error("Exception during deserialization", e4);
@@ -5344,127 +5554,128 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
     }
     
     //MQC 6669 - send refund message for a rolledback transaction
-//    @Override
-//	public RefundAuthorization refundRollbackTransactionMonetary (String clientId,String msisdn,String subscriptionId,RefundAttributes attributes) throws com.vizzavi.ecommerce.business.common.EcommerceException {
-//        ObjectOutputStream oos = null;
-//        ObjectInputStream ois = null;
-//	PostMethod method = null ;
-//
-//        try {
-//            HashMap requestPayload = new HashMap();
-//            requestPayload.put("locale", locale);
-//            String methodName = "refundRollbackTransactionMonetary41";
-//            requestPayload.put("methodName",methodName);
-//            requestPayload.put("clientId",clientId);
-//            requestPayload.put("msisdn",msisdn);
-//            requestPayload.put("subscriptionId",subscriptionId);
-//            requestPayload.put("attributes",attributes);
-//	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
-//
-//	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-//		try{
-//			if(httpConnectionManager == null ){
-//				createConnectionManager();
-//			}
-//			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-//			HttpClient httpclient = new HttpClient(httpConnectionManager);
-//
-//	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-//			method = new PostMethod( getDelegateUrl() );
-//			method.addRequestHeader("Content-Type", "application/octet-stream");
-//		        // Serialize to a byte array
-//			 byte[] buf = super.serializedPayload(requestPayload);
-//			 method.setRequestBody(new ByteArrayInputStream(buf));
-//			 httpclient.executeMethod(method);
-//
-//			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-//			}
-//			catch(IOException ie ){
-//			     ie.printStackTrace();
-//			}
-//	        }
-//		else {
-//		     URLConnection conn = null;
-//		     conn = getConnection();
-//		    oos = getObjectOutputStream(conn);
-//		    oos.writeObject(requestPayload);
-//		    oos.flush();
-//		    oos.close();
-//		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-//	     }
-//            try {
-//            	long beforeReadObject = System.currentTimeMillis() ;
-//                Object result = ois.readObject();
-//              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-//                   if (result == null)
-//                    {
-//                      log.debug("Encountered NULL from the Input Stream. Returning...");
-//                      return null;
-//                    }
-//                log.debug("Result object type: " + result.getClass().getName());
-//                if (result instanceof ExceptionAdapter) {
-//					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
-//					Vector exceptionVector = new Vector();
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
-//                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
-//                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
-//                }
-//                else
-//                {
-//                    return (RefundAuthorization)result;
-//                }
-//            }
-//            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");
-//            }
-//            catch (ClassNotFoundException e4) {
-//                log.error("Exception during deserialization", e4);
-//            }
-//        }
-//        catch (IOException e2) {
-//            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
-//            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
-//					String exceptionName = ((EcommerceException) e2).getClass().getName();
-//					Vector exceptionVector = new Vector();
-//					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = e2;
-//                     if (generatedException instanceof  EcommerceException){
-//                          throw (EcommerceException) generatedException ;
-//                      }
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", e2);
-//                }
-//	     else{
-//	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
-//
-//	     }
-//        }
-//        finally {
-//	   try {
-//                if (oos != null) {
-//                    oos.close();
-//                }
-//	        if (ois != null) {
-//	            ois.close();
-//	       }
-//       		if (method != null ){
-//       		log.debug("Releasing http connection" );
-//	     	  method.releaseConnection();
-//		}
-//	   }
-//	   catch (Exception e3) {
-//	       log.error("Error closing connection", e3);
-//	   }
-//	}
-//        return null;
-//    }
+    @Override
+	public RefundAuthorization refundRollbackTransactionMonetary (String clientId,String msisdn,String subscriptionId,RefundAttributes attributes) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+	boolean state = true;
+        PostMethod method = null ;
+
+        try {
+            HashMap requestPayload = new HashMap();
+            requestPayload.put("locale", locale);
+            String methodName = "refundRollbackTransactionMonetary41";
+            requestPayload.put("methodName",methodName);
+            requestPayload.put("clientId",clientId);
+            requestPayload.put("msisdn",msisdn);
+            requestPayload.put("subscriptionId",subscriptionId);
+            requestPayload.put("attributes",attributes);
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
+
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
+
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
+            try {
+            	long beforeReadObject = System.currentTimeMillis() ;
+                Object result = ois.readObject();
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
+                log.debug("Result object type: " + result.getClass().getName());
+                if (result instanceof ExceptionAdapter) {
+					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+					Vector exceptionVector = new Vector();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+                     if (generatedException instanceof com.vizzavi.ecommerce.business.common.EcommerceException)
+                          throw (com.vizzavi.ecommerce.business.common.EcommerceException) generatedException ;
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+                }
+                else                 
+                {
+                    return (RefundAuthorization)result;
+                }
+            }
+            catch (OptionalDataException e1) {
+                log.error("Primitive data in stream");              
+            }
+            catch (ClassNotFoundException e4) {
+                log.error("Exception during deserialization", e4);
+            }
+        }
+        catch (IOException e2) {
+            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
+					String exceptionName = ((EcommerceException) e2).getClass().getName();
+					Vector exceptionVector = new Vector();
+					exceptionVector.add("com.vizzavi.ecommerce.business.common.EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = e2;
+                     if (generatedException instanceof  EcommerceException){
+                          throw (EcommerceException) generatedException ;
+                      }
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", e2);
+                }
+	     else{
+	        throw new com.vizzavi.ecommerce.business.common.EcommerceException(e2);
+
+	     }
+        } 
+        finally {
+	   try {
+                if (oos != null) {
+                    oos.close();
+                }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
+        return null;
+    }
     
     //CR2082 - validate msisdn call, used to make a direct validation msisdn call to the opco ERIF
     @Override
@@ -5725,7 +5936,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
      * @throws ClassNotFoundException
 	 */
 	@Override
-	public ModifyAuthorisation modifyAccountChildSpId(String clientId, String msisdn, String childSpId) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public ModifyAuthorisation modifyAccountChildSpId(String clientId, String msisdn, String childSpId) throws com.vizzavi.ecommerce.business.common.EcommerceException, ClassNotFoundException {
 		ObjectOutputStream oos	= null;
 		ObjectInputStream ois	= null;
 		boolean state			= true;
@@ -5800,11 +6011,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			}
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
-				try {
-				    return (ModifyAuthorisation) ois.readUnshared();
-				} catch (ClassNotFoundException e) {
-					throw new EcommerceException(e);
-				}
+				return (ModifyAuthorisation) ois.readUnshared();
 			}
 			catch (ClassNotFoundException e4) {
 				log.error("Exception during deserialization", e4);
@@ -5865,7 +6072,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
      * @throws ClassNotFoundException
 	 */
 	@Override
-	public ModifyAuthorisation modifyAccountSpType(String clientId, String msisdn, String spType) throws com.vizzavi.ecommerce.business.common.EcommerceException {
+	public ModifyAuthorisation modifyAccountSpType(String clientId, String msisdn, String spType) throws com.vizzavi.ecommerce.business.common.EcommerceException, ClassNotFoundException {
 		ObjectOutputStream oos	= null;
 		ObjectInputStream ois	= null;
 		boolean state			= true;
@@ -5940,11 +6147,7 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
 			}
 			catch (OptionalDataException e1) {
 				log.error("Primitive data in stream");              
-				try {
 				return (ModifyAuthorisation) ois.readUnshared();
-				} catch (ClassNotFoundException e) {
-					throw new EcommerceException(e);
-				}
 			}
 			catch (ClassNotFoundException e4) {
 				log.error("Exception during deserialization", e4);
@@ -5994,93 +6197,4 @@ if (generatedException instanceof com.vizzavi.ecommerce.business.common.Ecommerc
         return modifyAuth;
 
 	}
-
-    /**
-     * NOT IMPLEMENTED in ECOM
-     */
-	@Override
-	public Transaction getTransaction(String clientId, String msisdn, long transactionId)
-			throws EcommerceException {
-		throw new RuntimeException("getTransaction(String, String, long) not supported in ecom, only decoupling ");
-	}
-
-	 /**
-     * JIRA ET148 Add SMS blacklist flag to opt out of courtesy SMS notifications
-	 * @param clientId
-     * @param custcareAttrs
-     * @throws EcommerceException
-     */
-	@Override
-	public ModifyAuthorisation modifyAccount(String clientId,
-			CustcareAttributes custcareAttrs) throws EcommerceException {
-		throw new RuntimeException("modifyAccount(String clientId CustcareAttributes custcareAttrs) not supported in ecom, only decoupling ");
-	}
-
-    /**
-     * JIRA ET196 Get account subscription promo-codes info
-     * @param msisdn
-     * @param clientId
-     * @return
-     * @throws EcommerceException
-     */
-	@Override
-	public List<SubscriptionPromoCode> getSubscriptionPromoCodes(String msisdn,
-			String clientId) throws EcommerceException {
-		throw new RuntimeException("getSubscriptionPromoCodes(String msisdn, String clientId) not supported in ecom, only decoupling ");
-	}
-
-
-
-	@Override
-	public Bar modifyBar(String barName, String msisdn, String clientId, boolean newValue)
-			throws EcommerceException {
-		// not supported in ECOM layer
-		return null;
-	}
-
-	@Override
-	public List<Bar> getBars(String msisdn, String clientId) throws EcommerceException {
-		// not supported in ECOM layer
-		return null;
-	}
-
-	 /**
-     * JIRA ET196 Inactivate subscription promo-code
-     * @param msisdn
-	 * @param clientId
-     * @param subscriptionId
-     * @param packageId
-     * @return List<InactivateSubscriptionPromoCodeAuthorization>
-     * @throws EcommerceException
-     */
-	@Override
-	public List<InactivateSubscriptionPromoCodeAuthorization> inactivateSubscriptionPromoCode(
-			String msisdn, String clientId, InactivateSubscriptionPromoCodeAttributes inactivateSubPromoAttrs) throws EcommerceException {
-		throw new RuntimeException("inactivateSubscriptionPromoCode(String msisdn, String clientId, InactivateSubscriptionPromoCodeAttributes inactivateSubPromoAttrs) not supported in ecom, only decoupling ");
-	}
-
-	  /**
-     * Jira ET245 implement get subscriptions in decoupling version 2
-     *
-     * @param msisdn
-     * @param filter
-     * @param locale
-     * @return
-     * @throws SubsManagementException
-     */
-	@Override
-	public List<Subscription> getSubscriptions(String msisdn,
-			SubscriptionFilter filter, Locale locale)
-			throws SubsManagementException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ServiceOffer> getServiceOffers(String msisdn, String serviceIds)
-			throws EcommerceException {
-		throw new RuntimeException("getServiceOffers(String msisdn, String serviceIds) not supported in ecom, only decoupling ");
-	}
-
-
 }

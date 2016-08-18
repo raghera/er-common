@@ -2401,35 +2401,28 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
     }
 
 	protected String getDelegateUrl() {
-		final String filename = "env.properties";
-		Properties props = new Properties();
-		String url = "";
-		try {
-			InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
+        final String filename = "env.properties";
+        Properties props = new Properties();
+        String url = "";
+        try {
+            InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
 
-			System.out.println("Input stream " + in);
-			props.load(in);
+            System.out.println("Input stream " + in);
+            props.load(in);
 
-		} catch (IOException ioEx) {
-			log.warn("Unable to load properties from file system - could not find filename: " + filename
-					+ " Will use system defaults."
-			);
-		}
+        } catch (IOException ioEx) {
+            log.warn("Unable to load properties from file system - could not find filename: " + filename
+                    + " Will use system defaults."
+            );
+        }
 
-		final String serverHost = props.getProperty("ecom.proxy.host", "127.0.0.1");
-		int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
-		url = "http://" + serverHost + ":" + serverPort + "/delegates/CatalogApi";
+        final String serverHost = props.getProperty("ecom.proxy.host", "127.0.0.1");
+        int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
+        url = "http://" + serverHost + ":" + serverPort + "/delegates/CatalogApi";
 
-		log.info("ER delegate connection URL: " + url);
-
+        log.info("ER delegate connection URL: " + url);
 		return url;
 	}
-
-    private Properties loadFileProperties(String filename) {
-//       InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
-        throw new UnsupportedOperationException();
-    }
-
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
         return oos;

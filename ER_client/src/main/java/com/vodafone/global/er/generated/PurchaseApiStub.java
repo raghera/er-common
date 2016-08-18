@@ -977,8 +977,7 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 	}
 
 	@Override
-//	public GoodwillCreditAuthorization goodwillCredit (String clientId,String msisdn,String partnerId,String merchantId,String packageId,double preRate) throws GoodwillCreditAuthorizationException {
-	public GoodwillCreditAuthorization goodwillCredit (String msisdn, GoodwillCreditAttributes goodwillCreditAttributes) throws GoodwillCreditAuthorizationException {
+	public GoodwillCreditAuthorization goodwillCredit (String clientId,String msisdn,String partnerId,String merchantId,String packageId,double preRate) throws GoodwillCreditAuthorizationException {
 		ObjectOutputStream oos = null;
 		ObjectInputStream ois = null;
 		boolean state = true;
@@ -989,13 +988,12 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 			requestPayload.put("locale", locale);
 			String methodName = "goodwillCredit9";
 			requestPayload.put("methodName",methodName);
-//			requestPayload.put("clientId",clientId);
+			requestPayload.put("clientId",clientId);
 			requestPayload.put("msisdn",msisdn);
-//			requestPayload.put("partnerId",partnerId);
-//			requestPayload.put("merchantId",merchantId);
-//			requestPayload.put("packageId",packageId);
-//			requestPayload.put("preRate", new Double(preRate) );
-			requestPayload.put("goodwillCreditAttributes",goodwillCreditAttributes);
+			requestPayload.put("partnerId",partnerId);
+			requestPayload.put("merchantId",merchantId);
+			requestPayload.put("packageId",packageId);
+			requestPayload.put("preRate", new Double(preRate) );  
 			String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
 
 			if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
@@ -1118,7 +1116,7 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 //		log.info("ER delegate connection URL: " + url);
 //		return url;
 		final String filename = "env.properties";
-		final String apiName = "PurchaseApi";
+        final String apiName = "PurchaseApi";
 		Properties props = new Properties();
 		String url = "";
 		try {
@@ -1138,9 +1136,7 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 		url = "http://" + serverHost + ":" + serverPort + "/delegates/" + apiName;
 
 		log.info("ER delegate connection URL: " + url);
-
 		return url;
-
 	}
 	public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));

@@ -5,7 +5,6 @@ import com.vizzavi.ecommerce.business.common.AccountNotFoundException;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.selfcare.*;
 import com.vodafone.config.ConfigProvider;
-import com.vodafone.global.er.subsmngmnt.SubsManagementException;
 import com.vodafone.global.er.util.ExceptionAdapter;
 import com.vodafone.global.er.util.HttpClientConnector;
 import org.apache.commons.httpclient.HttpClient;
@@ -15,7 +14,10 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Vector;
 
 public class SelfcareApiStub  extends HttpClientConnector implements SelfcareApi {
 	
@@ -1230,10 +1232,12 @@ if (generatedException instanceof EcommerceException)
                 }
             }
             catch (OptionalDataException e1) {
-                log.error("Primitive data in stream");              
+                log.error("Primitive data in stream");
+                throw new EcommerceException(e1);
             }
             catch (ClassNotFoundException e4) {
                 log.error("Exception during deserialization", e4);
+                throw new EcommerceException(e4);
             }
         }
         catch (IOException e2) {
@@ -1254,8 +1258,13 @@ if (generatedException instanceof EcommerceException)
 	     else{
 	        throw new EcommerceException(e2);
 
-	     }
-        } 
+            }
+        }
+        catch (Throwable thr) {
+            //TODO Remove debug code here:
+            System.out.println(" SELFCARE PROBLEM ====== " + thr.getStackTrace());
+            throw new EcommerceException(thr);
+        }
         finally {
 	   try {
                 if (oos != null) {
@@ -1277,8 +1286,7 @@ if (generatedException instanceof EcommerceException)
     }
 
     @Override
-//	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws EcommerceException, java.rmi.RemoteException {
-	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws EcommerceException {
+	public BaseAuthorization getNextPaymentAmount (String clientId,String msisdn,String subscriptionId) throws EcommerceException, java.rmi.RemoteException {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
 	boolean state = true;
@@ -1525,131 +1533,131 @@ if (generatedException instanceof EcommerceException)
         return false;
     }
 
-//    @Override
-//	public ResourceBalance[] getSuperCreditBalances (String clientId,String msisdn,int device) throws AccountNotFoundException, EcommerceException {
-//        ObjectOutputStream oos = null;
-//        ObjectInputStream ois = null;
-//	boolean state = true;
-//        PostMethod method = null ;
-//
-//        try {
-//            HashMap<String, Serializable> requestPayload = new HashMap<String, Serializable>();
-//            requestPayload.put("locale", locale);
-//            String methodName = "getSuperCreditBalances13";
-//            requestPayload.put("methodName",methodName);
-//            requestPayload.put("clientId",clientId);
-//            requestPayload.put("msisdn",msisdn);
-//            requestPayload.put("device", new Integer(device) );
-//	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
-//
-//	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
-//		try{
-//			if(httpConnectionManager == null ){
-//				createConnectionManager();
-//			}
-//			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
-//			HttpClient httpclient = new HttpClient(httpConnectionManager);
-//
-//	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
-//			method = new PostMethod( getDelegateUrl() );
-//			method.addRequestHeader("Content-Type", "application/octet-stream");
-//		        // Serialize to a byte array
-//			 byte[] buf = super.serializedPayload(requestPayload);
-//			 method.setRequestBody(new ByteArrayInputStream(buf));
-//			 httpclient.executeMethod(method);
-//
-//			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
-//			}
-//			catch(IOException ie ){
-//			     ie.printStackTrace();
-//			}
-//	        }
-//		else {
-//		     URLConnection conn = null;
-//		     conn = getConnection();
-//		    oos = getObjectOutputStream(conn);
-//		    oos.writeObject(requestPayload);
-//		    oos.flush();
-//		    oos.close();
-//		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
-//	     }
-//            try {
-//            	long beforeReadObject = System.currentTimeMillis() ;
-//                Object result = ois.readObject();
-//              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
-//                   if (result == null)
-//                    {
-//                      log.debug("Encountered NULL from the Input Stream. Returning...");
-//                      return null;
-//                    }
-//                log.debug("Result object type: " + result.getClass().getName());
-//                if (result instanceof ExceptionAdapter) {
-//					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
-//					Vector<String> exceptionVector = new Vector<String>();
-//					exceptionVector.add("AccountNotFoundException");
-//					exceptionVector.add("EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
-//                     if (generatedException instanceof AccountNotFoundException)
-//                          throw (AccountNotFoundException) generatedException ;
-//if (generatedException instanceof EcommerceException)
-//                          throw (EcommerceException) generatedException ;
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
-//                }
-//                else
-//                {
-//                    return (ResourceBalance[])result;
-//                }
-//            }
-//            catch (OptionalDataException e1) {
-//                log.error("Primitive data in stream");
-//            }
-//            catch (ClassNotFoundException e4) {
-//                log.error("Exception during deserialization", e4);
-//            }
-//        }
-//        catch (IOException e2) {
-//            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
-//            if (e2 instanceof EcommerceException) {
-//					String exceptionName = ((EcommerceException) e2).getClass().getName();
-//					Vector<String> exceptionVector = new Vector<String>();
-//					exceptionVector.add("AccountNotFoundException");
-//					exceptionVector.add("EcommerceException");
-//					if (exceptionVector.contains(exceptionName)){
-//					 Exception generatedException = e2;
-//                     if (generatedException instanceof  EcommerceException){
-//                          throw (EcommerceException) generatedException ;
-//                      }
-//                     }
-//                    else
-//					  log.error(" Exception during serialization ", e2);
-//                }
-//	     else{
-//	        throw new EcommerceException(e2);
-//
-//	     }
-//        }
-//        finally {
-//	   try {
-//                if (oos != null) {
-//                    oos.close();
-//                }
-//	        if (ois != null) {
-//	            ois.close();
-//	       }
-//       		if (method != null ){
-//       		log.debug("Releasing http connection" );
-//	     	  method.releaseConnection();
-//		}
-//	   }
-//	   catch (Exception e3) {
-//	       log.error("Error closing connection", e3);
-//	   }
-//	}
-//        return null;
-//    }
+    @Override
+	public ResourceBalance[] getSuperCreditBalances (String clientId,String msisdn,int device) throws AccountNotFoundException, EcommerceException {
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+	boolean state = true;
+        PostMethod method = null ;
+
+        try {
+            HashMap<String, Serializable> requestPayload = new HashMap<String, Serializable>();
+            requestPayload.put("locale", locale);
+            String methodName = "getSuperCreditBalances13";
+            requestPayload.put("methodName",methodName);
+            requestPayload.put("clientId",clientId);
+            requestPayload.put("msisdn",msisdn);
+            requestPayload.put("device", new Integer(device) );  
+	    String httpConnectorMethod = ConfigProvider.getProperty("er.http.connector.method", "urlconnection");
+
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+		try{
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
+
+	        httpclient.setConnectionTimeout(ConfigProvider.getPropertyAsInteger("er.http.connection.timeout",30000));
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 httpclient.executeMethod(method);
+
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
+            try {
+            	long beforeReadObject = System.currentTimeMillis() ;
+                Object result = ois.readObject();
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
+                log.debug("Result object type: " + result.getClass().getName());
+                if (result instanceof ExceptionAdapter) {
+					String exceptionName = (((ExceptionAdapter) result).originalException).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("AccountNotFoundException");
+					exceptionVector.add("EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = ((ExceptionAdapter)result).originalException ;
+                     if (generatedException instanceof AccountNotFoundException)
+                          throw (AccountNotFoundException) generatedException ;
+if (generatedException instanceof EcommerceException)
+                          throw (EcommerceException) generatedException ;
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", ((ExceptionAdapter)result).originalException);
+                }
+                else                 
+                {
+                    return (ResourceBalance[])result;
+                }
+            }
+            catch (OptionalDataException e1) {
+                log.error("Primitive data in stream");              
+            }
+            catch (ClassNotFoundException e4) {
+                log.error("Exception during deserialization", e4);
+            }
+        }
+        catch (IOException e2) {
+            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+            if (e2 instanceof EcommerceException) {
+					String exceptionName = ((EcommerceException) e2).getClass().getName();
+					Vector<String> exceptionVector = new Vector<String>();
+					exceptionVector.add("AccountNotFoundException");
+					exceptionVector.add("EcommerceException");
+					if (exceptionVector.contains(exceptionName)){
+					 Exception generatedException = e2;
+                     if (generatedException instanceof  EcommerceException){
+                          throw (EcommerceException) generatedException ;
+                      }
+                     } 
+                    else 
+					  log.error(" Exception during serialization ", e2);
+                }
+	     else{
+	        throw new EcommerceException(e2);
+
+	     }
+        } 
+        finally {
+	   try {
+                if (oos != null) {
+                    oos.close();
+                }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
+        return null;
+    }
 
     @Override
 	public ResourceBalance[] getBalances (String msisdn,String clientId,int deviceId,com.vodafone.global.er.business.selfcare.BalanceFilter filter) throws AccountNotFoundException, EcommerceException {
@@ -2183,59 +2191,12 @@ if (generatedException instanceof EcommerceException)
 		int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
 		url = "http://" + serverHost + ":" + serverPort + "/delegates/" + apiName;
 
-		log.info("ER delegate connection URL: " + url);
-
+        log.info("ER delegate connection URL: " + url);
 		return url;
-
 	}
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
         return oos;
     }
-
-    /**
-     * NOT IMPLEMENTED in ECOM
-     */
-	@Override
-	public Transaction getTransaction(String clientId, String msisdn, long transactionId)
-			throws EcommerceException {
-		throw new RuntimeException("getTransaction(String, String, long) not supported in ecom, only decoupling ");
-	}
-
-    /**
-     * JIRA ET196 Get account subscription promo-codes info
-     * @param msisdn
-     * @param clientId
-     * @return
-     * @throws EcommerceException
-     */
-	@Override
-	public List<SubscriptionPromoCode> getSubscriptionPromoCodes(String msisdn,
-																 String clientId) throws EcommerceException {
-		throw new RuntimeException("getSubscriptionPromoCodes(String msisdn, String clientId) not supported in ecom, only decoupling ");
-	}
-
-	  /**
-     * Jira ET245 implement get subscriptions in decoupling version 2
-     *
-     * @param msisdn
-     * @param filter
-     * @param locale
-     * @return
-     * @throws SubsManagementException
-     */
-	@Override
-	public List<Subscription> getSubscriptions(String msisdn,
-			SubscriptionFilter filter, Locale locale)
-			throws SubsManagementException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ServiceOffer> getServiceOffers(String msisdn, String serviceIds)
-			throws EcommerceException {
-		throw new RuntimeException("getServiceOffers(String msisdn, String serviceIds) not supported in ecom, only decoupling ");
-	}
 
 }

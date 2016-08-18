@@ -1119,7 +1119,7 @@ public class ChargingApiStub  extends HttpClientConnector implements ChargingApi
 //		return url;
 
 		final String filename = "env.properties";
-		final String apiName = "ChargingApi";
+        final String apiName = "ChargingApi";
 		Properties props = new Properties();
 		String url = "";
 		try {
@@ -1138,10 +1138,8 @@ public class ChargingApiStub  extends HttpClientConnector implements ChargingApi
 		int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
 		url = "http://" + serverHost + ":" + serverPort + "/delegates/" + apiName;
 
-		log.info("ER delegate connection URL: " + url);
-
+        log.info("ER delegate connection URL: " + url);
 		return url;
-
 	}
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
