@@ -6,7 +6,10 @@ public class ERUserGroup extends UserGroup implements java.io.Serializable, Dirt
 {
    private    static final long serialVersionUID = 3804492876716282437L;
 
-   	
+   	//CR1231
+    //protected static final LWLogger logger =
+        //LWSupportFactoryImpl.getInstance().getLogger(ERUserGroup.class);
+
     private Long mAccount_obj_id;
     private String mChangeFlag;
 	private boolean dirty = false;
@@ -24,8 +27,8 @@ public class ERUserGroup extends UserGroup implements java.io.Serializable, Dirt
 
    public ERUserGroup(String name, String description, Long account_obj_id, String changeFlag) {
 
-        this.mName = name;
-        this.mDescription = description;
+        mName = name;
+		mDescription = description;
 		mAccount_obj_id = account_obj_id;
 		mChangeFlag = changeFlag;
    }
@@ -33,15 +36,20 @@ public class ERUserGroup extends UserGroup implements java.io.Serializable, Dirt
 
    public ERUserGroup(String name, String description, Long account_obj_id, String changeFlag, boolean dirtyFlag, boolean newFlag) {
 
-	   this.mName = name;
-	   this.mDescription = description;
+	        mName = name;
+			mDescription = description;
 			mAccount_obj_id = account_obj_id;
 			mChangeFlag = changeFlag;
 			dirty=dirtyFlag;
 			newInstance=newFlag;
 
    }
-   
+    public void setName(String name) { mName = name; }
+
+
+    public void setDescription(String description) { mDescription = description; }
+
+
     public void setAccount_obj_id(Long account_obj_id) { mAccount_obj_id = account_obj_id; }
 
 

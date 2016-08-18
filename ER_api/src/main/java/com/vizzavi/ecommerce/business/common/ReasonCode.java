@@ -344,18 +344,9 @@ public class ReasonCode implements java.io.Serializable
 	public static final int C_PURCHASE_FAILED_DUPLICATE_EXT_TXN_ID=502;
 	public static final int C_PURCHASE_FAILED_DUPLICATE_EXT_SUB_ID=503;
 
-	//Changes for ET-131 starts here
-	public static final int C_PURCHASE_FAILED_PRICEPOINT_USERGROUP_NOT_ASSIGNED_TO_USER=325;
-	public final static ReasonCode PURCHASE_FAILED_PRICEPOINT_USERGROUP_NOT_ASSIGNED_TO_USER = new ReasonCode(C_PURCHASE_FAILED_PRICEPOINT_USERGROUP_NOT_ASSIGNED_TO_USER, "Purchase against a usergroup pricepoint where the user does not belong to the usergroup");
-	//Changes for ET-131 ends here
+
 	/**********************************************************************/
 
-	//JIRA ET196 Inactivate subscription promo-code
-	public static final int C_INACTIVATE_SUB_PROMO_FAILED_MISSING_PARAM=510;
-	public static final int C_INACTIVATE_SUB_PROMO_FAILED_MSISDN_SUBID_PACKAGEID_MISMATCH=511;
-	public static final int C_INACTIVATE_SUB_PROMO_FAILED_ACTIVE_SUBSCRIPTION=512;
-	public static final int C_INACTIVATE_SUB_PROMO_FAILED_NON_EXISTENT_SUBSCRIPTION_PROMO=513;
-	public static final int C_INACTIVATE_SUB_PROMO_FAILED_SUBSCRIPTION_PROMO_ALREADY_INACTIVATED=514;
 	/*
 	 * Error code objects.
 	 */
@@ -798,11 +789,6 @@ public class ReasonCode implements java.io.Serializable
 	public static final ReasonCode GOODWILL_CREDIT_NOT_ENABLED = 
 			new ReasonCode(C_GOODWILL_CREDIT_NOT_ENABLED, "GOODWILL_CREDIT_NOT_ENABLED");
     
-	//CR - Add Invoice Text to goodwill credit request, general error when goodwill credit attributes not set in request
-	public final static int C_GOODWILL_CREDIT_ATTRIBUTES_NOT_SET = 629;
-	public static final ReasonCode GOODWILL_CREDIT_ATTRIBUTES_NOT_SET = 
-			new ReasonCode(C_GOODWILL_CREDIT_ATTRIBUTES_NOT_SET, "GOODWILL_CREDIT_ATTRIBUTES_NOT_SET");
-	
     // CR2203 MPAY replacement.  Partner spend limits.
     public final static int C_PARTNER_SPEND_LIMITS_NOT_SET = 630;
     public final static ReasonCode PARTNER_SPEND_LIMITS_NOT_SET = 
@@ -821,13 +807,6 @@ public class ReasonCode implements java.io.Serializable
     //MQC 8284
     public final static ReasonCode RENEWAL_FAILED_NEW_USERGROUP_PRICEPOINT_RATE_GREATER = new ReasonCode(C_RENEWAL_FAILED_NEW_USERGROUP_PRICEPOINT_RATE_GREATER, "Renewal usergroup pricepoint rate greater than current subscription rate, subscription inactivated");
     public final static ReasonCode RENEWAL_FAILED_SUBSCRIPTION_DEFAULT_USERGROUP_PRICEPOINT_MISMATCH = new ReasonCode(C_RENEWAL_FAILED_SUBSCRIPTION_DEFAULT_USERGROUP_PRICEPOINT_MISMATCH, "Package contains active usergroup pricepoint which the user belongs but has no renewal pricepoint, subscription inactivated");
-	
-    //JIRA ET196 Inactivate subscription promo-code
-	public final static ReasonCode INACTIVATE_SUB_PROMO_FAILED_MISSING_PARAM = new ReasonCode(C_INACTIVATE_SUB_PROMO_FAILED_MISSING_PARAM, "Inactivate Subscription Promo Code request missing subscriptionId or packageId");
-	public final static ReasonCode INACTIVATE_SUB_PROMO_FAILED_MSISDN_SUBID_PACKAGEID_MISMATCH = new ReasonCode(C_INACTIVATE_SUB_PROMO_FAILED_MSISDN_SUBID_PACKAGEID_MISMATCH, "Inactivate Subscription Promo Code request msisdn, subscriptionId or packageId mismatch");
-	public final static ReasonCode INACTIVATE_SUB_PROMO_FAILED_ACTIVE_SUBSCRIPTION = new ReasonCode(C_INACTIVATE_SUB_PROMO_FAILED_ACTIVE_SUBSCRIPTION, "Inactivate Subscription Promo Code request on an active subscription");
-	public final static ReasonCode INACTIVATE_SUB_PROMO_FAILED_NON_EXISTENT_SUBSCRIPTION_PROMO = new ReasonCode(C_INACTIVATE_SUB_PROMO_FAILED_NON_EXISTENT_SUBSCRIPTION_PROMO, "Inactivate Subscription Promo Code request on an non-existent subscription promo code");
-	public final static ReasonCode INACTIVATE_SUB_PROMO_FAILED_SUBSCRIPTION_PROMO_ALREADY_INACTIVATED = new ReasonCode(C_INACTIVATE_SUB_PROMO_FAILED_SUBSCRIPTION_PROMO_ALREADY_INACTIVATED, "Inactivate Subscription Promo Code request on an already inactivated subscription promo code");
 	
     /*
 	 * INSTANCE VARIABLES.

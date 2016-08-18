@@ -6,10 +6,10 @@
  */
 package com.vodafone.global.er.subscriptionmanagement;
 
+import java.util.Calendar;
+
 import com.vizzavi.ecommerce.business.common.DeviceType;
 import com.vizzavi.ecommerce.business.common.RatingAttributes;
-
-import java.util.Calendar;
 
 /**
  * @author piotrad

@@ -1,18 +1,17 @@
 package com.vizzavi.ecommerce.business.catalog;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Locale;
+import java.util.List;
 
 import com.vizzavi.ecommerce.business.charging.PurchaseAttributes;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.common.PromotionData;
 import com.vodafone.global.er.business.catalog.BasePrice;
 /**
-    The catalog API is where you can get read-only catalog objects eg packages and services
+    The catalog API
 */
-public interface CatalogApi extends Serializable
+public interface CatalogApi extends java.io.Serializable
 {
 
 
@@ -72,8 +71,8 @@ public interface CatalogApi extends Serializable
 
  
     /**
-    *    Returns all of the packages in the catalog matching the input CatalogService and PurchaseAttributes<br/>
-    *    It also checks if the user has purchased the promo code already.  Msisdn is optional for certain use cases but not others.
+    *    Returns all of the packages in the catalog matching the input CatalogService and PurchaseAttributes
+    *    It also checks if the user has purchased the promo code already
     *    The mandatory attributes are the catalogService
     *    @param msisdn the user to check (can be null)
     *    @param serv the service to match
@@ -130,7 +129,7 @@ public interface CatalogApi extends Serializable
     @Deprecated
     public Map<String, ExpressData> findExpressPackagesByServiceId(String[] serviceId,boolean headline);
 
-    /**
+/**
     *		Method retrieves express package of a service id
     *   @param serviceId the service that is in an express package
     *   @param msisdn - customer's MSISDN optional

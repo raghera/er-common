@@ -199,7 +199,7 @@ public class CatalogPackageIdentifier
          * This may have got here from a usage so there may not be a package delimiter
          * If so return the same string.  Added index > -1
          */
-        if (index > -1 )
+        if (index > -1 && null != ppId)
         {
         	_ppId = _ppId.substring(index + CatalogPackage.PACKAGE_DELIMITER.length());
         }

@@ -19,7 +19,7 @@ import com.vodafone.config.ConfigProvider;
  * constants )
  * 
  * @author Arnaud Vignon
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.5 $
  */
 public class DateTimeUtil {
 
@@ -41,7 +41,7 @@ public class DateTimeUtil {
 	    private static SimpleDateFormat sYear = new SimpleDateFormat("yyyy");
 
 
-//	    private static SimpleDateFormat sMonth = new SimpleDateFormat("MM");
+	    private static SimpleDateFormat sMonth = new SimpleDateFormat("MM");
 
 
 	    private static SimpleDateFormat sDay = new SimpleDateFormat("dd");

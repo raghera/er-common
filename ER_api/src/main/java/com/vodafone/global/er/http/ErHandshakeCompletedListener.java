@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class ErHandshakeCompletedListener implements HandshakeCompletedListener {
 	private static Logger log = Logger.getLogger(ErHandshakeCompletedListener.class);
-	private final boolean isPeerCertificateExpired = Boolean.FALSE;
+	private boolean isPeerCertificateExpired = Boolean.FALSE;
 	/* (non-Javadoc)
 	 * @see javax.net.ssl.HandshakeCompletedListener#handshakeCompleted(javax.net.ssl.HandshakeCompletedEvent)
 	 */
@@ -32,7 +32,7 @@ public class ErHandshakeCompletedListener implements HandshakeCompletedListener 
 	     
 	     }catch (javax.net.ssl.SSLPeerUnverifiedException puv)
 	     {   
-	    	 log.info(puv.getMessage());    
+	    	 certs = null;      
 	     }      
 	     if  (certs != null)     
 	     {        

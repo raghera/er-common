@@ -1,17 +1,24 @@
 package com.vizzavi.ecommerce.business.common;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
+/**
+    The device type represents the type of the device the user is using
+*/
+public class Duration implements Serializable{
 
 
-public class Duration implements Serializable	{
 
+    /**
+	 * 
+	 */
 	private static final long serialVersionUID = 1485268952386596620L;
-
+	/**
+     * @since 5.1
+     */
 	protected static final String DAILY_STR = "daily";
     public static final String MINUTES = "minute(s)";
 	protected static final String DAYS = "day(s)";
@@ -20,11 +27,11 @@ public class Duration implements Serializable	{
 
     protected static final int DAY_BOUNDERIES [] = new int[] {1000,2000};
     protected static final int MINUTE_BOUNDERIES = 100000;
- 	protected static final int ENUM_MAX_ID = 12;
+ 	protected static final int ENUM_MAX_ID = 11;
     protected static final int FIXED_EXPIRY_BOUNDERIES [] = new int[] {-100,-1};
-    /**24 hours. In fact more: from now until 23:59 tomorrow*/
+
     public static final int ONEDAY		 = 8;
-	/**to the end of the day today?*/
+	//Not a Duration
     public static final int DAILY		 = 9;
 
     public static final int WEEKLY     	 = 2;
@@ -35,8 +42,7 @@ public class Duration implements Serializable	{
     public static final int ANNUALY		 = 7;
     public static final int EIGHTEEN_MONTHLY = 10;
   	public static final int TWO_YEARLY = 11;
-  	//JIRA ET158 Add 9 months duration
-  	public static final int NINE_MONTHLY = 12;
+
 
     public static final int MICRODURATIONCODE = MINUTE_BOUNDERIES;
     // Don't show 1 as it is not an option. It is the default value for event packages
@@ -47,8 +53,7 @@ public class Duration implements Serializable	{
 	protected static final int [] sValues = new int[] {
     //MQC MQC8290 - added 15, 60 and 90 days
     //MQC7976 - added -1 No duration for Calendar package
-    //JIRA ET158 Add 9 months duration
-	-1,		2,      3,      4,          5,      6,      7,      8,      9, 10, 11,12,
+	-1,		2,      3,      4,          5,      6,      7,      8,      9, 10, 11,
     1002,     1003,    1004,    1005,    1006,    1007,    1008,    1009,    1010,
     1011,     1012,    1013,    1014,    1015,	  1016,    1018,    1020,    1021,    1022,
     1024,     1026,    1028,    1030,    1035,    1040,    1045,  	1060,	 1090};
@@ -78,7 +83,7 @@ public class Duration implements Serializable	{
     /**
      * The logger used for performing log4j logging.
      */
-    private static Logger logger = LoggerFactory.getLogger(Duration.class);
+    private static Logger logger = Logger.getLogger(Duration.class);
     
     //END 6249
 	public Duration(int code, String type, String language){
@@ -116,8 +121,6 @@ public class Duration implements Serializable	{
     		case 9: rv = 1;break; //day
     		case 10: rv = 18;break; // months
     		case 11: rv = 2;break; // years
-    		//JIRA ET158 Add 9 months duration
-    		case 12: rv = 9;break; // months
     		}
     	}
         else if (durationCode>=MINUTE_BOUNDERIES) rv = durationCode - MINUTE_BOUNDERIES;
@@ -127,20 +130,35 @@ public class Duration implements Serializable	{
     	return rv;
     }
 
-    public static Duration getDurationCode(int val,String unit){
+   /*
 
-    	int code=-1;
-    	if (unit.equals(MINUTES)){
-    		code = val + MINUTE_BOUNDERIES;
-    	}	else if (unit.equals(DAYS)){
-    		code = val + DAY_BOUNDERIES[0];
-//    	}else {
-    		// This Duration & unit combination is not applicable
-    	}
+   *
 
-    	return new Duration(code);
+   *
 
-    }
+   */
+
+   public static Duration getDurationCode(int val,String unit){
+
+   int code=-1;
+
+   if (unit.equals(MINUTES)){
+
+   code = val + MINUTE_BOUNDERIES;
+
+   }else if (unit.equals(DAYS)){
+
+   code = val + DAY_BOUNDERIES[0];
+
+   }else {
+
+   // This Duration & unit combination is not applicable
+
+   }
+
+   return new Duration(code);
+
+   }
 
 
 
@@ -158,6 +176,7 @@ public class Duration implements Serializable	{
 	   return "Duration_" + this.mDurationCode;
    }
 
+
     public static boolean isDayUnit ( int durationCode ){
 		boolean rv = false;
     	if ((durationCode>DAY_BOUNDERIES[0])&&(durationCode<DAY_BOUNDERIES[1])) rv=true;
@@ -171,11 +190,9 @@ public class Duration implements Serializable	{
     	}
 		return rv;
     }
-    
 	public boolean isDayUnit () {
 		return isDayUnit(this.mDurationCode);
 	}
-	
 	public static boolean isMinuteUnit ( int durationCode ){
     	return durationCode > MINUTE_BOUNDERIES;
     }
@@ -187,17 +204,12 @@ public class Duration implements Serializable	{
 	public static boolean isYearUnit ( int durationCode ) {
  		 return (durationCode == ANNUALY || durationCode == TWO_YEARLY);
     }
-	
 	public boolean isYearUnit ( ) {
 		return isYearUnit(this.mDurationCode);
 	}
-	
-	/**to the end of the day today?*/
 	public static boolean isDaily ( int durationCode ) {
 		 return durationCode == DAILY;
 	}
-	
-	/**to the end of the day today?*/
 	public boolean isDaily (  ) {
 		return isDaily(this.mDurationCode);
 	}
@@ -209,8 +221,6 @@ public class Duration implements Serializable	{
 		case HALFYEARLY:
 		case QUARTERLY:
 		case EIGHTEEN_MONTHLY:
-		//JIRA ET158 Add 9 months duration
-		case NINE_MONTHLY:	
 			rv = true;
 			break;
 		default:
@@ -222,13 +232,26 @@ public class Duration implements Serializable	{
 		return isMonthUnit(this.mDurationCode);
 	}
 	
-	public static boolean isFixedExpiryDate(int durationCode)	{
+	public static boolean isFixedExpiryDate(int durationCode){
 		return FIXED_EXPIRY_BOUNDERIES[0]<=durationCode && FIXED_EXPIRY_BOUNDERIES[1]>=durationCode;
 	}
 	
+    //REMEDY 6249
+	/*
+	public static String getUnit ( int durationCode ){
+		 String rv = "UNKNOWN";
+		 if (isMinuteUnit(durationCode)) return MINUTES;
+		 else if (isDayUnit(durationCode)) return DAYS;
+		  else if (isMonthUnit(durationCode)) return MONTHS;
+		   else if (isYearUnit(durationCode)) return YEARS;
+		    else if (isDaily(durationCode)) return DAILY_STR;
+		 return rv;
+	}
+    */
 	
 	
-	public static String getUnit ( int durationCode )    {
+	public static String getUnit ( int durationCode )
+    {
         // Remedy 4487/6249 - Alan start
         // This will try to get the information from the ChargingTranslatorCore property file
         // If the Strings exists, then they will be used, else the Strings in this class
@@ -239,7 +262,7 @@ public class Duration implements Serializable	{
         {
             defaultLocale = Locale.UK;
         }
-        logger.debug("Duration.defaultLocale is {}",defaultLocale);
+        logger.debug("Duration.defaultLocale is "+defaultLocale);
 
         //CR1607aL. START
 		//wasResourceTranslatorImpl resourceTranslatorImpl = new ResourceTranslatorImpl(defaultLocale);
@@ -278,15 +301,25 @@ public class Duration implements Serializable	{
         {
             _years = YEARS;
         }
+        logger.debug("Duration. daily :"+_dailyStr);
+        logger.debug("Duration. minute :"+_minute);
+        logger.debug("Duration. days :"+_days);
+        logger.debug("Duration. months :"+_months);
+        logger.debug("Duration. years :"+_years);
 
 	 String rv = "UNKNOWN";
+//	 if (isMinuteUnit(durationCode)) return MINUTES;
+//	 else if (isDayUnit(durationCode)) return DAYS;
+//	  else if (isMonthUnit(durationCode)) return MONTHS;
+//	   else if (isYearUnit(durationCode)) return YEARS;
+//	    else if (isDaily(durationCode)) return DAILY_STR;
 
          if (isMinuteUnit(durationCode)) return _minute;
          else if (isDayUnit(durationCode)) return _days;
          else if (isMonthUnit(durationCode)) return _months;
          else if (isYearUnit(durationCode)) return _years;
          else if (isDaily(durationCode)) return _dailyStr;
-         logger.debug("Duration. rv :{}", rv);
+         logger.debug("Duration. rv :"+rv);
          // Remedy 4487 - Alan end.
 
          return rv;
@@ -391,28 +424,4 @@ public class Duration implements Serializable	{
 		this.type = type;
 	}
 	//[1] STKHREQ13113 End	
-
-	/**
-	 * returns a Calendar object which represents the current time, plus this duration.
-	 * @return
-	 */
-	public Calendar getEndDate()	{
-		Calendar cal = Calendar.getInstance();
-		if (isMonthUnit())
-			cal.add(Calendar.MONTH, mValue);
-		else if (isDayUnit())
-			cal.add(Calendar.DAY_OF_MONTH, mValue);
-		else if (isMinuteUnit())
-			cal.add(Calendar.MINUTE, mValue);
-		else if (isYearUnit())
-			cal.add(Calendar.YEAR, mValue);
-		else if (isDaily())	{	//presumably the end of the day
-			cal.set(Calendar.HOUR, 23);
-			cal.set(Calendar.MINUTE, 59);
-			cal.set(Calendar.SECOND, 59);
-		}
-		
-		return cal;
-	}
-	
 }

@@ -3,7 +3,7 @@ package com.vodafone.global.er.util;
 import java.util.Locale;
 
 /**
- * NB this class needs to be encoded correctly, since it contains euro (���) and pound (��) symbols.  
+ * NB this class needs to be encoded correctly, since it contains euro (€) and pound (£) symbols.  
  * @author matt
  *
  */
@@ -43,7 +43,7 @@ public class CurrencyUtils {
     }
 
     /**
-     * returns a string for the currency symbol, depending on locale - eg �� for Locale.UK.  N.B. this is not an xml character entity reference
+     * returns a string for the currency symbol, depending on locale - eg £ for Locale.UK.  N.B. this is not an xml character entity reference
      * @param locale
      * @return
      */

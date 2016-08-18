@@ -1,12 +1,12 @@
 package com.vodafone.global.er.rating;
 
-import java.util.Date;
-
-//import com.vizzavi.ecommerce.business.catalog.NetworkCode;
+import com.vizzavi.ecommerce.business.catalog.NetworkCode;
 import com.vizzavi.ecommerce.business.catalog.PricePoint;
 import com.vizzavi.ecommerce.business.common.Constants;
 import com.vizzavi.ecommerce.business.common.RatingAttributes;
 import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
+
+import java.util.Date;
 
 /**
     This is returned by a content usage
@@ -14,8 +14,21 @@ import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
 public class RatedEvent implements java.io.Serializable
 {
 	private    static final long serialVersionUID = -1459104543868625485L;
+	//private static final Logger	logger = LoggerFactory.getLogger(RatedEvent.class);
 
 
+	//@hud STKHREQ13076 SP ROAMNIG
+	// Record the roaming net amount and roaming gross amount, by default, it's 0, meaning no effect
+	protected double mRoamingNetAmount	= 0;
+	protected double mRoamingGrossAmount	= 0;	// including tax
+
+	////////////////////////////////////////////////////////
+	//@hud STKHREQ13076 SP ROAMING
+	protected NetworkCode	mNetworkCode = null;
+
+
+
+	//@hud STKHREQ36
 	protected double mAccessDuration = -1;		// in minutes
 	protected String mPricePointId = null;	// This is the id that is set during rating
 											// indicating which pricepoint is matched
@@ -187,7 +200,7 @@ public class RatedEvent implements java.io.Serializable
 		if (event.getMatchingAttributes()!=null) {
 			if(event.getMatchingAttributes() instanceof PricePoint)	{
 				//logger .debug("MD pprf: event.getMatchingAttributes() is a pricepoint");
-				mMatchingAttributes = new PricePoint(event.getMatchingAttributes()/*, ET-153 date*/);
+				mMatchingAttributes = new PricePoint(event.getMatchingAttributes(), date);
 			}
 			else	{
 				//logger .debug("MD pprf: event.getMatchingAttributes() is not a pricepoint but rather a {}", 
@@ -208,11 +221,11 @@ public class RatedEvent implements java.io.Serializable
 
 
 		//@hud STKHREQ13076 SP ROAMNIG
-//		mRoamingNetAmount = event.getRoamingNetAmount();
-//		mRoamingGrossAmount = event.getRoamingGrossAmount();
-//
-//		//@hud STKHREQ13076 SP ROAMNIG
-//		mNetworkCode = event.getNetworkCode();
+		mRoamingNetAmount = event.getRoamingNetAmount();
+		mRoamingGrossAmount = event.getRoamingGrossAmount();
+
+		//@hud STKHREQ13076 SP ROAMNIG
+		mNetworkCode = event.getNetworkCode();
 
 
 		//@hud STKHREQ36
@@ -229,18 +242,18 @@ public class RatedEvent implements java.io.Serializable
 
 	//////////////////////////////////////////////////////
 	//@hud STKHREQ13076 SP ROAMNIG
-//	public double getRoamingNetAmount() {
-//		return mRoamingNetAmount;
-//	}
-//	public void setRoamingNetAmount(double roamingNetAmount) {
-//		mRoamingNetAmount = roamingNetAmount;
-//	}
-//	public double getRoamingGrossAmount() {
-//		return mRoamingGrossAmount;
-//	}
-//	public void setRoamingGrossAmount(double roamingGrossAmount) {
-//		mRoamingGrossAmount = roamingGrossAmount;
-//	}
+	public double getRoamingNetAmount() {
+		return mRoamingNetAmount;
+	}
+	public void setRoamingNetAmount(double roamingNetAmount) {
+		mRoamingNetAmount = roamingNetAmount;
+	}
+	public double getRoamingGrossAmount() {
+		return mRoamingGrossAmount;
+	}
+	public void setRoamingGrossAmount(double roamingGrossAmount) {
+		mRoamingGrossAmount = roamingGrossAmount;
+	}
 	///////////////////////////////////////////////////////
 
 
@@ -626,12 +639,12 @@ public class RatedEvent implements java.io.Serializable
 
 	 ////////////////////////////////////////
 	 //@hud STKHREQ13076 SP ROAMING
-//	 public void setNetworkCode(NetworkCode networkCode) {
-//		 mNetworkCode = networkCode;
-//	 }
-//	 public NetworkCode getNetworkCode() {
-//		 return mNetworkCode;
-//	 }
+	 public void setNetworkCode(NetworkCode networkCode) {
+		 mNetworkCode = networkCode;
+	 }
+	 public NetworkCode getNetworkCode() {
+		 return mNetworkCode;
+	 }
 
 
 	 ////////////////////////////////////////

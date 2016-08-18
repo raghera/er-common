@@ -1,39 +1,16 @@
 package com.vizzavi.ecommerce.business.catalog;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.vizzavi.ecommerce.business.catalog.internal.BalanceImpact;
-import com.vizzavi.ecommerce.business.catalog.internal.BalanceImpacts;
-import com.vizzavi.ecommerce.business.catalog.internal.PricePointTier;
 import com.vizzavi.ecommerce.business.charging.BaseAuthorization;
 import com.vizzavi.ecommerce.business.charging.PurchaseAuthorization;
 import com.vizzavi.ecommerce.business.charging.UsageAuthorization;
@@ -67,11 +44,8 @@ import com.vodafone.config.ConfigProvider;
  *    <li> PaymentType</li></ul>
  *
  */
-@Entity
-@Access(AccessType.FIELD)
-public class PricePoint extends RatingAttributes implements Serializable, CatalogBean	{
-
-	protected static final Logger log = LoggerFactory.getLogger(PricePoint.class);
+public class PricePoint extends RatingAttributes implements java.io.Serializable
+{
 
 	private static final long serialVersionUID = 7649541222744453297L;
 
@@ -80,26 +54,34 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	public static final String CONTENT_PRICEPOINT_ID_PREFIX = "content:"; //[2] MOD
 
 
+	////////////////////////////////////////////////////////////
 	//@lle STKHREQ242 Grace, suspension period, retry frequency
-	@Transient
+	///////////////////////////////////////////////////////////
 	private PeriodValue gracePeriod = null;
-	@Transient
 	private PeriodValue suspensionPeriod = null;
-	@Transient
 	private PeriodValue retryFrequency = null;
 
+	///////////////////////////////////////////////////////
+	//@hud STKHREQ13076 SP ROAMING
+	// Added rated roaming amount for findPackagesWithService
+	private double mRoamingNetAmount	= 0;
+	private double mRoamingGrossAmount 	= 0;
+	//////////////////////////////////////////////////////
 
+
+	//////////////////////////////////////////////////////
 	//@hud STKHREQ36 Micro Service
 	private double mAccessDuration		= -1;
+	//////////////////////////////////////////////////////
 
 	/**
         The identifier of the price point
 	 */
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="`KEY`")
 	protected Long mKey;
-
+	protected String mCreatedBy;
+	protected String mModifiedBy;
+	protected Date mModifiedDate;
+	protected char mActiveStatus;
 	protected String mId;
 
 	protected String mContentId = Constants.STRING_MATCH_ALL;
@@ -108,31 +90,15 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	/** The price/token price of the package */
 	protected double mRateWithoutTax = -9999;
 
-
-	//TODO remove this ResourceBalance array!!  
-
-	/**
-	 * each ResourceBalance contains a ChargingResource, a balance, and a few other things
-	 */
-	@Transient
-	protected ResourceBalance[] mBalances;
-	/**
-	 * a list of BalanceImpact objects, each of which contains a ChargingResource and a few other things
-	 */
-	protected BalanceImpacts mImpacts = new BalanceImpacts();
-
-	//TODO remove this field
-	//PPM136861 refactoring aL. START
-	/**
-	 * replaces map of tiers.  contains a list of BalanceImpact objects, each of which contains a ChargingResource and a few other things
-	 */
-	@Transient private PricePointTier mPricePointTier = new PricePointTier();
+	/** The price/token price of the package */
+	protected double mAlternativeRate = -9999;
+	protected ChargingResource mAlternativeCurrency = null;
 
 
-	//extra fields for hibernate
-	@ManyToOne(optional=false, targetEntity=CatalogPackage.class, fetch=FetchType.LAZY)	
-	private CatalogPackage pack;
-	
+	/** The type of resource whether token or currency */
+	protected ChargingResource mResource = null;
+
+
 	/**
         Set to true if the price point is not valid anymore and is not in the priceplan
 	 */
@@ -141,6 +107,9 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 	protected String mGlid = "";
 
+	protected String mTaxCode = "";
+
+	protected double mTaxRate;
 
 	protected Date mPurchaseExpiryDate;
 
@@ -148,26 +117,31 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 
 	/** Custom fields for pricing text */
-	private String mPricingText1 = "";
-	private String mPricingText2 = "";
+	protected String mPricingText1 = "";
+	protected String mPricingText2 = "";
 
 	/** The list of pricing text1 in multiple languages including the default language.
 	 * Key is the language code.
 	 * Since ER9 **/
-	@Transient
-	protected Map<String, String> pricingTextList1 = null;
+	protected HashMap<String, String> pricingTextList1 = null;
 
 	/** The list of pricing text2 in multiple languages including the default language.
 	 * Key is the language code.
 	 * Since ER 9**/
-	@Transient
-	protected Map<String, String> pricingTextList2 = null;
+	protected HashMap<String, String> pricingTextList2 = null;
 
 	/** custom fields defined in catalog using <custom_field> tag */
-	@Transient
 	protected Map<String, String> mCustomFields = new HashMap<String, String>();
 
 	protected double mStandardRate = -1;
+
+	protected ResourceBalance[] mBalances;
+
+	/**
+	 * The DRM Object associated with the price point
+	 * @since ER 5.1
+	 */
+	protected DRMObject m_DRMObject=null;
 
 	/**
 	 * The linked price point id associated with the price point, used for selection of renewal package for trial packages
@@ -175,13 +149,17 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	 */
 	protected String mPricepointIdLink;
 
+
+
 	/** ADDED FOR EGYPT ER6 STUB **/
 	protected boolean mForcedPurchase=false;
 
 	/** ADDED FOR EGYPT ER6 STUB **/
 	protected boolean mDuplicateSubscription=true;
-
+	//protected Date mPurchaseFixedExpiryDate = new Date();
 	protected Date mPurchaseFixedExpiryDate;
+
+
 
 
 	/** ADDED FOR EGYPT ER6 STUB **/
@@ -204,6 +182,10 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 	/** ADDED FOR ER6.5 STUB **/
 	protected double mPenaltyCharges=0.0;
+
+	//[11] Mod Start
+//	protected VolumeModel mVolumeModel;
+	//[11] Mod Start
 
 	/** ADDED FOR ER6.5 STUB **/
 	protected boolean mCancellation=false;
@@ -229,6 +211,11 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	/** ADDED FOR ER6.5 STUB **/
 	protected boolean mReceipting=false;
 
+	/** ADDED FOR ER6.5 STUB **/
+	//public static final String RECEIPTING_ATTRIBUTE_NONE= "NONE";
+	//public static final String RECEIPTING_ATTRIBUTE_EXPRESS= "";
+	//public static final String RECEIPTING_ATTRIBUTE_NON_= "NON-";
+	//public static final String RECEIPTING_ATTRIBUTE_ALL= "ALL";
 
 	public static final String RECEIPTING_ATTRIBUTE_NONE= "NULL";
 	public static final String RECEIPTING_ATTRIBUTE_EXPRESS= "Express";
@@ -244,16 +231,27 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	protected String mPaymentHandler=PricePoint.PAYMENT_HANDLER_NONE;
 	public static final String PAYMENT_HANDLER_NONE= "NULL";
 	public static final String PAYMENT_HANDLER_SUBMIT= "Submit";
-	
-	/**  ADDED FOR ET233: Add Zero Price Payment Handler Suppression to Pricepoint */
-	public static final String PAYMENT_HANDLER_SUPPRESS= "Suppress";
 	//[13] Mod End
+
+	/** ADDED FOR EGYPT ER7 STUB **/
+//	protected boolean mPreOrder=false;
 
 	/** ADDED FOR EGYPT ER7 STUB **/
 	protected int mOrder;
 
+	/** ADDED FOR ER7 STUB **/
+	protected SuperCreditPricePoint mCreditPurchasePricePoints [];
+
+	/** ADDED FOR ER7 STUB **/
+	protected boolean mPurchaseableBySuperCredit=false;
+
+	/** ADDED FOR ER7 STUB **/
+	protected boolean mbSuperCreditDonor=false;
+
 	/** Remedy 4945 **/
 	protected boolean mFixedRecurringPricePoint=false;
+
+	protected boolean mValidSuperCredit = false;
 
 	/** ADDED FOR ER8 PH2 STUB **/
 	protected boolean mBasePricePoint = false;
@@ -285,6 +283,14 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	protected String pricingTextTemplateNameRoaming=null;
 	protected double onFootPrintPrice = 0;
 	protected double offFootPrintPrice = 0;
+	//REMEDY 7306
+	//protected boolean isOnRoamingPresent = true;
+	//protected boolean isOffRoamingPresent = true;
+	protected boolean isOnRoamingPresent = false;
+	protected boolean isOffRoamingPresent = false;
+
+	//END REMEDY 7306	
+	//Roaming END
 
 	protected boolean isZeroCostIgnore = false;
 
@@ -294,7 +300,25 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	//REMEDY 6968
 	static final String ROUND_NTH_EXPRESS_PATTERN_DEFAULT = "0.00";
 	static final String ROUND_NTH_EXPRESS_PATTERN_INTEGER = "0.##";
+	//MQC 6016 - change to private variable from static
+	//WAS
+	//static final String ROUND_NTH_EXPRESS_PATTERN; 
+	//NOW
 	private String ROUND_NTH_EXPRESS_PATTERN;
+
+	//MQC 6016 - move retrieval of property to local method of where it is used
+	// static {
+
+	//     String round_nth_express_pattern = ConfigProvider.getProperty("ROUND_NTH_EXPRESS_PATTERN");
+	//     if (round_nth_express_pattern == null) {
+	//         ROUND_NTH_EXPRESS_PATTERN = ROUND_NTH_EXPRESS_PATTERN_DEFAULT;
+	//     }
+	//     else {
+	//         ROUND_NTH_EXPRESS_PATTERN = round_nth_express_pattern;
+	//     }
+
+	//}
+	//END REMEDY 6968
 
 	//Fair Usage Start
 	private int fairUsageLimit = -1;
@@ -328,13 +352,18 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	//CR Advanced Linked Pricepoint - true if pricepoint is a link pricepoint from a TRIAL pricepoint
 	protected boolean linkedByTrialPricepoint = false;
 	
-
+	//CR1564 -Utctimezone for diff region in country
+	/**
+	 * @deprecated 
+	 */
+	@Deprecated
 	void init(PricePoint pt) {
 		init(pt, new Date());
 	}
 
 	//CR1564 -Utctimezone for diff region in country
-	void init(PricePoint pt, Date date)	{
+	void init(PricePoint pt, Date date)
+	{
 		mId = pt.mId;
 		mContentId = pt.mContentId;
 		mPackageId = pt.mPackageId;
@@ -346,7 +375,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		mPurchaseFixedExpiryDate = pt.getFixedExpiryDate();
 		mInteractiveFlag = pt.getInteractiveFlag();
 		//[1] Mod end
-//		m_DRMObject = pt.getDRMObject();
+		m_DRMObject = pt.getDRMObject();
 		mDuplicateSubscription = pt.isSubscriptionDuplicate();
 		mForcedPurchase = pt.isForcedPurchase();
 		mReserveOnly = pt.isReserveOnly();
@@ -362,9 +391,9 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		mFixedRecurrence = pt.getFixedRecurrence();
 		mReceipting = pt.isReceipting();
 		mReceiptingAttribute = pt.getReceiptingAttribute();
-//		mPurchaseableBySuperCredit = pt.isPurchaseableBySuperCredit();
-//		mCreditPurchasePricePoints = pt.getCreditPurchasePricePoints();
-//		mbSuperCreditDonor = pt.isSuperCreditDonor();
+		mPurchaseableBySuperCredit = pt.isPurchaseableBySuperCredit();
+		mCreditPurchasePricePoints = pt.getCreditPurchasePricePoints();
+		mbSuperCreditDonor = pt.isSuperCreditDonor();
 
 		mRateWithoutTax = pt.getNetRate();
 
@@ -373,41 +402,30 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		//ER 7 Compliant
 		//FIX
 		if(pt.getPricingText1() != null && pt.getPricingText1().length() > 0)
-			setmPricingText1(pt.getPricingText1());
+			mPricingText1 = pt.getPricingText1();
 
 		if(pt.getPricingText2() != null && pt.getPricingText2().length() > 0)
-			setmPricingText2(pt.getPricingText2());
+			mPricingText2 = pt.getPricingText2();
 		//END FIX
 		//ER 7 Compliant
 
 
 		setPricingTextList1(pt.getPricingTextList1());
 		setPricingTextList2(pt.getPricingTextList2());
-
-		//PPM136861 refactoring aL. removed
-//		mResource = pt.getResource();
-
-
-
-//		mActiveStatus = pt.getActiveStatus();
-//		mAlternativeCurrency = pt.getAlternativeCurrency();
-
+		mResource = pt.getResource();
+		mActiveStatus = pt.getActiveStatus();
+		mAlternativeCurrency = pt.getAlternativeCurrency();
 		mBalances = pt.mBalances;
-		
-		//PPM136861 refactoring aL. START
-		//copy impacts... why not!? :-)
-		mImpacts = pt.mImpacts;
-		
-//		mCreatedBy = pt.getCreatedBy();
+		mCreatedBy = pt.getCreatedBy();
 		mIsDiscount = pt.isDiscount();
 		mKey = pt.getKey();
-//		mModifiedBy = pt.getModifiedBy();
+		mModifiedBy = pt.getModifiedBy();
 		mPricepointIdLink = pt.getPricepointIdLink();
 		mPromoText = pt.mPromoText;
 
 		mStandardRate = pt.getStandardRate(date);
 
-//		mValidSuperCredit = pt.isValidSuperCreditOption();
+		mValidSuperCredit = pt.isValidSuperCreditOption();
 		mCustomFields = new HashMap<String, String>(pt.getCustomFields());
 		//Remedy 4945
 		mFixedRecurringPricePoint = pt.isFixedRecurringPricePoint();
@@ -419,6 +437,11 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		//ER 8 Stubb
 
 
+		//@hud STKHREQ13076
+		mRoamingGrossAmount = pt.getRoamingGrossAmount();
+		mRoamingNetAmount = pt.getRoamingNetAmount();
+		onFootPrintPrice = pt.getOnFootPrintPrice();
+		offFootPrintPrice = pt.getOffFootPrintPrice();
 
 		//@hud STKHREQ36
 		mAccessDuration = pt.getAccessDuration();
@@ -430,7 +453,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 		this.pricingTextTemplateName1 = pt.pricingTextTemplateName1;
 		this.pricingTextTemplateName2 = pt.pricingTextTemplateName2;
-//		this.pricingTextTemplateNameRoaming = pt.getPricingTextTemplateNameRoaming();
+		this.pricingTextTemplateNameRoaming = pt.getPricingTextTemplateNameRoaming();
 
 		//REMEDY 5553
 		if(pt.mUserGroups != null && pt.mUserGroups.length > 0)
@@ -515,8 +538,8 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		cancellationUsage = pt.cancellationUsage;
 		mPromoPrecode = pt.mPromoPrecode;
 		mPromoUniqueCode = pt.mPromoUniqueCode;
-//		mNetworkCode = pt.getNetworkCode();
-//		mNetworkCodeStr = pt.getNetworkCodeStr();
+		mNetworkCode = pt.getNetworkCode();
+		mNetworkCodeStr = pt.getNetworkCodeStr();
 		mNextCycleDisount = pt.mNextCycleDisount;
 
 		translatedPricingText = pt.translatedPricingText;
@@ -558,8 +581,8 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		renewalsUntilLinkedPricepoint = pt.getRenewalsUntilLinkedPricepoint();
 		linkedByTrialPricepoint = pt.getLinkedByTrialPricepoint();
 	}
-	
-	public PricePoint()	{
+	public PricePoint()
+	{
 		// price point is always initialised to match all
 		mChannel = Constants.INT_MATCH_ALL;
 		mPaymentType = Constants.INT_MATCH_ALL;
@@ -577,18 +600,103 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 	//CR1564 -Utctimezone for diff region in country
 	/**
-	 *
+	 * @deprecated 
 	 */
+	@Deprecated
 	public PricePoint(RatingAttributes attr) {
-		/*	this(attr, new Date());
-	}//ET-153
+		this(attr, new Date());
+	}
 
 	//CR1564 -Utctimezone for diff region in country
 	public PricePoint(RatingAttributes attr, Date date)
-	{*/
+	{
 		super(attr);
 		if (attr instanceof PricePoint) {
-			init((PricePoint)attr/*, date*/);
+			init((PricePoint)attr, date);
+			/*
+			PricePoint pt = (PricePoint)attr;
+			mId = pt.mId;
+			mContentId = pt.mContentId;
+			mPackageId = pt.mPackageId;
+			mTaxRate = pt.getTaxRate();
+			mTaxCode = pt.getTaxCode();
+			mPurchaseStartDate = pt.getStartDate();
+			mPurchaseExpiryDate = pt.getExpiryDate();
+			//[1] Mod start
+			mPurchaseFixedExpiryDate = pt.getFixedExpiryDate();
+			mInteractiveFlag = pt.getInteractiveFlag();
+			//[1] Mod end
+			m_DRMObject = pt.getDRMObject();
+			mDuplicateSubscription = pt.isSubscriptionDuplicate();
+			mForcedPurchase = pt.isForcedPurchase();
+			mReserveOnly = pt.isReserveOnly();
+			//[11] Mod Start
+			mVolumeModel = pt.getVolumeModel();
+			//[11] Mod End
+			mPreOrder = pt.isPreOrder();
+			mOrder = pt.getOrder();
+			mMinSubPeriod = pt.getMinSubPeriod();
+			mPenaltyCharges = pt.getPenaltyCharges();
+			mCancellation = pt.getCancellation();
+			mMonthEndSubscription = pt.getMonthEndSubscription();
+			recurrenceDay = pt.getRecurrenceDay();
+			alignWithExternal = pt.isAlignWithExternal();
+			mHistoric = pt.isHistoric();
+			mFixedRecurrence = pt.getFixedRecurrence();
+			mReceipting = pt.isReceipting();
+			mReceiptingAttribute = pt.getReceiptingAttribute();
+			mPurchaseableBySuperCredit = pt.isPurchaseableBySuperCredit();
+			mCreditPurchasePricePoints = pt.getCreditPurchasePricePoints();
+			mbSuperCreditDonor = pt.isSuperCreditDonor();
+
+			mRateWithoutTax = pt.getNetRate();
+			mIsArchived = pt.isArchived();
+
+                        //ER 7 Compliant
+			mPricingText1 = pt.getPricingText1();
+			mPricingText2 = pt.getPricingText2();
+                        //ER 7 Compliant
+
+
+			this.setPricingTextList1(pt.getPricingTextList1());
+			this.setPricingTextList2(pt.getPricingTextList2());
+			mResource = pt.getResource();
+			mActiveStatus = pt.getActiveStatus();
+			mAlternativeCurrency = pt.getAlternativeCurrency();
+			mBalances = pt.mBalances;
+			mCreatedBy = pt.getCreatedBy();
+			mIsDiscount = pt.isDiscount();
+			mKey = pt.getKey();
+			mModifiedBy = pt.getModifiedBy();
+			mPricepointIdLink = pt.getPricepointIdLink();
+			mPromoText = pt.mPromoText;
+			mStandardRate = pt.getStandardRate();
+			mValidSuperCredit = pt.isValidSuperCreditOption();
+			mCustomFields = new HashMap(pt.getCustomFields());
+			//[13] Mod Start
+			mPaymentHandler = pt.getPaymentHandler();
+			//[13] Mod Start
+			//ER 8 Stubb
+			mBasePricePoint = pt.isBasePricePoint();
+			//ER 8 Stubb
+
+			//@hud STKHREQ13076
+			mRoamingGrossAmount = pt.getRoamingGrossAmount();
+			mRoamingNetAmount = pt.getRoamingNetAmount();
+			onFootPrintPrice = pt.getOnFootPrintPrice();
+			offFootPrintPrice = pt.getOffFootPrintPrice();
+
+			//@hud STKHREQ36
+			mAccessDuration = pt.getAccessDuration();
+
+			this.pricingTextTemplateName1 = pt.pricingTextTemplateName1;
+			this.pricingTextTemplateName2 = pt.pricingTextTemplateName2;
+
+			//@lle STKHREQ242
+			gracePeriod = pt.getGracePeriod();
+			suspensionPeriod = pt.getSuspensionPeriod();
+			retryFrequency = pt.getRetryFrequency();
+			 */
 
 		}
 	}
@@ -613,12 +721,11 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	 */
 	@Deprecated
 	public PricePoint(BaseAuthorization auth) {
-		/*this(auth, new Date()); //ET-153
+		this(auth, new Date());
 	}
 
 	public PricePoint(BaseAuthorization auth, Date date) {
-		this(auth.getMatchingAttributes(), date);*/
-		this(auth.getMatchingAttributes());
+		this(auth.getMatchingAttributes(), date);
 		// balance impacts
 		mId = auth.getRateIdentifier();
 		mPackageId = auth.getPackageId();
@@ -627,17 +734,15 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		mTaxCode = auth.getTaxCode();
 		mStandardRate = auth.getStandardRate();
 		mRateWithoutTax = auth.getNetRate();
-		//PPM136861 refactoring removed
-//		mResource = auth.getResource();
-
+		mResource = auth.getResource();
 		mIsDiscount = auth.isDiscount();
 		mPromoText = auth.getDiscountPromoText();
 		setPricingText1(auth.getPricingText1());
 		setPricingText2(auth.getPricingText2());
 
 		//ER 7 Compliant
-		setmPricingText1(auth.getPricingText1());
-		setmPricingText2(auth.getPricingText2());
+		mPricingText1 = auth.getPricingText1();
+		mPricingText2 = auth.getPricingText2();
 		//ER 7 Compliant
 
 		if (auth instanceof PurchaseAuthorization) {
@@ -649,6 +754,10 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 			mPreOrder = uAuth.getIsPreordered() == 1?true:false;
 		}
 
+		//@hud STKHREQ13076
+		mRoamingGrossAmount = auth.getRoamingGrossAmount();
+		mRoamingNetAmount = auth.getRoamingNetAmount();
+		mNetworkCode = auth.getNetworkCode();
 
 		//CR1429
 		alwaysValidateMsisdn = auth.isAlwaysValidateMsisdn();
@@ -662,8 +771,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		String[] codes = new String[] { promoCode};
 		setPromoCodes(codes);
 		mRateWithoutTax = rate;
-//PPM136861 refactoring removed
-//		mResource = res;
+		mResource = res;
 		mIsArchived = archiveFlag;
 	}
 
@@ -680,8 +788,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		setBearer(bearerId);
 		//[10] Mod Ends
 		mRateWithoutTax = rate;
-//PPM136861 refactoring removed
-//		mResource = res;
+		mResource = res;
 		mIsArchived = archiveFlag;
 	}
 
@@ -689,6 +796,10 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 			String createdBy, String modifiedBy, Date modifiedDate, char activeStatus)
 	{
 		mKey = key;
+		mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+		mModifiedDate = modifiedDate;
+		mActiveStatus = activeStatus;
 
 		mId = id;
 		setDuration(durationCode);
@@ -696,8 +807,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		String[] codes = new String[] { promoCode};
 		setPromoCodes(codes);
 		mRateWithoutTax = rate;
-//PPM136861 refactoring removed
-//		mResource = res;
+		mResource = res;
 		mIsArchived = archiveFlag;
 	}
 
@@ -705,6 +815,10 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 			String createdBy, String modifiedBy, Date modifiedDate, char activeStatus)
 	{
 		mKey = key;
+		mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+		mModifiedDate = modifiedDate;
+		mActiveStatus = activeStatus;
 
 		mId = id;
 		setDuration(durationCode);
@@ -717,20 +831,30 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		setBearer(bearerId);
 		//[10] Mod Ends
 		mRateWithoutTax = rate;
-//PPM136861 refactoring removed
-//		mResource = res;
+		mResource = res;
 		mIsArchived = archiveFlag;
 	}
-	
+
 	public Long getKey() {
 		return mKey;
 	}
-	
-	void setKey(Long key)	{
-		this.mKey = key;
+
+
+	public String getCreatedBy() {
+		return mCreatedBy;
 	}
 
+	public String getModifiedBy() {
+		return mModifiedBy;
+	}
 
+	public Date getModifiedDate() {
+		return mModifiedDate;
+	}
+
+	public char getActiveStatus() {
+		return mActiveStatus;
+	}
 
 	public String getId()
 	{
@@ -744,19 +868,23 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	{
 		return null;
 	}
-	
-	@Transient
 	public boolean isArchived()
 	{
 		return mIsArchived;
 	}
 
-
+	public boolean isValidSuperCreditOption() {
+		return mValidSuperCredit;
+	}
 
 	public boolean isBasePricePoint() {
 		return mBasePricePoint;
 	}
 
+
+	public double getRate() {
+		return getRate(new Date());
+	}
 
 	//CR1564 -Utctimezone for diff region in country
 	/**
@@ -766,34 +894,43 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
         normal price when the discount does not apply.
         @return double the price
 	 */
-	public double getRate(Date date)	{
+	public double getRate(Date date)
+	{
+		//int round_nth_decimal =  4;
 		double rv = -1;
+
 		int round_nth_decimal =  ConfigProvider.getPropertyAsInteger("ROUND_NTH_DECIMAL", 4);
-		rv = (1 + getTaxRate(/*date ET-153*/)) * getNetRate();
+
+
+		rv = (1 + getTaxRate(date)) * getNetRate();
+
 		return roundDouble(rv,round_nth_decimal);
 	}
 
-	
-//	//CR1564 -Utctimezone for diff region in country
-//	/**
-//	 * @deprecated 
-//	 */
-//	@Deprecated
+	public double getNetRate()
+	{
+		return mRateWithoutTax;
+	}
+
+	//CR1564 -Utctimezone for diff region in country
+	/**
+	 * @deprecated 
+	 */
+	@Deprecated
 	public double getNetRate(double volumeAmount) {
-//		return getNetRate(volumeAmount, new Date());
-//	}
-//
-//	//CR1564 -Utctimezone for diff region in country
-//	@Deprecated
-//	public double getNetRate(double volumeAmount, Date date)
-//	{
+		return getNetRate(volumeAmount, new Date());
+	}
+
+	//CR1564 -Utctimezone for diff region in country
+	@Deprecated
+	public double getNetRate(double volumeAmount, Date date)
+	{
 		return getNetRate();
 	}
 
 	/**
         This is the same as getDrviceType()
 	 */
-	@Transient
 	public int getAccessDevice()
 	{
 		return getDeviceType();
@@ -803,12 +940,12 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
     Calculates amount based on volume amount
     overridden by the implementation
 	 */
+	@Deprecated
 	public double getRate(double volumeAmount)
 	{
 		return getRate();
 	}
 
-	@Transient
 	public double getAlternativeRate()
 	{
 		return getRate();
@@ -892,74 +1029,51 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return rv;
 	}
 
-	/**
-	 * if there is a balance impact which is a currency, return that. 
-	 *  If not, return the LAST BalanceImpact which is not a currency but which has +ve fixed or scaled amount.   
-	 *  If the balance impacts are null, return the charging resource of the first ResourceBalance which is a currency
-	 * @return
-	 */
-	@Transient
-  	public ChargingResource getResource()	{	
-		if (mImpacts !=null && mImpacts.size() > 0)	{
-			//this logic taken from the set..... method
-			if (getAllBalanceImpacts().getCurrency() != null) {
-	 			return getAllBalanceImpacts().getCurrency();
-	 		} else // if (getAllBalanceImpacts().getNonCurrencyResource() != null) 	
-	 			return getAllBalanceImpacts().getNonCurrencyResource();
-		}
-		//if the balance impacts null it could be that this pricepoint object was created
- 		// during e.g. the rating flow
- 		//in this case we can try the resource balance object instead
-		if (getResourceBalances()!=null)	{
-			for (ResourceBalance bal: getResourceBalances())	{
-				if (bal.getResource()!=null && bal.getResource().isCurrency())
-					return bal.getResource();
-			}
-		}
-		
-		return null;
-  	}
 
-	//MQC 6610 - setter method for charging resource
 	/**
-	 * does nothing
-	 * @param res
+        The type of currency or tokens.
+        @return the currency used to purchase/use price point
 	 */
-	public void setResource(ChargingResource res)
+	public ChargingResource getResource()
 	{
-		log.debug("PPM136861 refactoring: setResource(int mResource) does nothing now");
+		return mResource;
 	}
 
+	//MQC 6610 - setter method for charging resource
+	public void setResource(ChargingResource res)
+	{
+		mResource = res;
+	}
 
 	/**
-        The array of resources that the user will get if the price point is purchased - including the currency 
+        The type of currency or tokens.
+        @return the currency used to purchase/use price point
 	 */
-	@Transient
-	public ChargingResource[] getBalanceImpacts()	{
-		
+	public ChargingResource getAlternativeCurrency()
+	{
+		return mAlternativeCurrency;
+	}
+
+	/**
+        The array of resources that the user will get if the price point is purchased
+	 */
+	public ChargingResource[] getBalanceImpacts()
+	{
 		List<ChargingResource> rv = new ArrayList<ChargingResource>();
 		for (int index=0; mBalances!=null && index<mBalances.length; index++) {
-			 if (mBalances[index].getBalance() != 0.0) {
-				 // PPM136861 refactoring aL. 
-				ChargingResource cr = mBalances[index].getResource();
-				if (cr != null ){	//ET138 ppt balance impacts missing from decoupling response
-					rv.add(cr);
+			//ER7 - changed for super credits requirement, only return the negative balances
+			//REMEDY 6493
+			if (mBalances[index].getResource().isSuperCredit()) {
+				if (mBalances[index].getBalance() < 0.0) {
+					rv.add(mBalances[index].getResource());
 				}
+			}
+			else if (mBalances[index].getBalance() != 0.0) {
+				rv.add(mBalances[index].getResource());
 			}
 			//REMEDY 6493 END
 		}
 		return rv.toArray(new ChargingResource[rv.size()]);
-	}
-	
-	@OneToMany(mappedBy="pricePoint",targetEntity=BalanceImpact.class, fetch=FetchType.LAZY)
-//	@ForeignKey(name = "one_ppt_many_bal_impacts")	//only for the ddl generation to give the constraint a readable name
-	@Access(AccessType.PROPERTY)
-	public List<BalanceImpact> getBalanceImpactList() {
-		return mImpacts;
-	}
-	
-	public void setBalanceImpactList(List<BalanceImpact> impacts){
-		mImpacts = new BalanceImpacts(impacts);
 	}
 
 	/**
@@ -977,64 +1091,40 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return rv;
 	}
 
-
+	/**
+	 * e.g. "package:p001_3_4_999_999_*_*_true duration code 4, charging method 3, rate 2.35"
+	 * @return
+	 * @see getDescription() for something more user-friendly
+	 */
 	@Override
-	public String toString() {
-		return "PricePoint [gracePeriod=" + gracePeriod + ", suspensionPeriod="
-				+ suspensionPeriod + ", retryFrequency=" + retryFrequency
-				+ ", mAccessDuration=" + mAccessDuration + ", mKey=" + mKey
-				+ ", mId=" + mId + ", mContentId=" + mContentId
-				+ ", mPackageId=" + mPackageId + ", mRateWithoutTax="
-				+ mRateWithoutTax + ", mResource=REMOVED, mBalances="
-				+ Arrays.toString(mBalances) + ", mImpacts=" + mImpacts
-				+ ", mPricePointTier=" + mPricePointTier + ", pack=" + pack
-				+ ", mIsArchived=" + mIsArchived + ", mGlid=" + mGlid
-				+ ", mPurchaseExpiryDate=" + mPurchaseExpiryDate
-				+ ", mPurchaseStartDate=" + mPurchaseStartDate
-				+ ", mPricingText1=" + mPricingText1 + ", mPricingText2="
-				+ mPricingText2 + ", pricingTextList1=" + pricingTextList1
-				+ ", pricingTextList2=" + pricingTextList2 + ", mCustomFields="
-				+ mCustomFields + ", mStandardRate=" + mStandardRate
-				+ ", mPricepointIdLink=" + mPricepointIdLink
-				+ ", mForcedPurchase=" + mForcedPurchase
-				+ ", mDuplicateSubscription=" + mDuplicateSubscription
-				+ ", mPurchaseFixedExpiryDate=" + mPurchaseFixedExpiryDate
-				+ ", mInteractiveFlag=" + mInteractiveFlag + ", mReserveOnly="
-				+ mReserveOnly + ", mMinSubPeriod=" + mMinSubPeriod
-				+ ", mPenaltyCharges=" + mPenaltyCharges + ", mCancellation="
-				+ mCancellation + ", mMonthEndSubscription="
-				+ mMonthEndSubscription + ", mHistoric=" + mHistoric
-				+ ", mFixedRecurrence=" + mFixedRecurrence + ", mReceipting="
-				+ mReceipting + ", mReceiptingAttribute="
-				+ mReceiptingAttribute + ", mPaymentHandler=" + mPaymentHandler
-				+ ", mOrder=" + mOrder + ", mFixedRecurringPricePoint="
-				+ mFixedRecurringPricePoint + ", mBasePricePoint="
-				+ mBasePricePoint + ", pricingTextTemplateName1="
-				+ pricingTextTemplateName1 + ", pricingTextTemplateName2="
-				+ pricingTextTemplateName2 + ", translatedPricingText1="
-				+ translatedPricingText1 + ", translatedPricingText2="
-				+ translatedPricingText2 + ", translatedPricingText="
-				+ translatedPricingText + ", usageTime=" + usageTime
-				+ ", recurrenceDay=" + recurrenceDay + ", alignWithExternal="
-				+ alignWithExternal + ", pricingTextTemplateNameRoaming="
-				+ pricingTextTemplateNameRoaming + ", onFootPrintPrice="
-				+ onFootPrintPrice + ", offFootPrintPrice=" + offFootPrintPrice
-				+ ", isZeroCostIgnore=" + isZeroCostIgnore
-				+ ", hideForPurchaseOptions=" + hideForPurchaseOptions
-				+ ", ROUND_NTH_EXPRESS_PATTERN=" + ROUND_NTH_EXPRESS_PATTERN
-				+ ", fairUsageLimit=" + fairUsageLimit + ", fairUsagePeriod="
-				+ fairUsagePeriod + ", fairUsagePeriodUnit="
-				+ fairUsagePeriodUnit + ", mExtensionPeriod="
-				+ mExtensionPeriod + ", includeServiceForPackageFUP="
-				+ includeServiceForPackageFUP + ", mTax=" + mTax
-				+ ", useStaticValues=" + useStaticValues
-				+ ", alwaysValidateMsisdn=" + alwaysValidateMsisdn
-				+ ", renewalsUntilLinkedPricepoint="
-				+ renewalsUntilLinkedPricepoint + ", linkedByTrialPricepoint="
-				+ linkedByTrialPricepoint + ", mIsDiscount=" + mIsDiscount
-				+ ", mPromoText=" + mPromoText + ", mIsOriginal=" + mIsOriginal
-				+ ", mIsVolumeType=" + mIsVolumeType + ", mProtectedFk="
-				+ mProtectedFk + "]";
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder(32);
+		sb.append(" : duration code ").append(getDuration());
+		sb.append(", charging method ").append(getChargingMethod());
+		if (this.isTrial())
+			sb.append(" TRIAL ");
+		else if (this.getPromoCode()!=null && !this.getPromoCode().equals("*"))
+			sb.append(", PromoCode ").append(this.getPromoCode());
+		if (StringUtils.isNotBlank(this.getUserGroup()) && !this.getUserGroup().equals("*"))
+			sb.append(", User Group ").append(this.getUserGroup());
+		
+		if (StringUtils.isNotBlank(this.getBearer()) && !this.getBearer().equals("*"))
+			sb.append(", Bearer ").append(this.getBearer());
+		
+		if (this.getTariff()!=null && !this.getTariff().equals("*"))
+			sb.append (", Tariff ").append(this.getTariff());
+		
+		if (this.isHistoric())
+			sb.append(", HISTORIC");
+		
+		if (this.getChannel()!=998 && this.getChannel()!=999)
+			sb.append(", Channel ").append(this.getChannel());
+		
+		if (this.isExpressFlag())
+			sb.append(", Express");		
+		sb.append(", rate=").append(getRate());
+		return sb.toString();
 	}
 	
 	/**
@@ -1095,11 +1185,10 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
         This is used to determine if a price point is active ie can be used to buy a package.
         @return true if the pricepoint can be bought
 	 */
-	@Transient
 	public boolean isActive()	{
 		return isActive(new Date());
 	}
-	
+
 	/**
         This is used to determine if a price point is active ie can be used to buy a package, for the specified date.
         @return true if the pricepoint can be bought
@@ -1127,43 +1216,36 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return mTaxCode;
 	}
 
+
 	@Override
 	public double getTaxRate() {
 		return getTaxRate(new Date());
 	}
 
 	//CR1564 -Utctimezone for diff region in country
-//ET-153 | commented this one,below is the modified method | Start	
-//	public double getTaxRate(Date date)
-//	{
-//		//MQC 5654 - add Tax object for real time tax rate calculation
-//		if (mTax != null) {
-//
-//			// Need to put some extra logic here to get the proper tax rate
-//			//boolean isTimeZoneAdjustedDate = isTimeZoneAdjustedDate(date);
-//
-//			if (isTimeZoneAdjustedDate) {
-//				return mTax.getTaxRate(date);
-//			} else if (useStaticValues) {
-//				return mTaxRate;
-//			} else {
-//				return mTax.getTaxRate(date);
-//			}
-//		}
-//		else {
-//			return mTaxRate;
-//		}
-//	}
-//ET-153 |  commented this one,below is the modified method | End	
 	public double getTaxRate(Date date)
-	{	
+	{
+		//MQC 5654 - add Tax object for real time tax rate calculation
 		if (mTax != null) {
-			return mTax.getTaxRate(date); 
+
+			// Need to put some extra logic here to get the proper tax rate
+			boolean isTimeZoneAdjustedDate = isTimeZoneAdjustedDate(date);
+
+			if (isTimeZoneAdjustedDate) {
+				return mTax.getTaxRate(date);
+			} else if (useStaticValues) {
+				return mTaxRate;
 			} else {
-			return mTaxRate;
+				return mTax.getTaxRate(date);
 			}
+		}
+		else {
+			return mTaxRate;
+		}
 	}
-	
+
+
+
 	/**
         The expiry purchase date defining the end of the period the price point can be bought
 	 */
@@ -1193,7 +1275,30 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return mPackageId;
 	}
 	
-
+//	/**
+//        This should not be used
+//        @deprecated
+//	 */
+//	@Deprecated
+//	public boolean isComplex() {
+//		return false;
+//	}
+//
+//	/**
+//        This should not be used
+//
+//	 */
+//	public void enableComplex() {
+//		//complex=true;
+//	}
+//
+//	/**
+//        This should not be used
+//
+//	 */
+//	public void disableComplex() {
+//		//complex=false;
+//	}
 	/**
         Used to store special pricing information.
         A catalog field
@@ -1224,21 +1329,13 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	/**
         Returns all custom fields
 	 */
-	@Transient
-  	public Map<String, String> getCustomFields() {
+	public Map<String, String> getCustomFields() {
 		return mCustomFields;
 	}
 
 	// new methods to support promotional activity
 	protected boolean mIsDiscount=false;
 	protected String mPromoText="";
-
-	private boolean mIsOriginal = false;
-
-	protected boolean mIsVolumeType = false;
-
-	protected String mProtectedFk;
-
 
 	/**
         This is a promotional price point.  This will have discount text associated with it.
@@ -1268,9 +1365,9 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		double rv = mStandardRate;
 
 		// Need to put some extra logic here to get the proper standard rate
-		//boolean isTimeZoneAdjustedDate = isTimeZoneAdjustedDate(date);//ET-153
+		boolean isTimeZoneAdjustedDate = isTimeZoneAdjustedDate(date);
 
-		if (rv<0 /*|| isTimeZoneAdjustedDate ET-153*/) {
+		if (rv<0 || isTimeZoneAdjustedDate) {
 			rv = getRate(date);
 		}
 
@@ -1314,7 +1411,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 				//Added an extra condition to check if net/gross needs to be returned
 				if(ConfigProvider.getPropertyAsBoolean("API_PRICEPOINT_RETURN_RATE_AS_STRING_NET", false))
 				{
-					double net = getStandardRate(date) / ( 1 + getTaxRate(/*date ET-153*/) );
+					double net = getStandardRate(date) / ( 1 + getTaxRate(date) );
 					rv = form.format(net);
 				}
 				//End add extra condition
@@ -1334,6 +1431,48 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return mPromoText;
 	}
 
+	/**
+        Retrieves all of the tiers valid for this price point.
+        This method will change in ER5.
+	 */
+	public String[] getPricingModelTiers(String pricingModel)
+	{
+		throw new RuntimeException("This is implemented in the implementation class");
+	}
+
+	/**
+        Retrieves the price for this tier. -1 means that this tier is not valid.
+        This method will change in ER5.
+	 */
+	public double getPricingModelTierPriceWithTax(String tier, String pricingModel)
+	{
+		//REMEDY 7010
+		//This method should not be used. The method to be used is in the PricePointImpl
+		//throw new RuntimeException("This is implemented in the implementation class");
+		return 0;
+	}
+
+	/**
+        The pricing text for this tier.
+        This method will change in ER5.
+	 */
+	public String getPricingModelTierPricingText(String tier, String pricingModel)
+	{
+		//REMEDY 7010
+		//This method should not be used. The method to be used is in the PricePointImpl
+		//throw new RuntimeException("This is implemented in the implementation class");
+		return "";
+	}
+
+	/**
+	 * return the DRM Object associated with the price point.
+	 * @return String
+	 * @since 5.1
+	 */
+	public DRMObject getDRMObject()
+	{
+		return m_DRMObject;
+	}
 
 	/**
 	 * return the pricepoint id link associated with the price point.
@@ -1413,7 +1552,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return mHistoric;
 	}
 
-	/** the fixed number of renewals for this pricepoint **/
+	/** ADDED FOR ER6.5 STUB **/
 	public long getFixedRecurrence() {
 		return mFixedRecurrence;
 	}
@@ -1443,7 +1582,6 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 
 	/** ADDED FOR EGYPT ER7 STUB **/
-	@Column(name="pp_order")
 	public int getOrder() {
 		return mOrder;
 	}
@@ -1453,7 +1591,15 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return Math.round(d * Math.pow(10, nthDecimal)) / Math.pow(10,nthDecimal);
 	}
 
+	/** ADDED FOR EGYPT ER7 STUB superCredit **/
+	public SuperCreditPricePoint[] getCreditPurchasePricePoints() {
+		return mCreditPurchasePricePoints;
+	}
 
+	/** ADDED FOR ER7 STUB **/
+	public boolean isPurchaseableBySuperCredit() {
+		return mPurchaseableBySuperCredit;
+	}
 	//[13] Mod Start
 	/** ADDED FOR ER8 STUB **/
 	public String getPaymentHandler() {
@@ -1464,6 +1610,201 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 	//[13] Mod Start
 
+	/** ADDED FOR ER7 STUB **/
+	public boolean isSuperCreditDonor() {
+		return mbSuperCreditDonor;
+	}
+
+	//[12] Mod Start
+	/**
+        Take the input of usageClassName, UsageSubClassName and VolumeModelRating and entry point.
+        From the volume model rating get the id of the volume model, i.e
+        volumeModelRating.getId(),
+
+        based on the volume rating model id, usage class and usage subclass and
+        entrypoint, look in the volume model tree for the matching volume model
+        rating object
+        once you get the rating
+        from the volumemodelrating object get the tEventTiers and populate them with the rating information.
+        Once you have done this return the same object in the method.
+        I believe this may not be very clear, we can have a call tomorrow if you need to understand further.
+	 */
+//	public VolumeModelRating getVolumeModelRating(String usageClassName, String usageSubClassName, String eventId, String childEventId) {
+//		VolumeModelRating volumeModelRating = null;
+//
+//		if(mVolumeModel != null && usageClassName != null && usageSubClassName != null) {
+//			UsageClass [] uClass = mVolumeModel.getUsageClass();
+//			if(uClass != null) {
+//				for (UsageClass uClas : uClass) {
+//					if(uClas.getId() != null && uClas.getId().equals(usageClassName)) {
+//						UsageSubClass [] uSub = uClas.getUsageSubClass();
+//						if(uSub != null) {
+//							for (UsageSubClass element : uSub) {
+//								if(element.getId() != null && element.getId().equals(usageSubClassName)) {
+//									EventGroup eGroup = element.getEventGroup();
+//									if(eGroup!=null) {
+//										EventModel [] eModel = eGroup.getEventModel();
+//										if(eModel != null) {
+//											for (EventModel element2 : eModel) {
+//												if(childEventId != null && !childEventId.equals("")) { //this is a call for child event model
+//													if(element2.getId() != null && element2.getId().equals(eventId)) {
+//														ChildEventGroup cEGroup = element2.getChildEventGroup();
+//														if(cEGroup!=null) {
+//															ChildEventModel [] cEModel = cEGroup.getChildEventModel();
+//															if(cEModel != null) {
+//																for (ChildEventModel element3 : cEModel) {
+//																	if(element3.getId() != null && element3.getId().equals(childEventId)) {
+//																		volumeModelRating = getNewVolumeModelRating(
+//																				childEventId,
+//																				null,//eventgroup,
+//																				element3.getStepTier(),
+//																				element3.getAllEach(),
+//																				element3.getVolumeType(),
+//																				setRatingAttributes(element3.getRange()));
+//																		volumeModelRating.setName(element3.getName());
+//																		return volumeModelRating;
+//																	}
+//																}
+//															}
+//														}
+//													}
+//												} else { // this is a call for event model
+//													if(element2.getId() != null && element2.getId().equals(eventId)) {
+//														volumeModelRating = getNewVolumeModelRating(
+//																eventId,
+//																null,//eventgroup,
+//																element2.getStepTier(),
+//																element2.getAllEach(),
+//																element2.getVolumeType(),
+//																setRatingAttributes(element2.getRange()));
+//														volumeModelRating.setName(element2.getName());
+//														return volumeModelRating;
+//													}
+//												}
+//											}
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return null;
+//	}
+
+//	private VolumeModelRating getNewVolumeModelRating(String childEventId, com.vizzavi.ecommerce.business.charging.EventGroup eventGroup, String stepTier, String allEach, String volumeType, ArrayList<EventTier> eventTiers) {
+//		int iStepTier = 0;
+//		if(stepTier != null && stepTier.equals("Step")) {
+//			iStepTier = VolumeModelRating.STEP;
+//		} else if(stepTier != null && stepTier.equals("Tier")) {
+//			iStepTier = VolumeModelRating.TIER;
+//		}
+//		int iAllEach = 0;
+//		if(allEach != null && allEach.equals("All")) {
+//			iAllEach = VolumeModelRating.ALL;
+//		} else if(allEach != null && allEach.equals("Each")) {
+//			iAllEach = VolumeModelRating.EACH;
+//		}
+//
+//		int iVolumeType = 0;
+//		if(volumeType != null && volumeType.equals("NULL")) {
+//			iVolumeType = VolumeModelRating.VOLUME_NON;
+//		} else if(volumeType != null && volumeType.equals("True")) {
+//			iVolumeType = VolumeModelRating.VOLUME_TRUE;
+//		} else if(volumeType != null && volumeType.equals("Banded")) {
+//			iVolumeType = VolumeModelRating.VOLUME_BANDED;
+//		}
+//		return new VolumeModelRating(
+//				childEventId,
+//				//eventGroup,
+//				iStepTier,
+//				iAllEach,
+//				iVolumeType,
+//				eventTiers);
+//	}
+//
+//	private ArrayList<EventTier> setRatingAttributes(Range[] range) {
+//		ArrayList<EventTier> arrEveTiers = new ArrayList<EventTier>();
+//		if(range == null) return null;
+//		for (Range element : range) {
+//			//@hud STKHREQ13076
+//			EventTier eveTier = new EventTier(
+//					(int)element.getFrom(),
+//					(int)element.getTo(),
+//					(float)element.getRate(),
+//					element.getOnFootPrintPrice(),
+//					element.getOffFootPrintPrice()
+//					);
+//			arrEveTiers.add(eveTier);
+//		}
+//		return arrEveTiers;
+//	}
+//	//[12] Mod End
+//
+//	//[13] Mod Start
+//	public com.vizzavi.ecommerce.business.charging.EventGroup getEventGroup(String usageSubClassName) {
+//		if(mVolumeModel != null && usageSubClassName != null) {
+//			UsageClass [] uClass = mVolumeModel.getUsageClass();
+//			if(uClass != null) {
+//				for (UsageClass uClas : uClass) {
+//					UsageSubClass [] uSub = uClas.getUsageSubClass();
+//					if(uSub != null) {
+//						for (UsageSubClass element : uSub) {
+//							if(element.getId() != null && element.getId().equals(usageSubClassName)) {
+//								return getChargingEventGroup(element.getEventGroup());
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return null;
+//	}
+//
+//	private com.vizzavi.ecommerce.business.charging.EventGroup getChargingEventGroup(EventGroup eventGroup) {
+//		int eventCap=0,childEventCap=0;
+//		String childEventMultiplier = eventGroup.getChildEventMultiplier();
+//		if(eventGroup.getEventCap() != null){
+//			try {
+//				//REMEDY 4862/4863 - Added the check for length = 0. Was throwing exception previously
+//				if (eventGroup.getEventCap() == null || eventGroup.getEventCap().equalsIgnoreCase("NULL") || (eventGroup.getEventCap().length() ==0)) {
+//					eventCap = 0;
+//				}
+//				else {
+//					eventCap = Integer.parseInt(eventGroup.getEventCap());
+//				}
+//			} catch (NumberFormatException e) {
+//				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//			}
+//		}
+//		if(eventGroup.getChildEventCap() != null) {
+//			try {
+//				//REMEDY 4862/4863 - Added the check for length = 0. Was throwing exception previously
+//				if (eventGroup.getChildEventCap() == null || eventGroup.getChildEventCap().equalsIgnoreCase("NULL") || (eventGroup.getChildEventCap().length()==0)) {
+//					childEventCap = 0;
+//				}
+//				else {
+//					childEventCap = Integer.parseInt(eventGroup.getChildEventCap());
+//				}
+//			} catch (NumberFormatException e) {
+//				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//			}
+//		}
+//		ArrayList<Priority> arrPriority = new ArrayList<Priority>();
+//		if(eventGroup.getEventModel()!=null) {
+//			EventModel [] eveModel = eventGroup.getEventModel();
+//			for (EventModel element : eveModel) {
+//				Priority pr = new Priority();
+//				pr.setPriority(element.getPriority());
+//				pr.setEventModelName(element.getName());
+//				arrPriority.add(pr);
+//			}
+//		}
+//		com.vizzavi.ecommerce.business.charging.EventGroup chrginEGrp = new com.vizzavi.ecommerce.business.charging.EventGroup(eventCap,childEventCap,childEventMultiplier,arrPriority);
+//		return chrginEGrp;
+//	}
 
 	/**
 	 * @version   ER 8.0
@@ -1473,9 +1814,8 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	 * 				with this pricepoint
 	 * @return      Array of String Objects containing the non "*" & "" UserGroups associated with this pricepoint
 	 **/
-	@Transient
-    public String[] getNonMatchAllUserGroups(){
-		List<String> list = new ArrayList<String>();
+	public Object[] getNonMatchAllUserGroups(){
+		ArrayList<String> list = new ArrayList<String>();
 
 		if (mUserGroups != null && mUserGroups.length>0) {
 			for (int i=0; i<mUserGroups.length; i++) {
@@ -1488,12 +1828,12 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 			}
 			//No custom user groups
 		}
-		return list.toArray(new String[list.size()]);
+		return list.toArray();
 	}
 
 	/**
 	 * @version   ER 8.0
-	 * @author    VFE  PS Team
+	 * @author    VFE � PS Team
 	 * @date      15-Aug-2005
 	 * @description  The purpose of this logic is to return TRUE if the pricepoint has a User-Group which
 	 *               is set to a value other than "*" otherwise return FALSE.
@@ -1517,12 +1857,12 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return rv;
 	}
 	/**
-	 *@ VFE  PS Code Ends
+	 *@ VFE � PS Code Ends
 	 **/
 
 	/**
 	 * @version   ER 8.0
-	 * @author    VFE  PS Team
+	 * @author    VFE � PS Team
 	 * @date      15-Aug-2005
 	 * @description  The purpose of this logic is to check if the pricepoint has a Promo-Code which
 	 *               is set to a value other than "*". If Promo-Code found return TRUE otherwise return FALSE.
@@ -1539,12 +1879,12 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		return rv;
 	}
 	/**
-	 *@ VFE  PS Code Ends
+	 *@ VFE � PS Code Ends
 	 **/
 	/**
 	 * This method returns a boolean to allow a message to be sent to the payment handler
 	 * @version   ER 8.0
-	 * @author    VFE  PS Team
+	 * @author    VFE � PS Team
 	 * @date      15-Aug-2005
 	 *
 	 */
@@ -1555,19 +1895,6 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		}
 
 		if (mPaymentHandler.equals(PAYMENT_HANDLER_SUBMIT)){
-			rv = true;
-		}
-		return rv;
-	}
-
-	/**  ADDED FOR ET233: Add Zero Price Payment Handler Suppression to Pricepoint */
-	public boolean isSuppressToPaymentHandler(){
-		boolean rv = false;
-		if(mPaymentHandler == null || mPaymentHandler.equals("")){
-			mPaymentHandler = PAYMENT_HANDLER_NONE;
-		}
-
-		if (mPaymentHandler.equals(PAYMENT_HANDLER_SUPPRESS)){
 			rv = true;
 		}
 		return rv;
@@ -1625,21 +1952,19 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 			alignWithExternal = false;
 	}
 
-	@Transient
-	public Map<String, String> getPricingTextList1() {
+	public HashMap<String, String> getPricingTextList1() {
 		return pricingTextList1;
 	}
 
-	public void setPricingTextList1(Map<String, String> pricingTextList1) {
+	public void setPricingTextList1(HashMap<String, String> pricingTextList1) {
 		this.pricingTextList1 = pricingTextList1;
 	}
 
-	@Transient
-	public Map<String, String> getPricingTextList2() {
+	public HashMap<String, String> getPricingTextList2() {
 		return pricingTextList2;
 	}
 
-	public void setPricingTextList2(Map<String, String> pricingTextList2) {
+	public void setPricingTextList2(HashMap<String, String> pricingTextList2) {
 		this.pricingTextList2 = pricingTextList2;
 	}
 
@@ -1672,8 +1997,8 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		}
 		//REMEDY 7249 END
 
-		if(getmPricingText1()!= null && getmPricingText1().length() > 0)
-			return getmPricingText1();
+		if(mPricingText1!= null && mPricingText1.length() > 0)
+			return mPricingText1;
 
 		//END FIX
 
@@ -1707,8 +2032,8 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		}
 		//REMEDY 7249 END
 
-		if(getmPricingText2()!= null && getmPricingText2().length() > 0)
-			return getmPricingText2();
+		if(mPricingText2!= null && mPricingText2.length() > 0)
+			return mPricingText2;
 
 		//END FIX
 
@@ -1718,7 +2043,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	public void setPricingText1(String text)
 	{
 		//ER 7 Compliant
-		setmPricingText1(text);
+		mPricingText1 = text;
 		//ER 7 Compliant
 
 		setPricingText1(Constants.DEFAULT_LANGUAGE_CODE, text);
@@ -1727,7 +2052,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	public void setPricingText2(String text)
 	{
 		//ER 7 Compliant
-		setmPricingText2(text);
+		mPricingText2 = text;
 		//ER 7 Compliant
 
 		setPricingText2(Constants.DEFAULT_LANGUAGE_CODE, text);
@@ -1750,7 +2075,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 		//REMEDY 7249 START
 		if (Constants.DEFAULT_LANGUAGE_CODE.equals(language)) {
-			setmPricingText1(text);
+			mPricingText1 = text;
 		}
 		//REMEDY 7249 END
 	}
@@ -1772,7 +2097,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 		//REMEDY 7249 START
 		if (Constants.DEFAULT_LANGUAGE_CODE.equals(language)) {
-			setmPricingText2(text);
+			mPricingText2 = text;
 		}
 		//REMEDY 7249 END
 	}
@@ -1788,66 +2113,66 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 
 	//Roaming START
-//	public void setPricingTextTemplateNameRoaming(String PricingTextTemplateNameRoaming){
-//		this.pricingTextTemplateNameRoaming=PricingTextTemplateNameRoaming;
-//	}
-//	public void setOnFootPrintPrice(double OnFootPrintPrice){
-//		this.onFootPrintPrice = OnFootPrintPrice;
-//	}
-//	public void setOffFootPrintPrice(double OffFootPrintPrice){
-//		this.offFootPrintPrice = OffFootPrintPrice;
-//	}
-//	public void setIsOnRoamingPresent(boolean IsOnRoamingPresent){
-//		this.isOnRoamingPresent = IsOnRoamingPresent;
-//	}
-//	public void setIsOffRoamingPresent(boolean IsOffRoamingPresent){
-//		this.isOffRoamingPresent = IsOffRoamingPresent;
-//	}
-//	public String getPricingTextTemplateNameRoaming(){
-//		return this.pricingTextTemplateNameRoaming ;
-//	}
-//	public double getOnFootPrintPrice(){
-//		return this.onFootPrintPrice ;
-//	}
-//	public double getOffFootPrintPrice(){
-//		return this.offFootPrintPrice ;
-//	}
-//	public boolean getIsOnRoamingPresent(){
-//		return this.isOnRoamingPresent ;
-//	}
-//	public boolean getIsOffRoamingPresent(){
-//		return this.isOffRoamingPresent ;
-//	}
-//	//@hud
-//	public boolean isRoamingEnabled() {
-//		return isOnRoamingPresent || isOffRoamingPresent;
-//	}
+	public void setPricingTextTemplateNameRoaming(String PricingTextTemplateNameRoaming){
+		this.pricingTextTemplateNameRoaming=PricingTextTemplateNameRoaming;
+	}
+	public void setOnFootPrintPrice(double OnFootPrintPrice){
+		this.onFootPrintPrice = OnFootPrintPrice;
+	}
+	public void setOffFootPrintPrice(double OffFootPrintPrice){
+		this.offFootPrintPrice = OffFootPrintPrice;
+	}
+	public void setIsOnRoamingPresent(boolean IsOnRoamingPresent){
+		this.isOnRoamingPresent = IsOnRoamingPresent;
+	}
+	public void setIsOffRoamingPresent(boolean IsOffRoamingPresent){
+		this.isOffRoamingPresent = IsOffRoamingPresent;
+	}
+	public String getPricingTextTemplateNameRoaming(){
+		return this.pricingTextTemplateNameRoaming ;
+	}
+	public double getOnFootPrintPrice(){
+		return this.onFootPrintPrice ;
+	}
+	public double getOffFootPrintPrice(){
+		return this.offFootPrintPrice ;
+	}
+	public boolean getIsOnRoamingPresent(){
+		return this.isOnRoamingPresent ;
+	}
+	public boolean getIsOffRoamingPresent(){
+		return this.isOffRoamingPresent ;
+	}
+	//@hud
+	public boolean isRoamingEnabled() {
+		return isOnRoamingPresent || isOffRoamingPresent;
+	}
 	//Roaming END
 
 
 
 	///////////////////////////////////////////////////////
 	//@hud STKHREQ13076 SP ROAMING
-//	public double getRoamingNetAmount() {
-//		return mRoamingNetAmount;
-//	}
-//	public void setRoamingNetAmount(double roamingNetAmount) {
-//		mRoamingNetAmount = roamingNetAmount;
-//	}
-//	public double getRoamingGrossAmount() {
-//		return mRoamingGrossAmount;
-//	}
-//	public void setRoamingGrossAmount(double roamingGrossAmount) {
-//		mRoamingGrossAmount = roamingGrossAmount;
-//	}
-//	public int getRoamingType() {
-//		if (getNetworkCode() == null) {
-//			return ErCoreConst.ROAMING_DOMESTIC;
-//		}
-//		else {
-//			return getNetworkCode().getRoamingType();
-//		}
-//	}
+	public double getRoamingNetAmount() {
+		return mRoamingNetAmount;
+	}
+	public void setRoamingNetAmount(double roamingNetAmount) {
+		mRoamingNetAmount = roamingNetAmount;
+	}
+	public double getRoamingGrossAmount() {
+		return mRoamingGrossAmount;
+	}
+	public void setRoamingGrossAmount(double roamingGrossAmount) {
+		mRoamingGrossAmount = roamingGrossAmount;
+	}
+	public int getRoamingType() {
+		if (getNetworkCode() == null) {
+			return ErCoreConst.ROAMING_DOMESTIC;
+		}
+		else {
+			return getNetworkCode().getRoamingType();
+		}
+	}
 
 
 	//////////////////////////////////////////////////////
@@ -1862,8 +2187,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 
 	///////////////////////////////////////////////////
 	//@lle STKHREQ242
-	@Transient
-  	public PeriodValue getGracePeriod() {
+	public PeriodValue getGracePeriod() {
 		return gracePeriod;
 	}
 
@@ -1871,8 +2195,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		this.gracePeriod = gracePeriod;
 	}
 
-	@Transient
-    public PeriodValue getRetryFrequency() {
+	public PeriodValue getRetryFrequency() {
 		return retryFrequency;
 	}
 
@@ -1880,8 +2203,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		this.retryFrequency = retryFrequency;
 	}
 
-	@Transient
-  	public PeriodValue getSuspensionPeriod() {
+	public PeriodValue getSuspensionPeriod() {
 		return suspensionPeriod;
 	}
 
@@ -1893,8 +2215,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	 * Specifies whether the grace, suspension, retry frequency combo is undefined
 	 * @return true if any of the grace, suspension, or retry frequency is null or undefined
 	 */
-	@Transient
-  	public boolean isGraceSuspensionRetryFrequencyUndefined() {
+	public boolean isGraceSuspensionRetryFrequencyUndefined() {
 		if ((gracePeriod == null) || (suspensionPeriod == null) || (retryFrequency == null)
 				|| gracePeriod.isUndefined() || suspensionPeriod.isUndefined() || retryFrequency.isUndefined()) {
 			return true;
@@ -1970,7 +2291,6 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	//ES FUP Enhancement CR End
 
 	//CR-0978 Location Services
-	@Transient
 	public boolean isTariff() {
 		if (this.mTariff != null && !mTariff.equals("") && !mTariff.equals(Constants.STRING_MATCH_ALL)) {
 			return true;
@@ -1991,21 +2311,19 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 
 	//MQC 5067 - return the resource balances
-	@Transient
-  	public ResourceBalance[] getResourceBalances () {
+	public ResourceBalance[] getResourceBalances () {
 		return this.mBalances;
 	}
 
 	//MQC 5067 - return the custom resource balances
-	@Transient
-  	public ResourceBalance[] getCustomResourceBalances () {
+	public ResourceBalance[] getCustomResourceBalances () {
 		List<ResourceBalance> rv = new ArrayList<ResourceBalance>();
 		for (int index=0; mBalances!=null && index<mBalances.length; index++) {
 			if (mBalances[index].getResource().isResource()) {
 				rv.add(mBalances[index]);
 			}
 		}
-		if (rv.size() > 0) {
+		if (rv != null && rv.size() > 0) {
 			return rv.toArray(new ResourceBalance[rv.size()]);
 		}
 		else {
@@ -2014,7 +2332,6 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 
 	//MQC 5654 - add Tax object for real time tax rate calculation
-	@ManyToOne(optional=true, cascade=CascadeType.PERSIST)
 	public Tax getTax() {
 		return mTax;
 	}
@@ -2025,16 +2342,32 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 		mTax = taxObject;
 	}
 
-	/**
-	 * @deprecated use {@link #getNetRate} instead
-	 * @param futureDate
-	 * @return
-	 */
-	@Deprecated
+	//CR1430
 	public double getFutureRate(Date futureDate) {
 		return getNetRate();
 	}
 
+	//CR1564 -Utctimezone for diff region in country
+	public boolean isUseStaticValues() {return useStaticValues;}
+	public void setUseStaticValues(boolean useStaticValues) {this.useStaticValues = useStaticValues;}
+
+	//CR1564 -Utctimezone for diff region in country
+	public boolean isTimeZoneAdjustedDate(Date date) {
+		boolean rv = false;
+		try {
+			if (date != null) {
+				Date nowDate = new Date();
+				Long dateDiff = date.getTime() - nowDate.getTime();
+				// If date difference between the input date and nowDate is greater than 10 minutes we are dealing with a time zone adjusted date
+				if (dateDiff > 600000 || dateDiff < -600000) {
+					rv = true;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return rv;
+	}
 
 	//CR1429 - Begin - Always validate MSISDN during purchase
 	public boolean isAlwaysValidateMsisdn() {
@@ -2046,6 +2379,16 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 	//CR1429 - End
 
+	//CR1759 - start
+	public void setIsPurchaseableBySuperCredit(boolean isPurchaseableBySuperCredit)
+	{
+		this.mPurchaseableBySuperCredit = isPurchaseableBySuperCredit;
+	}
+
+	public void setDRMObject(DRMObject drmObject)
+	{
+		this.m_DRMObject = drmObject;
+	}
 
 	public void setId(String id)
 	{
@@ -2073,7 +2416,6 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	/**
 	 * @return the mBalances
 	 */
-	@Transient
 	public ResourceBalance[] getBalances() {
 		return mBalances;
 	}
@@ -2145,647 +2487,5 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	@Override
 	public void setLinkedByTrialPricepoint(boolean linkedByTrial) {
 		this.linkedByTrialPricepoint = linkedByTrial;
-	}
-	
-	public PricePointTier getPricePointTier(String tierId, String modelId) {
-		PricePointTier rv = new PricePointTier();
-		rv.setBalanceImpacts(mImpacts);
-				//mPricePointTiers.get(getPricePointTierId(tierId,modelId));
-		return rv;
-	}
-	
-	protected String getPricePointTierId(String tier, String pricingModel) {
-		String ret = tier;
-		if (ret == null) ret="";
-		if (pricingModel != null ) ret = ret + pricingModel ;
-		return ret;
-	}
-
-	
-	
-	public boolean hasUserGroup() {
-		return StringUtils.isNotBlank(getUserGroup());
-	}
-	
-
-
-	
-	public BalanceImpacts getAllBalanceImpacts() {
- 		return mImpacts;
-	}
-
-	public void setAttributes(int durationCode, int chargingMethod, String promoCode,
-			int paymentTypeCode, int customResource) {
-				setDuration(durationCode);
-				setPromoCodes(new String[] {promoCode});
-				setChargingMethod(chargingMethod);
-				setPaymentType(paymentTypeCode);
-				setResource(customResource);
-			}
-
-	public void setAttributes(int durationCode, int chargingMethod, String promoCode,
-			String bearerId, int paymentTypeCode, int customResource) {
-		setDuration(durationCode);
-		setPromoCodes(new String[] {promoCode});
-		//[5] Mod Starts
-		setBearerIds(new String[] {bearerId});
-		setBearer(bearerId);
-		//[5] Mod Ends
-		setChargingMethod(chargingMethod);
-		setPaymentType(paymentTypeCode);
-		setResource(customResource);
-	}
-
-
-
-
-	public void setArchived(boolean mIsArchived) {
-		this.mIsArchived = mIsArchived;
-	}
-
-	public void setRateWithoutTax(double val) {
-		this.mRateWithoutTax = val;
-	}
-
-	/**
-	    The type of currency or tokens.
-	
-	 */
-	public void setResource(int mResource) {
-		//PPM136861 refactoring removed
-//		this.mResource = ChargingResource.getResource(mResource);
-		log.debug("PPM136861 refactoring: setResource(int mResource) does nothing now");
-	}
-
-	public void setContentId(String val) {
-		mContentId = val;
-	}
-
-	public void setPackageId(String val) {
-		mPackageId = val;
-	}
-
-	public String getPackageIdentifier() {
-		StringBuffer buf = new StringBuffer();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-
-		buf.append(PACKAGE_PRICEPOINT_ID_PREFIX).append(getPackageId()).append('_');
-		buf.append(getTaxCode()).append('_');
-		buf.append(getChargingMethod()).append('_');
-		buf.append(getDuration()).append('_');
-		buf.append(getPaymentType()).append('_');
-		buf.append(getAccessDevice()).append('_');
-		buf.append(getChannel()).append('_');
-		buf.append(getPromoCode()).append('_');
-		//[5] Mod Starts
-		buf.append(getBearer()).append('_');
-		//[5] Mod Ends
-		buf.append(getUserGroup()).append('_');
-		buf.append(isExpressFlag()).append('_');
-		//Modified by marcell 200405
-		buf.append(isHistoric());
-
-		//CR MPP - start			
-		if(this.isHistoric()){		
-			if(this.getStartDate()!=null){
-				buf.append(sdf.format(this.getStartDate()));
-			} else {
-				buf.append(sdf.format(new Date()));
-			}			
-		}
-		//CR MPP - end
-
-		//CR-0978 Location Services
-		buf.append('_').append(getTariff());
-
-		return buf.toString();
-	}
-
-	public String getServiceIdentifier() {
-		StringBuffer buf = new StringBuffer();
-		buf.append(CONTENT_PRICEPOINT_ID_PREFIX).append(getPackageId()).append('_');
-		buf.append(getTaxCode()).append('_');
-		buf.append(getContentId()).append('_');
-		buf.append(getChannel()).append('_');
-		buf.append(getPaymentType()).append('_');
-		//[5] Mod Starts
-		buf.append(getBearer()).append('_');
-		//[5] Mod Ends
-		buf.append(getAccessDevice()).append('_');
-		buf.append(getAccessDevice());
-		return buf.toString();
-	}
-
-	public void addBalanceImpact(BalanceImpact impact) {
-	
-		if (mImpacts == null) {
-			mImpacts = new BalanceImpacts();
-		}
-	
-		mImpacts.addBalanceImpact(impact);
-	
-		/* the following code is to ensure that whenever a link is created
-		 * between a pricepoint and a balance impact, a corresponding default
-		 * tier is added.  this does cause redundant links between objects,
-		 * but is currently perceived to be easier than refactoring the entire
-		 * priceplan code!
-		 *///rbw20040406
-		PricePointTier pptier = new PricePointTier();
-		pptier.setBalanceImpacts(mImpacts);
-		//pptier.setDefaultPPT(true);
-		pptier.setTier(PricePointTier.PPT_DEFAULT_ID);
-		addPricePointTier(pptier);
-	
-	}
-
-	public void deleteAllBalanceImpacts() {
-		mImpacts = new BalanceImpacts();
-		log.debug("[Deleted all balance impacts.]");
-	}
-
-	public void setGlid(String val) {
-		mGlid = val;
-	}
-
-	@Override
-	public void setTaxCode(String val) {
-		mTaxCode = val;
-	}
-
-	/**
-	 * @deprecated 
-	 */
-	@Deprecated
-	public void setBalanceImpacts(BalanceImpacts impacts) {
-	    setBalanceImpacts(impacts, new Date());
-	}
-
-	public void setBalanceImpacts(BalanceImpacts impacts, Date date) {
-		mImpacts = impacts;
-	
-	
-		if (impacts != null) {
-	
-			if (impacts.getCurrency() != null) {
-//PPM136861 refactoring removed
-//				setResource(impacts.getCurrency().getCode());
-				double rate = impacts.getRate(date);
-				setRateWithoutTax(rate);
-			} else if (impacts.getNonCurrencyResource() != null) {
-//PPM136861 refactoring removed
-//				setResource(impacts.getNonCurrencyResource().getCode());
-				setRateWithoutTax(impacts.getRate(impacts.getNonCurrencyResource(), date));
-			}
-	
-			/* see addBalanceImpact() for a dissertation on this.
-			 *///rbw20030406
-			PricePointTier pptier = new PricePointTier();
-			pptier.setBalanceImpacts(mImpacts);
-			//pptier.setDefaultPPT(true);
-			pptier.setTier(PricePointTier.PPT_DEFAULT_ID);
-			addPricePointTier(pptier);
-		}
-	}
-
-
-
-	// PPM136861 TODO: can remove now if pricing tool doesn't use
-	public ChargingResource getResourceField() {
-		// PPM136861 refactoring aL. removed
-//		return mResource;
-		return getResource();
-	}
-
-	/**
-	 * the rate ie amount
-	 */
-	public double getRate() {
-	    return getRate(new Date());
-	}
-
-	public double getRate(double volumeAmount, Date date) {
-	
-	
-		double rv = getNetRate(volumeAmount);
-	
-		if (this.getResource() != null && this.getResource().isCurrency()) {
-	
-			double taxRate = getTaxRate();
-			rv = rv + rv * taxRate;
-			rv = roundDouble(rv, ErCoreConst.getRoundNthDecimal());
-	
-		}
-		// PPM136861 refactoring aL. added to handle cases where legacy code depends on presence of a resource :-\
-		return rv;
-	}
-
-	/**
-	 * CR1430 changed to get the rate from the Balance Impacts as there
-	 * can now be >1
-	 */
-	public double getNetRate() {
-	    return mRateWithoutTax;
-	}
-
-	
-
-	@Override
-	public boolean equals(Object obj) {
-		
-		if (!(obj instanceof PricePoint)) {	//instanceof will return false if obj is null
-			return false;
-		}
-		
-		PricePoint impl = (PricePoint) obj;
-		
-		if (!getContentId().equals(impl.getContentId())) {
-			return false;
-		} else if (!getPackageId().equals(impl.getPackageId())) {
-			return false;
-		} else if (!getSupplierId().equals(impl.getSupplierId())) {
-			return false;
-		} else if (isHistoric() != impl.isHistoric()) {
-			return false;
-		} else if (getPremiumLevel() != impl.getPremiumLevel()) {
-			return false;
-		} else if (!getPromoCode().equals(impl.getPromoCode())) {
-			return false;
-			//[5] Mod Starts
-		} else if (!getBearer().equals(impl.getBearer())) {
-			return false;
-			//[5] Mod Ends
-		} else if (!getUserGroup().equals(impl.getUserGroup())) {
-			return false;
-		} else if (getAccessDevice() != impl.getAccessDevice()) {
-			return false;
-		} else if (getPaymentType() != impl.getPaymentType()) {
-			return false;
-		} else if (getChannel() != impl.getChannel()) {
-			return false;
-		} else if (getChargingMethod() != impl.getChargingMethod()) {
-			return false;
-		} else if (getDuration() != impl.getDuration()) {
-			return false;
-		}
-	
-		return true;
-	}
-
-	/**
-	 * Sets a custom field for the service.
-	 * Custom fields appear in <custom_field> tags in the catalog XML.
-	 */
-	public void setCustomField(String name, String value) {
-		mCustomFields.put(name, value);
-	}
-
-	/**
-	         Retrieves the price for this tier. -1 means that this tier is not valid.
-	         This method will change in ER5.
-	 */
-	public double getPricingModelTierPriceWithTax(String tier, String pricingModel) {
-		double priceWithoutTax = getPricingModelTierPrice(tier, pricingModel);
-		double rv = -1;
-		if (priceWithoutTax>=0) {
-			double taxRate = getTaxRate();
-	
-			priceWithoutTax = 100 * priceWithoutTax + priceWithoutTax * taxRate;
-			long val = Math.round(priceWithoutTax);
-			rv = val*0.01;
-		}
-	
-		return rv;
-	}
-
-	public double getPricingModelTierPrice(String tier, String pricingModel) {
-		
-		PricePointTier ppt = getPricePointTier();////PPM136861 refactoring aL. START s.get( getPricePointTierId(tier, pricingModel) );
-		Double val = null;
-		if (ppt != null)
-			val = ppt.getPromotionalPrice();
-		double rv = -1;
-		if (val != null) {
-			rv = val.doubleValue();
-		}
-	
-		return rv;
-	}
-
-	public String getPricingModelTierPricingText(String tier, String pricingModel) {
-		String ret = null;
-		PricePointTier ppt = getPricePointTier();////PPM136861 refactoring aL. STARTs.get( getPricePointTierId(tier, pricingModel) );
-		if (ppt!=null) ret = ppt.getPromotionalPricingText();
-		return ret;
-	}
-
-	public void setIsDiscount(boolean val) {
-		mIsDiscount = val;
-	}
-
-	public void setDiscountPromoText(String text) {
-		mPromoText = text;
-	}
-
-	public double getStandardRateWithoutTax() {
-		//Remedy 5037, Bruno Meseguer, Calculations were wrong. It is as simple as getting the Net Rate.
-		return getNetRate();
-	
-	}
-
-	public void setPricingModelTier(String tier, String pricingModel, boolean discount) {
-		if (isOriginal()) {
-			throw new RuntimeException("This object cannot be altered. A copy of the price point can be rereived using CatalogApi.getPricePoint().");
-		}
-	
-		setIsDiscount(discount);
-		if (tier != null && tier.equals("") == false) {
-			double val = getPricingModelTierPrice(tier,pricingModel);
-			if (val < 0) {
-				// @mawn RF MDC.put(LoggingConstant.METHOD, "setPricingModelTier");
-				log.error( "The price for the tier in price point " + getId()
-						+ " has a negative price associated with it. Please assign a price to this tier");
-				// @mawn RFLoggingHelper.clearMDC();
-	
-				/**
-				 *  @mawn RF
-				 logger.error(
-						"The price for the tier in  price point "
-						+ getId()
-						+ " has a negative price associated with it. Please assign a price to this tier");
-						**/
-			} else {
-				setRateWithoutTax(getPricingModelTierPrice(tier,pricingModel));
-			}
-			if (discount) {
-				setDiscountPromoText(getPricingModelTierPricingText(tier,pricingModel));
-			}
-		}
-	}
-
-	/**
-	 * does nothing
-	 * @deprecated
-	 */
-	public void deletePricingModelData() {	}
-
-	public void deletePricingModel(String id) {
-		PricePointTier[] tiers = getPricePointTiers();
-	
-		for (int index=0; tiers!=null && index<tiers.length; index++) {
-			if (tiers[index].getPricingModel().equals(id)) {
-				deletePricingModelTier(tiers[index].getTier(), id);
-			}
-		}
-	}
-
-	/**
-	 * does nothing
-	 * @param tier
-	 * @param pricingModel
-	 * @deprecated
-	 */
-	public void deletePricingModelTier(String tier, String pricingModel) {		}
-
-	public boolean isVolumeType() {
-		return mIsVolumeType;
-	}
-
-	public void setVolumeType(boolean val) {
-		mIsVolumeType = val;
-	}
-
-	public boolean isOriginal() {
-		return mIsOriginal;
-	}
-
-	public void setIsOriginal() {
-		mIsOriginal = true;
-	}
-
-	/**
-	 * @return an array of one PricePointTier
-	 */
-	public PricePointTier[] getPricePointTiers() {
-			//PPM136861 refactoring aL. START
-			PricePointTier[] ret = new PricePointTier[1];
-			ret[0] = getPricePointTier();
-			return ret;
-		}
-
-	public void addPricePointTier(PricePointTier pptier) {
-		if (pptier != null){
-			//PPM136861 refactoring aL. START
-			if (pptier.isDefaultPPT() || "default".equals(pptier.getTier())){
-				//				add tier
-				setPricePointTier(pptier);
-			}
-
-		}
-	}
-
-	/**
-	 * does nothing
-	 * @param tier
-	 * @param pricingModel
-	 */
-	public void removePricePointTier(String tier, String pricingModel) {}
-
-	public void removeAllPricePointTiers() {
-			//PPM136861 refactoring aL. START
-	//		mPricePointTiers = new HashMap<String, PricePointTier>();
-			setPricePointTier(new PricePointTier());
-		}
-
-	/**
-	 * @param map
-	 */
-	public void setPricePointTiers(Map<String, PricePointTier> map) {
-			//PPM136861 refactoring aL. START
-			//changed to use individual tier, no more map
-			Set<Entry<String,PricePointTier>> m = map.entrySet();
-			for (Entry<String, PricePointTier> tier : m) {
-				if (tier.getValue().isDefaultPPT() || "default".equals(tier.getValue().getTier())){
-					//logger.debug("alexxxx got default tier");
-	//				map.remove(tier.getKey());
-					setPricePointTier(tier.getValue());
-					break;
-				}
-			}
-	//		mPricePointTiers = map;
-		}
-
-	/**
-	 * Setter method for the Pricepoint ID Link field
-	 * @param String
-	 * @return void
-	 * @since ER 5.1
-	 */
-	public void setPricepointIdLink(String pricepointid) {
-		mPricepointIdLink = pricepointid;
-	}
-
-	/**
-	 * return null
-	 * @param pricingModel
-	 * @return
-	 * @deprecated
-	 */
-	public String[] getPricingModelTiers(String pricingModel) {
-		return null;
-	}
-
-	/** ADDED FOR EGYPT ER6 STUB **/
-	public void setForcedPurchase(boolean forcedPurchase) {
-		mForcedPurchase = forcedPurchase;
-	}
-
-	/** ADDED FOR EGYPT ER6 STUB **/
-	public void setSubscriptionDuplicate(boolean subscriptionDuplicate) {
-		mDuplicateSubscription = subscriptionDuplicate;
-	}
-
-	/** ADDED FOR EGYPT ER6 STUB **/
-	public void setFixedExpiryDate(Date val) {
-		mPurchaseFixedExpiryDate = val;
-	}
-
-	/** ADDED FOR EGYPT ER6 STUB **/
-	public void setInteractiveFlag(String interactiveFlag) {
-		mInteractiveFlag = interactiveFlag;
-	}
-
-	/** ADDED FOR EGYPT ER7 STUB **/
-	public void setReserveOnly(boolean reserveOnly) {
-		mReserveOnly = reserveOnly;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setMinSubPeriod(int MinSubPeriod) {
-		mMinSubPeriod = MinSubPeriod;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setPenaltyCharges(double penaltyCharges) {
-		mPenaltyCharges = penaltyCharges;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setCancellation(boolean cancellation) {
-		mCancellation = cancellation;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setMonthEndSubscription(String MonthEndSubscription) {
-		mMonthEndSubscription = MonthEndSubscription;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setHistoric(boolean historic) {
-		mHistoric = historic;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setFixedRecurrence(long fixedRecurrence) {
-		mFixedRecurrence = fixedRecurrence;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setReceipting(boolean receipting) {
-		mReceipting = receipting;
-	}
-
-	/** ADDED FOR ER6.5 STUB **/
-	public void setReceiptingAttribute(String receiptingAttribute) {
-		mReceiptingAttribute = receiptingAttribute;
-	}
-
-	public void setFixedRecurringPricePoint(boolean isFixedRecurringPricePoint) {
-		mFixedRecurringPricePoint = isFixedRecurringPricePoint;
-	}
-
-	/** ADDED FOR EGYPT ER8 STUB **/
-	public void setBasePricePoint(boolean BasePricePoint) {
-		mBasePricePoint = BasePricePoint;
-	}
-
-	/** ADDED FOR EGYPT ER7 STUB **/
-	@Override
-	public void setPreOrder(boolean preOrder) {
-		mPreOrder = preOrder;
-	}
-
-	/** ADDED FOR EGYPT ER7 STUB **/
-	public void setOrder(int order) {
-		mOrder = order;
-	}
-
-	public void setProtectedFk(String protectedFk) {
-		mProtectedFk = protectedFk;
-	}
-
-	public String getProtectedFk() {
-		return mProtectedFk;
-	}
-
-
-	// CR-0095 RBT END
-
-	/**
-	 * @deprecated 
-	 */
-	@Deprecated
-	public void recalculateRateWithoutTax() {
-	    recalculateRateWithoutTax(new Date());
-	}
-
-	public void recalculateRateWithoutTax(Date date) {
-		double rv = this.getNetRate();
-	    if (mImpacts != null && mImpacts.size() != 0 ) {
-	        rv = mImpacts.getRate(0.0, date);
-	    }
-	    
-	    mRateWithoutTax = rv;
-	}
-
-	public String getmPricingText1() {
-		return mPricingText1;
-	}
-
-	public void setmPricingText1(String mPricingText1) {
-		this.mPricingText1 = mPricingText1;
-	}
-
-	public String getmPricingText2() {
-		return mPricingText2;
-	}
-
-	public void setmPricingText2(String mPricingText2) {
-		this.mPricingText2 = mPricingText2;
-	}
-
-	public PricePointTier getPricePointTier() {
-		return mPricePointTier;
-	}
-
-	public void setPricePointTier(PricePointTier mPricePointTier) {
-		this.mPricePointTier = mPricePointTier;
-	}
-
-	//CR1430 end
-	
-	/**
-	 * returns true only for non-recurring calendar pricepoints, and false for event OR recurring calendar ppts.
-	 * @return
-	 */
-	public boolean isNonRecurring()	{
-		return ChargingMethod.isNonRecurring(getChargingMethod());
-	}
-	
-	/**
-	 * returns true only for event pricepoints, and false for non-recurring OR recurring calendar ppts.
-	 * @return
-	 */
-	public boolean isEvent()	{
-		return ChargingMethod.isEvent(getChargingMethod());
 	}
 }

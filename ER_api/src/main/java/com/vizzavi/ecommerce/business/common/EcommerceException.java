@@ -23,10 +23,6 @@ public class EcommerceException extends RemoteException
     private Subscription subscription;
     //MQC 6948 End
     
-    //MQC 9848, the opco error id sent in erif message response
-    private String mOpcoErrorId;
-    
-    
     public EcommerceException()
     {
         super();
@@ -189,24 +185,5 @@ public class EcommerceException extends RemoteException
     	return subscription;
     }
     //MQC 6948 End
-    
-    
-    /**
-     * MQC9848 
-     * @param val, the opco error id to set
-     */
-    public void setOpcoErrorId(String val)
-    {
-        mOpcoErrorId = val;
-    }
-
-    /**
-     * MQC9848
-     * @return the opco error id
-     */
-    public String getOpcoErrorId()
-    {
-        return mOpcoErrorId;
-    }
     
 }

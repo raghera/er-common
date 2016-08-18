@@ -3,7 +3,7 @@
  */
 package com.vizzavi.ecommerce.business.catalog;
 
-import java.util.Map;
+import java.util.Hashtable;
 
 /**
  * 
@@ -18,7 +18,7 @@ public class FindExpressPackagesResponseDTOImpl implements
 	boolean isSuccess = false;
 	int errorCode = -1;
 	String errorDescription = null;
-	Map<String, ExpressData> resultsTable;
+	Hashtable<String, ExpressData> resultsTable;
 	
 	public FindExpressPackagesResponseDTOImpl() {
 		//default
@@ -33,12 +33,12 @@ public class FindExpressPackagesResponseDTOImpl implements
 	}
 	
 	@Override 
-	public Map<String, ExpressData> getServiceResultsTable() {
+	public Hashtable<String, ExpressData> getServiceResultsTable() {
 		return resultsTable;
 	}
 
 	@Override
-	public void setServiceResultsTable(Map<String, ExpressData> serviceResultsTable) {
+	public void setServiceResultsTable(Hashtable<String, ExpressData> serviceResultsTable) {
 		
 		this.resultsTable = serviceResultsTable;
 

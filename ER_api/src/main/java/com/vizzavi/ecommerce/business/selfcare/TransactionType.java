@@ -6,15 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vizzavi.ecommerce.business.selfcare.Transaction.MetaType;
-
 //TODO - make this an enum, with a display name, an id (as per DB), and all the isXXX() methods as per below
-/**
- * eg PAYMENT_PACKAGE_TRANSACTION, REFUND_CREDIT, GOODWILL_CREDIT, etc
- *
- * @see {@link Transaction.MetaType}
- * @see {@link TransactionTypeEnum}
- */
 public class TransactionType implements Serializable	{
 	
    private    static final long serialVersionUID = -7819313848690768532L;
@@ -61,12 +53,6 @@ public class TransactionType implements Serializable	{
 	//CR2198 - Modify the Account Service Provider Type
 	public final static String MODIFY_ACCOUNT_SP_TYPE	= "MODIFY_ACCOUNT_SP_TYPE";
 	
-	//JIRA ET155 - Add Modify Account Suppress Notifications Modify Transaction
-	public final static String MODIFY_ACCOUNT_SUPPRESS_NOTIFICATIONS	= "MODIFY_ACCOUNT_SUPPRESS_NOTIFICATIONS";
-	
-	//JIRA ET196 Inactivate subscription promo-code
-	public final static String MODIFY_INACTIVATE_SUB_PROMO_CODE	= "MODIFY_INACTIVATE_SUB_PROMO_CODE";
-	
     private final String mName;
     
     public TransactionType(String name)
@@ -82,38 +68,40 @@ public class TransactionType implements Serializable	{
         mName = name;
     }
 
-    /**
-     * will return false for a usage (including monetary) but true for any package purchases, renewals, etc
-     * @return
-     */
-    public boolean isPackagePayment()    {
-        return ((mName.equals(PAYMENT_PACKAGE_TRANSACTION))
+    public boolean isPackagePayment()
+    {
+        if ((mName.equals(PAYMENT_PACKAGE_TRANSACTION))
         	|| (mName.equals(PAYMENT_NEW_PACKAGE_TRANSACTION))
         	|| (mName.equals(RECURRING_PACKAGE_TRANSACTION))
-        	|| (mName.equals(RENEWAL_PACKAGE_TRANSACTION)));
+        	|| (mName.equals(RENEWAL_PACKAGE_TRANSACTION)))
+        {
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    /**
-     * is this the first purchase transaction made on a subscription? (as opposed to the renewals which happen after)
-     * @return
-     */
-    public boolean isNewPackagePayment()   {
+    public boolean isNewPackagePayment()
+    {
         //Remedy 3463
-       return ((mName.equals(PAYMENT_NEW_PACKAGE_TRANSACTION))||(mName.equals(PAYMENT_PACKAGE_TRANSACTION)));
+        if ((mName.equals(PAYMENT_NEW_PACKAGE_TRANSACTION))||(mName.equals(PAYMENT_PACKAGE_TRANSACTION))) {
+        //Remedy 3463 end
+        	return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * a modify txn (6)
      * @return
      */
-    public boolean isSubscription()    {
+    public boolean isSubscription()
+    {
         return mName.equals(PACKAGE_ADDED);
     }
 
-    /**
-     * any kind of modify including account or subscription modifications
-     * @return
-     */
     public boolean isModification()    {
         if (mName.equals(MODIFICATION)
         	||mName.equals(MODIFY_CHARGING_METHOD_TYPE)
@@ -133,11 +121,7 @@ public class TransactionType implements Serializable	{
         	||mName.equals(MODIFY_USERGROUPS_TYPE)
         	||mName.equals(MODIFY_SPEND_LIMITS_TYPE)
         	||mName.equals(MODIFY_ACCOUNT_IS_PREPAY_TYPE)
-        	||mName.equals(MODIFY_ACCOUNT_SP_ID_TYPE)
-        	//JIRA ET155 - Add Modify Account Suppress Notifications Modify Transaction
-        	||mName.equals(MODIFY_ACCOUNT_SUPPRESS_NOTIFICATIONS)
-        	//JIRA ET196 Inactivate subscription promo-code
-        	||mName.equals(MODIFY_INACTIVATE_SUB_PROMO_CODE)){
+        	||mName.equals(MODIFY_ACCOUNT_SP_ID_TYPE)){
             return true;
         } else {
             return false;
@@ -146,26 +130,30 @@ public class TransactionType implements Serializable	{
 
     public boolean isRefundNonCash()
     {
-        return (mName.equals(REFUND_NON_CASH));
+        if (mName.equals(REFUND_NON_CASH)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public boolean isRefundCash()    {
+    public boolean isRefundCash()
+    {
         return mName.equals(REFUND_CASH);
     }
 
-    public boolean isRefundDiscount()    {
+    public boolean isRefundDiscount()
+    {
         return mName.equals(REFUND_DISCOUNT);
     }
 
-    public boolean isRefundEnlargement()    {
+    public boolean isRefundEnlargement()
+    {
         return mName.equals(REFUND_ENLARGEMENT);
     }
 
-    /**
-     * i.e. a usage transaction
-     * @return
-     */
-    public boolean isPaymentContent()    {
+    public boolean isPaymentContent()
+    {
         return mName.equals(PAYMENT_CONTENT);
     }
 
@@ -174,7 +162,8 @@ public class TransactionType implements Serializable	{
      * PAYMENT_RECURRING_PACKAGE_TRANSACTION (4)
      * @return
      */
-    public boolean isRecurringPayment()    {
+    public boolean isRecurringPayment()
+    {
         return mName.equals(RECURRING_PACKAGE_TRANSACTION);
     }
 
@@ -183,7 +172,8 @@ public class TransactionType implements Serializable	{
      * PAYMENT_RENEWAL_PACKAGE_TRANSACTION (5)
      * @return
      */
-    public boolean isRenewalPayment()    {
+    public boolean isRenewalPayment()
+    {
         return mName.equals(RENEWAL_PACKAGE_TRANSACTION);
     }
 
@@ -196,32 +186,32 @@ public class TransactionType implements Serializable	{
     	return isRenewalPayment() || isRecurringPayment();
     }
 
-    /**
-     * a String representing the type of this transaction
-     * e.g. REFUND_PKG-NONCASH-REFUND
-     * @return
-     */
-    public String getType()    {
+    public String getType()
+    {
         return mName;
     }
 
     @Override
-	public String toString()    {
+	public String toString()
+    {
         return getType();
     }
 
-    /**
-     * same as {@link #getType} - use that instead
-     * @return
-     */
-    public String getResourceName()    {
+    public String getResourceName()
+    {
         return getType();
     }
-    public boolean isDunningTransaction()    {
-        return (mName.equals(DUNNING_REQUEST_TRANSACTION));
+    public boolean isDunningTransaction()
+    {
+        if (mName.equals(DUNNING_REQUEST_TRANSACTION)) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
-    public boolean isCreditRefundTransaction()    {
+    public boolean isCreditRefundTransaction()
+    {
         return mName.equals(REFUND_CREDIT);
     }
     
@@ -237,9 +227,7 @@ public class TransactionType implements Serializable	{
         	||mName.equals(MODIFY_BAN_TYPE)
         	||mName.equals(MODIFY_SPEND_LIMITS_TYPE) /* CR2040 MPAY replacement*/
         	||mName.equals(MODIFY_ACCOUNT_CHILD_SP_ID_TYPE) /*CR2198 - Modify the Account Child Service Provider ID and Service Provider Type*/
-        	||mName.equals(MODIFY_ACCOUNT_SP_TYPE)
-        	//JIRA ET155 - Add Modify Account Suppress Notifications Modify Transaction
-        	||mName.equals(MODIFY_ACCOUNT_SUPPRESS_NOTIFICATIONS)) {
+        	||mName.equals(MODIFY_ACCOUNT_SP_TYPE)) {
             return true;
         } else {
             return false;
@@ -253,7 +241,8 @@ public class TransactionType implements Serializable	{
     }
 
     //MQC 9593 - is modify msisdn
-    public boolean isModifyMsisdn()    {
+    public boolean isModifyMsisdn()
+    {
         return mName.equals(MODIFY_MSISDN_TYPE);
     }
 
@@ -261,70 +250,10 @@ public class TransactionType implements Serializable	{
     	return mName.equals(GOODWILL_CREDIT);
     }
     
-    //MQC 9420 - is inactivate subscription
-    public boolean isModifyInactivateSubscription()    {
+    //MQC 9420 - is inactivat subscription
+    public boolean isModifyInactivateSubscription()
+    {
         return mName.equals(MODIFY_INACTIVATE_SUBSCRIPTION_TYPE);
     }
-    
-    /**
-     * JIRATET183 - is modify charging method type
-     * @return boolean
-     */
-    public boolean isModifyChargingMethod()    {
-        return mName.equals(MODIFY_CHARGING_METHOD_TYPE);
-    }
-    
-    /**
-     * JIRATET183 - is modify subscription type
-     * @return boolean
-     */
-    public boolean isModifySubscription()    {
-        return mName.equals(MODIFY_SUBSCRIPTION_TYPE);
-    }
-    
-    /**
-     * JIRATET183 - is modify usergroups type
-     * @return boolean
-     */
-    public boolean isModifyUserGroups()    {
-        return mName.equals(MODIFY_USERGROUPS_TYPE);
-    }
-    
-    /**
-     * JIRATET183 - is modify BAN type
-     * @return boolean
-     */
-    public boolean isModifyBAN()    {
-        return mName.equals(MODIFY_BAN_TYPE);
-    }
-    
-    /**
-     * JIRATET196 - is modify inactive sub promo code type
-     * @return boolean
-     */
-    public boolean isModifyInactivateSubPromoCode()    {
-        return mName.equals(MODIFY_INACTIVATE_SUB_PROMO_CODE);
-    }
 
-    /**
-	 *  one of Payment, Refund, Modification, Goodwill_Credit or Usage.  Or null if it can't figure out the right type.
-	 * @author matt
-	 * @return {@link MetaType}
-	 */
-    public MetaType getMetaType()	{
-    	if (isRefund())
-    		return MetaType.Refund;
-    	if (isModification())
-    		return MetaType.Modification;
-    	if (isGoodwillCredit())
-    		return MetaType.Goodwill_Credit;
-    	if ( isPaymentContent())
-    		return MetaType.Usage;
-    	if (isPackagePayment())
-    		return MetaType.Payment;
-    	
-    	logger.warn("don't know metatype for "+getType());
-    	return null;
-    }
-    
 }

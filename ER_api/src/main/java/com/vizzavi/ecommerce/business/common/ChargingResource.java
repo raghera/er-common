@@ -1,28 +1,24 @@
 package com.vizzavi.ecommerce.business.common;
 
-import com.vizzavi.ecommerce.business.common.generated.currency.Currencies;
-import com.vizzavi.ecommerce.business.common.generated.currency.Currency;
-import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
-
-import javax.persistence.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import org.exolab.castor.xml.Unmarshaller;
+import org.xml.sax.InputSource;
+
+import com.vizzavi.ecommerce.business.common.generated.Currencies;
+import com.vizzavi.ecommerce.business.common.generated.Currency;
 
 /**
 * Represents the resources that customers use to pay for goods.
 * This might be either "tokens" or "euros".
 * Convenience class for resources used in ER2.
 */
-@Entity
-@Table(name="er_resources")
-public final class ChargingResource implements Serializable	{
-   
-	private static final long serialVersionUID = 8025626721680256094L;
+public final class ChargingResource implements Serializable
+{
+   private    static final long serialVersionUID = 8025626721680256094L;
 
     /*
      * STATIC VARIABLES.
@@ -37,73 +33,40 @@ public final class ChargingResource implements Serializable	{
     public final static ChargingResource USAGE_TOKEN =
         new ChargingResource( 1100012, "USAGE_TOKEN" );
 
-
+    private boolean superCredit = false;
     
     /*
      * INSTANCE VARIABLES.
      */
 
-    /**the DB id (resource_obj_id)*/
-	//@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="resseq")	
-	//probably not necessary since we aren't creating any in code
-	//@SequenceGenerator(name="resseq", sequenceName="er_resources_seq", allocationSize=1)
-	@Id
-	@Column(name="resource_obj_id", insertable=false, updatable=false)
-    long id;
-    
-	@Column(name="country_obj_id", insertable=false, updatable=false)
-    int countryId;
-    
-	public int getCountryId() {
-		return countryId;
-	}
-
-	public void setCountryId(int countryId) {
-		this.countryId = countryId;
-	}
-
-	@Column(name="resource_code", insertable=false, updatable=false)
     int code;
-
-	@Transient
-	String name;    
-
-	@Column(name="description", insertable=false, updatable=false)
+    String name;    
+    //REMEDY 3783 - Resource name not picked up from database
     String description;
-	
-	@OneToMany( mappedBy="resource",	fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	protected List<ResourceBalance> resourceBalanceList;
-	
+    //CQ14113
+    //private String symbol;
 
-	ChargingResource(){}
-	
-    private static Map<Integer, ChargingResource> sResources = new HashMap<>();
-    private static Map<String, ChargingResource>  customResources = new HashMap<>();
-    
+    private static Map<Integer, ChargingResource> sResources = new HashMap<Integer, ChargingResource>();
+
     static {
     	//CQ14114 - @lle - refactoring
     	try {
     		InputStream currencyCodeFile = CountryCode.class.getClassLoader().getResourceAsStream("ecom/currencycodes.xml");
-    		
-    		//ET-38 refactor countrycodes and currencies to use jaxb
-    		// changes from castor to JAXB implementation
- 
-    		JAXBContext jaxbContext = JAXBContext.newInstance(Currencies.class);
-    		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-    		Currencies currencies = (Currencies) unmarshaller.unmarshal(currencyCodeFile);
-    		for (Currency aCurrency : currencies.getCurrency()){
+    		Unmarshaller unmarshaller = new Unmarshaller(Currencies.class);
+    		Currencies currencies = (Currencies) unmarshaller.unmarshal(new InputSource(currencyCodeFile));
+    		for (int i=0;i<currencies.getCurrencyCount();i++) {
+    			Currency aCurrency = currencies.getCurrency(i);
     			ChargingResource cr = new ChargingResource(aCurrency);
     			sResources.put(new Integer(aCurrency.getCode()), cr);
-    			customResources.put(aCurrency.getName(), cr);
-    		}
+    		}    		   	
     	} catch (Exception e) {
     		e.printStackTrace();    		
     	}
         
         sResources.put(new Integer(ChargingResource.PAY_TOKEN.getCode()), ChargingResource.PAY_TOKEN);
         sResources.put(new Integer(ChargingResource.USAGE_TOKEN.getCode()), ChargingResource.USAGE_TOKEN);
-        GBP = sResources.get(826);
-		EUR = sResources.get(978);	 
+        GBP = sResources.get(new Integer(826));
+		EUR = sResources.get(new Integer(978));	 
     }
     /*
      * INSTANCE METHODS.
@@ -122,6 +85,7 @@ public final class ChargingResource implements Serializable	{
     	this.code = currency.getCode();
     	this.name = currency.getName();
     	this.description = currency.getDescription();
+    	//this.symbol = currency.getSymbol();    	
     }
 
     /**
@@ -165,9 +129,10 @@ public final class ChargingResource implements Serializable	{
     }
 
     /**
-	*	get the ChargingResource corresponding to this id.  If it doesn't exist, build a new one with the name ""
+
     */
-    public static ChargingResource getResource(int id)    {
+    public static ChargingResource getResource(int id)
+    {
         ChargingResource res = sResources.get(new Integer(id));
         if (res == null) {
             res = new ChargingResource(id, "");
@@ -175,28 +140,27 @@ public final class ChargingResource implements Serializable	{
         return res;
     }
 
-    public static ChargingResource getResource(String name)    {
-        ChargingResource res = customResources.get(name);
-        if (res == null) {
-            res = new ChargingResource(0, name);
-        }
-        return res;
-    }
+    
 
-    /** eg 978 for euros
+    /**
     */
     public int getCode() {
         return this.code;
     }
 
-    /** eg 978 for euros
+    /**
     */
     protected void setCode(int c) {
         this.code = c;
     }
 
-    public boolean equals(ChargingResource res)    {
-       return getCode() == res.getCode() ;
+    public boolean equals(ChargingResource res)
+    {
+        boolean rv = false;
+        if (getCode() == res.getCode()) {
+            rv = true;
+        }
+        return rv;
     }
 
     /**
@@ -243,22 +207,13 @@ public final class ChargingResource implements Serializable	{
         return sb.toString();
     }
 
-    /**
-     * is a usage or payment token?
-     * @return
-     * @deprecated
-     */
     public boolean isToken()
     {
         return isUsageToken() || isPayToken();
     }
 
-    /**
-     * is the code 1100012?
-     * @return
-     * @deprecated
-     */
-    public boolean isUsageToken()    {
+    public boolean isUsageToken()
+    {
         if (USAGE_TOKEN.getCode() == getCode()) {
             return true;
         } else {
@@ -266,11 +221,8 @@ public final class ChargingResource implements Serializable	{
         }
     }
 
-    /**
-     * is the code 1100011?
-     * @return
-     */
-    public boolean isPayToken()    {
+    public boolean isPayToken()
+    {
         if (PAY_TOKEN.getCode() == getCode()) {
             return true;
         } else {
@@ -278,24 +230,25 @@ public final class ChargingResource implements Serializable	{
         }
     }
 
-    /**
-     * false if it's a currency or a token, true otherwise
-     * @return
-     */
-    public boolean isResource()    {
+    public boolean isResource()
+    {
         if (isCurrency() || isToken()) {
             return false;
         } else {
             return true;
         }
     }
-    
-    
-    public final static boolean isCurrencyResource(int code)    {
-        return (code>1 && code<1000) ;
+    public final static boolean isCurrencyResource(int code)
+    {
+        boolean rv = false;
+        if (code>1 && code<1000) {
+            rv = true;
+        }
+        return rv;
     }
 
-    public boolean isCurrency()    {
+    public boolean isCurrency()
+    {
         return isCurrencyResource(getCode());
     }
 
@@ -303,49 +256,21 @@ public final class ChargingResource implements Serializable	{
      * e.g."ChargingResource_1000035"
      * @return
      */
-    public String getResourceName()    {
+    public String getResourceName()
+    {
         return "ChargingResource_" + getCode();
     }
 
-    public String getResourceSymbol()    {
+    public String getResourceSymbol()
+    {
         return "ChargingResource_Symbol_" + getCode();
     }
-
     
-
-    @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + code;
-		result = prime * result
-				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof ChargingResource))
-			return false;
-		ChargingResource other = (ChargingResource) obj;
-		if (code != other.code)
-			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+    public boolean isSuperCredit(){
+    	return superCredit;
+    }
     
+    public void setSuperCredit(boolean val){
+    	superCredit = val;
+    }    
 }

@@ -1,22 +1,18 @@
 package com.vizzavi.ecommerce.business.selfcare;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
-import com.vizzavi.ecommerce.business.charging.BaseAuthorization;
 import com.vizzavi.ecommerce.business.common.AccountNotFoundException;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vodafone.global.er.business.selfcare.BalanceFilter;
 import com.vodafone.global.er.business.selfcare.MicroServiceStatus;
 import com.vodafone.global.er.business.selfcare.ParentTransaction;
-import com.vodafone.global.er.subsmngmnt.SubsManagementException;
 
 /**
     The API used to get the transactional and subscription list for a user.
 */
-public interface SelfcareApi extends Serializable	{
+public interface SelfcareApi extends java.io.Serializable
+{
 
     /**
         This retrieves all of the packages for a customer. This retrieves event packages, failed packages and
@@ -88,36 +84,36 @@ public interface SelfcareApi extends Serializable	{
 
 
     /**
-     * This API represents a security hole since there is no check that the msisdn corresponds to the transactionId<br/>
-     * use {@link #getTransaction(String , String , long )} instead
-	*/
-    @Deprecated
+        Returns the single transaction according to the transId specified
+
+        @return null if the transaction doesn't exist
+        @param clientId used to identify the client making the request
+
+        @param transId the transaction Id to search for
+        
+        @hud  we must use filter instead of transId
+        
+
+    */
     public Transaction getTransaction(String clientId, String transId) throws EcommerceException;
 
-    /**
-     * a more secure get transaction method which requires an msisdn as well as transactionId.  The msisdn should correspond to the transaction, else we throw an exception
-     * @param clientId
-     * @param msisdn
-     * @param transactionId
-     * @return
-     * @throws EcommerceException
-     */
-    public Transaction getTransaction(String clientId, String msisdn, long transactionId)	throws EcommerceException;
- 
+
+
     /**
         Returns the list of transactions matching the filter.
         The deviceType is NOT used for filtering.
         No more than 100 transactions is returned.
         The mandatory attributes are msisdn and the filter
-        Only retrieve payment and refund transactions
-
         @see TransactionFilter
         @param clientId used to identify the client making the request
         @param msisdn the account to search for
         @param deviceType logs the type of device used to get the transaction list
         @param filter the attributes to filter the list with
         @return Transaction [] the list of transactions found for the user
+    */
 
+    /**
+        Only retrieve payment and refund transactions
     */
     public Transaction[] getPaymentTransactions(String clientId, String msisdn, int deviceType, TransactionFilter filter) throws EcommerceException;
 
@@ -127,12 +123,11 @@ public interface SelfcareApi extends Serializable	{
         The mandatory attributes are msisdn
     */
     public ResourceBalance[] getBalances(String clientId, String msisdn, int device) throws AccountNotFoundException, EcommerceException;
-  
-    /**
-        Retrives a particular subscription for a given msisdn.
-        If the no subscription is found which matches both of these attributes, a SubscriptionNotFoundException is thrown
-        @return the Subscription requested
-        @throws SubscriptionNotFoundException if no subscription is found
+   /**
+        Retrives a particular subscription.
+        The mandatory attributes are packageSubId
+        The msisdn is not used to find the subscription
+        @return null if the subscription doesn't exist
     */
     public Subscription getSubscription(String clientId, String msisdn, int deviceType, String packageSubId) throws EcommerceException;
 
@@ -145,9 +140,9 @@ public interface SelfcareApi extends Serializable	{
         @param locale Locale
         @return PurchaseAuthorization
     */
-    public BaseAuthorization getNextPaymentAmount(String clientId,String msisdn,String subscriptionId) throws EcommerceException;//, RemoteException;
+    public com.vizzavi.ecommerce.business.charging.BaseAuthorization getNextPaymentAmount(String clientId,String msisdn,String subscriptionId) throws com.vizzavi.ecommerce.business.common.EcommerceException, java.rmi.RemoteException;
 
-    /**
+ /**
      * To include the Apply Penalty charge. ER7 functionality
      *  
      * @param clientId
@@ -156,12 +151,14 @@ public interface SelfcareApi extends Serializable	{
      * @return
      * @throws EcommerceException
      */
+    //nayera Min Subscription Period - German Migration - new method with CustcareAttributes object to hold the extra attributes including boolean for applyPenalty
     public boolean modifySubscriptionChargingMethod(String clientId, String msisdn, int deviceType, CustcareAttributes attr ) throws AccountNotFoundException, EcommerceException;
 
+    public ResourceBalance[] getSuperCreditBalances(String clientId, String msisdn, int device) throws AccountNotFoundException, EcommerceException;
 
 
     public ResourceBalance[] getBalances(String msisdn, String clientId, int deviceId, BalanceFilter filter)
-    throws AccountNotFoundException, EcommerceException;
+    throws com.vizzavi.ecommerce.business.common.AccountNotFoundException, EcommerceException;
 
     /** Added: 15-09-05 
      * Added for ER8 phase2 
@@ -189,43 +186,5 @@ public interface SelfcareApi extends Serializable	{
     	,	MicroServiceFilter	msfilter			//@hud STARTING NOW, SUBSCRIPTION ID SHOULD BE LONG
     ) throws EcommerceException;
 
-    /**
-     * this is insecure since the msisdn is not required
-     * @param clientId
-     * @param filter
-     * @return
-     * @throws EcommerceException
-     */
-    @Deprecated
     public Transaction getTransaction(String clientId, TransactionFilter filter) throws EcommerceException;
-    
-    
-    /**
-     * JIRA ET196 Get account subscription promo-codes info
-     * @param msisdn
-     * @param clientId
-     * @return List<SubscriptionPromoCode>
-     * @throws EcommerceException
-     */
-    public List<SubscriptionPromoCode> getSubscriptionPromoCodes(String msisdn, String clientId) throws EcommerceException;
-    
-    /**
-     * Jira ET245 implement get subscriptions in decoupling version 2
-     * 
-     * @param msisdn
-     * @param filter
-     * @param locale
-     * @return
-     * @throws SubsManagementException
-     */
-    public List<Subscription> getSubscriptions(String msisdn, SubscriptionFilter filter, Locale locale) throws SubsManagementException;
-    
-    /**
-     * JIRA ET-238 - new get service offers call
-     * @param msisdn
-     * @param serviceIds
-     * @return
-     * @throws SubsManagementException
-     */
-    public List<ServiceOffer> getServiceOffers(String msisdn, String serviceIds) throws EcommerceException;
 }

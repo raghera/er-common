@@ -1,8 +1,5 @@
 package com.vodafone.global.er.partner;
 
-import java.rmi.RemoteException;
-
-import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.common.SubscriptionNotFoundException;
 import com.vizzavi.ecommerce.business.common.TransactionNotFoundException;
 import com.vizzavi.ecommerce.business.selfcare.ExternalSubscriptionTransactionStatus;

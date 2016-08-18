@@ -15,7 +15,9 @@ public class CountryCodeComparator implements Comparator<CountryCode> {
 	 * @return integer
 	 */
 	public int compare(CountryCode c1, CountryCode c2) {
-		return c1.getCountryCode().compareTo(c2.getCountryCode());
+		int result = c1.getCountryCode().compareTo(c2.getCountryCode());
+
+		return result;
 	}
 
 }

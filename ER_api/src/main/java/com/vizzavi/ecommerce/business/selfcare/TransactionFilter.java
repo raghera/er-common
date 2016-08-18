@@ -8,11 +8,10 @@ package com.vizzavi.ecommerce.business.selfcare;
         Successful transactions
         Non zero transactions
 */
-public interface TransactionFilter extends FilterAttributes	{
-	
+public interface TransactionFilter extends FilterAttributes
+{
     public static String ALL_TRANSACTIONS = "all";
     public static String REFUND_TRANSACTIONS_ONLY = "refund";
-    /**@deprecated - use REFUND_TRANSACTIONS_ONLY instead*/
     public static String REFUND_PAYMENT_TRANSACTIONS_ONLY = "refund_payment";
     public static String PAYMENT_TRANSACTIONS_ONLY = "payment";
     public static String MODIFY_TRANSACTIONS_ONLY = "modify";
@@ -114,11 +113,6 @@ public interface TransactionFilter extends FilterAttributes	{
 	
    public void setExternalTransId(String externalTransId);
    
-   public String getExternalField1();
-   public String getExternalField2();
-   public String getExternalTransId();
-   
-   
    //CR 1029 ACR - add partner id to transaction filter
    public void setPartnerId(String partnerId);
    
@@ -139,7 +133,5 @@ public interface TransactionFilter extends FilterAttributes	{
 	String getTransactionType();
 	public  boolean isAllEvents();
 	public  boolean isRefundPaymentsEventsOnly();
-	//JIRAET183 - is partnerid set to ALL_PARTNER_TRANSACTIONS
-	public boolean isAllPartnerTransactionsPartnerId();
    
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.selfcare.Transaction;
 
 /** @Added: 13-09-05 
@@ -27,17 +28,17 @@ public class ParentTransaction implements Serializable
 	 *              to the local mTransaction variable
 	 *@Throws Ecommerce Exception
 	 */
-	public ParentTransaction (Collection<Transaction> transList)
+	public ParentTransaction (Collection<Transaction> transList) throws EcommerceException
 	{
 		if ((transList != null)&&(!transList.isEmpty()))
 		{
-//			Iterator<Transaction> listIt = transList.iterator();
-//			while ((listIt.hasNext()))
-//			{
-//				Transaction trans = listIt.next();
-//				if (!(trans instanceof Transaction))
-//					throw new EcommerceException("ParentTransaction:getParentTransaction mTransaction not	instance of ParentTransaction");
-//			}
+			Iterator<Transaction> listIt = transList.iterator();
+			while ((listIt.hasNext()))
+			{
+				Transaction trans = listIt.next();
+				if (!(trans instanceof Transaction))
+					throw new EcommerceException("ParentTransaction:getParentTransaction mTransaction not	instance of ParentTransaction");
+			}
 			mTransaction = transList;
 		}
 	}

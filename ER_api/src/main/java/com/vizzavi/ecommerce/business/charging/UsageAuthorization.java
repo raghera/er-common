@@ -1,3 +1,12 @@
+/*****************************Modification History*********************************
+ * 
+ *    Rev. No.		Date		Author					Description
+ **********************************************************************************
+ *		[1]		Apr-28-2006		Ly Le					CQ14112:
+ *														Fix to tell if this is the first usage transaction
+ *														for receipting data at package pricepoint 
+ *	
+ */
 package com.vizzavi.ecommerce.business.charging;
 
 
@@ -18,6 +27,7 @@ public class UsageAuthorization extends BaseAuthorization {
 
 	private    static final long serialVersionUID = -5123460399280837293L;
 
+//	protected ServiceUsageInstance mServiceUsageInstance = null; 
 
 	/**
 	 * Maximum largest date object possible.
@@ -44,6 +54,13 @@ public class UsageAuthorization extends BaseAuthorization {
 	private Date mEndDate;
 	private Date mStartDate;
 	
+	
+	//@HUD RFRFRF
+	//private boolean mAccountHasCustomResource = false;
+
+
+	// ER7 Change
+
 	private int mSubscriptionStatus;
 	
 	//[1] CQ14112 - add new member for first usage transaction
@@ -62,6 +79,14 @@ public class UsageAuthorization extends BaseAuthorization {
 	 */
 	private boolean mBasedOnMultiplePackages  ;
 
+	//Er8 Change
+	//TODO: ? why another EventUnits attribute , should remove it
+	//@mawn
+	//private double mEventUnits = 1 ;
+
+	//(VFE-PS, ER8 P2: Access Control)
+	//protected AccessControlDecision mAccessControlDecision;
+
 	/**
 	 * 
 	 * holds the parent transaction id in case of usage from multiple subscriptions 
@@ -70,6 +95,13 @@ public class UsageAuthorization extends BaseAuthorization {
 	 */
 	private String mParentTransactionId;
 	private long mParentTransactionIdLong = -1;
+
+	//private long mReceiptingCreditBalanceImpact = 0;
+	//private int mReceiptingUsageTypeAttribute = -1;
+	//public final static int  PURCHASE_RECEIPT = 0;
+	//public final static int  USAGE_COST = 1;
+	//public final static int  NILE_COST = 2;
+	//public final static int  CREDIT_COST = 3;
 	
 	//CR1423: Duplicate Charging
 	private int reIssue = 0;
@@ -147,9 +179,10 @@ public class UsageAuthorization extends BaseAuthorization {
 		this.mEndDate = DATE_MAX;
 	}
 	/**
-        This is the service-level price point found for the authorisation
+        This is the matching price point found for the authorisation
 	 */
-	public PricePoint getServicePricePoint()	{
+	public PricePoint getServicePricePoint()
+	{
 		return getPricePoint();
 	}
 
@@ -188,6 +221,28 @@ public class UsageAuthorization extends BaseAuthorization {
 	}
 
 
+//	/**
+//	 * @version      ER 8.0 P2
+//	 * @author       VFE PS Team
+//	 * @date         12-Sep-2005
+//	 * @description  (Access Control use-case)      return AccessControlDecision. 
+//	 **/
+//	public AccessControlDecision getAccessControlDecision()
+//	{
+//		return this.mAccessControlDecision; 
+//	}
+//
+//	/**
+//	 * @version      ER 8.0 P2
+//	 * @author       VFE PS Team
+//	 * @date         12-Sep-2005
+//	 * @description  (Access Control use-case)      Set mAccessControlDecision. 
+//	 **/
+//	public void setAccessControlDecision (AccessControlDecision accCtrlDecision) 
+//	{
+//		this.mAccessControlDecision = accCtrlDecision;
+//	}
+
 	/**
 	 * Set the end date for the Subscription and PricePoint.
 	 * @param endDate - Date object of the end date.
@@ -224,7 +279,14 @@ public class UsageAuthorization extends BaseAuthorization {
 		return val;
 	}
 
-	
+	/** ER7 **/
+	//public int getReceiptingUsageTypeAttribute(){
+	//	return mReceiptingUsageTypeAttribute;
+	//}
+	/** ER7 **/
+	//public long getReceiptingCreditBalanceImpact(){
+	//	return mReceiptingCreditBalanceImpact;
+	//}
 
 	/**
 	 * Returns a String representation of the object.

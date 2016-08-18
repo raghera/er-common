@@ -121,12 +121,9 @@ public class TransactionStatus
         return "TransactionStatus_" + val;
     }
 
-    /**
-     * Supply a txn status code and this will return the name - eg 101 returns "COMPLETED"
-     * @param val
-     * @return
-     */
-    public static String getTransactionStatusName(int val)    {
+    //CR1528 - get transactions status name
+    public static String getTransactionStatusName(int val)
+    {
     	return internalStatusMap.get(val);
 
     }
@@ -140,16 +137,5 @@ public class TransactionStatus
     public static boolean isGoodwillCreditCompleted(int val) {
     	return val ==  GOODWILL_CREDIT_COMPLETED;
     }
-
-    /**
-     * Supply a txn status code and this will return the name - eg 101 returns "COMPLETED"
-     * <br/>
-     * This method is the same as {@link #getTransactionStatusName}
-     * @param code
-     * @return
-     */
-	public static String translate(int code) {
-		return getTransactionStatusName(code);
-	}
     
 }

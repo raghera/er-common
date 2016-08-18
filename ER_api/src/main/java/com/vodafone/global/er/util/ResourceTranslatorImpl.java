@@ -4,8 +4,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import com.vizzavi.ecommerce.business.common.ChargingMethod;
 import com.vizzavi.ecommerce.business.common.Duration;

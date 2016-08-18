@@ -1,8 +1,10 @@
 package com.vodafone.global.er.subscriptionmanagement;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.vizzavi.ecommerce.business.catalog.DRMObject;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.common.RatingAttributes;
@@ -48,9 +50,11 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 		, 	String 				paymentTransId
 	)
 	{
+		//@hud MUST CALL super!!!!
 		super(type, subscriptionId, status, paymentTransId);
 	}
 	
+	//@hud RFRFRF
 	public ERTransaction (
 			TransactionType 	type
 		, 	long 				subscriptionIdLong
@@ -58,6 +62,7 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 		, 	long 				paymentTransIdLong
 	)
 	{
+		//@hud MUST CALL super!!!!
 		super(type, subscriptionIdLong, status, paymentTransIdLong);
 	}	
 	
@@ -148,20 +153,11 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 	}
 	
 	//Getter Setter methods for Tax Rate
-//ET-330	
-//	@Override
-//	public void setTaxRate(double taxRate)
-//	{
-//		super.setTaxRate(taxRate);
-//		mDirty = true;
-//	}
 	@Override
-	public void setTaxRate(Double taxRate)
+	public void setTaxRate(double taxRate)
 	{
-		if(taxRate !=null){
-			super.setTaxRate(taxRate);
-			mDirty = true;
-		}
+		super.setTaxRate(taxRate);
+		mDirty = true;
 	}
 	//Getter Setter methods for Purchase Currency
 	/**
@@ -195,15 +191,9 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 		mDirty = true;
 	}
 	
-	public void setTransactionIdLong(long transactionId)	{
-		if(transactionId>0)
-			super.setTransactionIdLong(transactionId);
-		mDirty=true;
-	}
-	
 	//Getter Setter methods for Next Cycle Discount
 	@Override
-	public void setNextCycleDiscount(Double nextCycleDiscount)
+	public void setNextCycleDiscount(double nextCycleDiscount)
 	{
 		super.setNextCycleDiscount(nextCycleDiscount);
 		mDirty = true;
@@ -228,7 +218,21 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 		super.setAssetId(assetId);
 		mDirty = true;
 	}
-	
+	/***********************************************/ 
+	/*@hud deprecated
+    	//Remedy 4362 & 4468 TR Start 
+        public void setContentID(String id) {
+    	    mContentID = id;
+    	    mDirty = true;
+        }    
+       //Getter Setter methods for Content Name
+        public void setContentName(String val)
+        {
+            mContentName = val;
+		mDirty = true;
+        }
+    	//Remedy 4362 & 4468 TR End
+	*/
 	
 	// Getter setter methods to set the CSR id
 	@Override
@@ -254,13 +258,13 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 		mDirty = true;
 	}
 	
-//	@Override
-//	public void setResourceBalances(ResourceBalance[] balance)
-//	{
-//		super.setResourceBalances(balance);
-//		//@hud ??? no dirty set? just added it here
-//		mDirty = true;
-//	}
+	@Override
+	public void setResourceBalances(ResourceBalance[] balance)
+	{
+		super.setResourceBalances(balance);
+		//@hud ??? no dirty set? just added it here
+		mDirty = true;
+	}
 	
 	// Getter setter methods for AuthCode
 	@Override
@@ -325,7 +329,6 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 	
 	// Getter setter methods for Subscription Id
 	@Override
-	@Deprecated
 	public void setSubscriptionId(String subscriptionId)
 	{
 		super.setSubscriptionId(subscriptionId);
@@ -385,7 +388,16 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 		super.setRefundPaymentTransactionId(refundPaymentTransactionId);
 		mDirty = true;
 	}
-
+	
+	//  Added :     21-04-2005		-- wiped off
+	//  Added by :  VFE - PS team
+	//  Purpose :   ER7 PIII Spain Migration 
+	@Override
+	public void setSuperCreditId(String superCreditId)
+	{
+		super.setSuperCreditId(superCreditId);
+		mDirty = true;
+	}
 	
 	@Override
 	public void setBalanceImpact(int balanceImpact)
@@ -518,6 +530,19 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 		mDirty = true;
 	}
 	
+	/**
+	 * @version       ER 8.0 P2
+	 * @author        VFE  PS Team
+	 * @date          13-Sep-2005
+	 * @description  (Access Control)   setter for the "SuitabilityDecision" for the transaction object. **/
+	
+	//REMEDY 6065 - add drm object
+	@Override
+	public void setDRMObject(DRMObject drmobject)
+    {
+        super.setDRMObject(drmobject);
+        mDirty = true;
+    }
 	
 	//CR AffiliateID
 	@Override
@@ -556,22 +581,22 @@ public class ERTransaction extends Transaction implements DirtyMarker {
 	 * @param childSpId the childSpId to set
 	 */
     public void setChildSpId(String childSpId) {
-		super.setChildSpId(childSpId);
+		this.childSpId = childSpId;
 	}
     
     /**
      * CR 2198
    	 * @param spType the spType to set
    	 */
-    public void setSpType(String spType) {
-  		super.setSpType(spType);
+  	public void setSpType(String spType) {
+  		this.spType = spType;
   	}
     
     /**
      * CR 2255
    	 * @param contentCategory the mContentCategory to set
    	 */
-    public void setContentCategory(String contentCategory) {
-  		super.setContentCategory(contentCategory);
+  	public void setContentCategory(String contentCategory) {
+  		this.mContentCategory = contentCategory;
   	}
 }

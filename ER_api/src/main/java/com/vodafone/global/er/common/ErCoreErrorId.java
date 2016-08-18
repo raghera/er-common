@@ -1,8 +1,4 @@
 package com.vodafone.global.er.common;
-import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import com.vizzavi.ecommerce.business.charging.PurchaseAuthorizationException;
 import com.vizzavi.ecommerce.business.charging.UsageAuthorizationException;
 import com.vizzavi.ecommerce.business.common.AccountNotFoundException;
@@ -12,6 +8,9 @@ import com.vodafone.global.er.batch.BatchException;
 import com.vodafone.global.er.rating.RatingException;
 import com.vodafone.global.er.rating.TaxException;
 import com.vodafone.global.er.subsmngmnt.SubsManagementException;
+
+import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 /**
  * This is the class that defines all the logging error definitions.
@@ -102,10 +101,6 @@ implements java.io.Serializable
     
     /** can't modify msisdn because the destination msisdn already exists.  MQC 8456 */
     public final static int C_DUPLICATE_MSISDN = 258456; 
-    //MQC10256 - add errors for validation failure for the destination msisdn for modifyMsidn
-    public final static int C_DESTINATION_MSISDN_VALIDATE_REJECTED = 258457; 
-    public final static int C_DESTINATION_MSISDN_VALIDATE_DENIED = 258458; 
-    public final static int C_DESTINATION_MSISDN_VALIDATE_ERROR = 258459; 
 
     /*
      * Error code integers.
@@ -115,10 +110,6 @@ implements java.io.Serializable
     public final static int C_MSISDN_NOT_FOUND = 218438;
 //    public final static int C_SUBSCRIPTION_EXPIRED = 21000;
 
-    //ET83: changes starts here
-    public final static int C_MSISDN_NULL = 218439;
-    //ET83: changes ends here
-    
     //added these codes, based on ER6 t3 spec.
     public final static int C_TXID_NOT_FOUND = 218440;
     public final static int C_REFUND_TXID_NOT_FOUND = 218441;
@@ -676,7 +667,6 @@ implements java.io.Serializable
      */
     public final static ErCoreErrorId SUCCESS = new ErCoreErrorId(C_SUCCESS,
             "Routine succeeded", INFO);
-    /**216401*/
     public final static ErCoreErrorId INVALID_BAN = new ErCoreErrorId(C_INVALID_BAN,
             "Billing Account Number not validated by Payment handler", ERROR);
     public final static ErCoreErrorId PAYMENT_HANDLER_DOWN = new ErCoreErrorId(C_PAYMENT_HANDLER_DOWN,
@@ -807,35 +797,18 @@ implements java.io.Serializable
             "Modify msisdn: The modify request failed because the destination msisdn exists",
             ERROR);
     
-    //MQC10256 - add errors for validation failure for the destination msisdn for modifyMsidn
-    public final static ErCoreErrorId MODIFY_FAILED_DESTINATION_MSISDN_VALIDATE_REJECTED = new ErCoreErrorId(C_DESTINATION_MSISDN_VALIDATE_REJECTED,
-            "Modify msisdn: The modify request failed because the validation handler returned rejected for the destination msisdn",
-            ERROR);
-    public final static ErCoreErrorId MODIFY_FAILED_DESTINATION_MSISDN_VALIDATE_DENIED = new ErCoreErrorId(C_DESTINATION_MSISDN_VALIDATE_DENIED,
-            "Modify msisdn: The modify request failed because the validation handler returned denied for the destination msisdn",
-            ERROR);
-    public final static ErCoreErrorId MODIFY_FAILED_DESTINATION_MSISDN_VALIDATE_ERROR = new ErCoreErrorId(C_DESTINATION_MSISDN_VALIDATE_ERROR,
-            "Modify msisdn: The modify request failed because the validation handler returned error for the destination msisdn",
-            ERROR);
-    
-    /**218437*/
+    /**
+     * Error code objects for ER_Subscriptions.
+     */
     public final static ErCoreErrorId INVALID_MSISDN = new ErCoreErrorId(C_INVALID_MSISDN,
             "Invalid MSISDN", INFO);
-    /**218438*/
+
     public final static ErCoreErrorId MSISDN_NOT_FOUND = new ErCoreErrorId(C_MSISDN_NOT_FOUND,
             "Account not found for given MSISDN.", ERROR);
-    //ET83: changes starts here
-    /**218439*/
-    public final static ErCoreErrorId INPUT_MSISDN_NULL = new ErCoreErrorId(C_MSISDN_NULL,
-            "Input MSISN is null.", ERROR);
-    //ET83: changes ends here    
-    /**218440*/
     public final static ErCoreErrorId TXID_NOT_FOUND = new ErCoreErrorId(C_TXID_NOT_FOUND,
             "Account not found for given ER transaction ID.", ERROR);
-    /**218441*/
     public final static ErCoreErrorId REFUND_TXID_NOT_FOUND = new ErCoreErrorId(C_REFUND_TXID_NOT_FOUND,
             "Account not found for given ER refund transaction ID.", ERROR);
-    /**218442*/
     public final static ErCoreErrorId ACCOUNT_NOT_CREATED = new ErCoreErrorId(C_ACCOUNT_NOT_CREATED,
             "Unable to create a new account.", ERROR);
     public final static ErCoreErrorId JNDI_LOOKUP_ERR = new ErCoreErrorId(C_JNDI_LOOKUP_ERR,
@@ -1653,16 +1626,12 @@ implements java.io.Serializable
 
         return createException(erCoreErrorId, extraDescription, thr, type);
     }
-    
+
     public static EcommerceException createException(ErCoreErrorId erCoreErrorId, String extraDescription, Throwable thr, int type)
     {
         EcommerceException ecom = createExceptionType(type, thr);
         ecom.setErrorId(erCoreErrorId.getCode());
-        if (isNotBlank(extraDescription) && ! extraDescription.equals(erCoreErrorId.getName())) {
-        	ecom.setErrorDescription(erCoreErrorId.getName() + ": " + extraDescription);
-        } else {
-        	ecom.setErrorDescription(erCoreErrorId.getName() + " ");
-        }
+        ecom.setErrorDescription(erCoreErrorId.getName() + " " + extraDescription);
         return ecom;
     }
 
@@ -1687,6 +1656,8 @@ implements java.io.Serializable
             return new PurchaseAuthorizationException(msg, thr);
         case RATING_EXCEPTION:
             return new RatingException(msg, thr);
+//        case SCALABILITY_LOG_EXCEPTION:
+//            return new ScalabilityLogException(msg, thr);
         case SUBS_MANAGEMENT_EXCEPTION:
             return new SubsManagementException(msg, thr);
         case TAX_EXCEPTION:

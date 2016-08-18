@@ -1,32 +1,40 @@
+/**
+ * --------------------------------Modification History--------------------------------
+ *
+ *      Sr. No.		Date			    Author				Description
+ * ------------------------------------------------------------------------------------
+ *      [1]			Aug 31, 2005		Sagar More  		Changed for CR
+ *                                                          "Purchase Channel Reporting"
+ *
+ */
 package com.vizzavi.ecommerce.business.catalog;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 
 /**
  * Service Revenue Share partner.
- * contains a List of {@link RevenueShareTier}s
+ * Part of Partner Revenue Share pahse 2.
+ * @author Periasamy
+ *
+ * @see Revenue Share Technical Design document
  */
-@Entity
-@IdClass(ServiceRevenueSharePartnerKey.class)
 public class ServiceRevenueSharePartner implements java.io.Serializable  {
 
    private    static final long serialVersionUID = 8857818362355764441L;
     protected Long mKey;
-
+    protected String mCreatedBy;
+    protected String mModifiedBy;
+    protected Date mModifiedDate;
+    protected char mActiveStatus;
     /**
      * Partner Id
      */
-    @Id
     protected String mId;
 
     //[1] Mod Start
     /** Added for ER8 Requirements */
-    @Id
     protected String mPurchaseChannel = "*";
     //[1] Mod End
 
@@ -80,7 +88,6 @@ public class ServiceRevenueSharePartner implements java.io.Serializable  {
      * default empty constructor
      */
     public ServiceRevenueSharePartner() {}
-   
     /**
      * getting Partner Key
      * @return partner key
@@ -89,6 +96,21 @@ public class ServiceRevenueSharePartner implements java.io.Serializable  {
         return mKey;
     }
 
+    public String getCreatedBy() {
+        return mCreatedBy;
+    }
+
+    public String getModifiedBy() {
+        return mModifiedBy;
+    }
+
+    public Date getModifiedDate() {
+        return mModifiedDate;
+    }
+
+    public char getActiveStatus() {
+        return mActiveStatus;
+    }
 
     /**
      * getting Partner Id
@@ -244,14 +266,8 @@ public class ServiceRevenueSharePartner implements java.io.Serializable  {
         buf.append(getModel());
         buf.append("\nfixedPaymentFlag=");
         buf.append(getFixedPaymentFlag());
-        //PPM136861 refactoring aL. START
-		//fixed logging NPE:
-        FixedPayment fp = getFixedPayment();
-        if (fp != null){
-            buf.append("\nfixedPayment=");
-        	buf.append(getFixedPayment().toString());
-        }
-      //PPM136861 refactoring aL. END
+        buf.append("\nfixedPayment=");
+        buf.append(getFixedPayment().toString());
         buf.append("\nrevenueShareTiers=");
         if (getRevenueShareTiers() != null) {
             for (int i = 0; i < getRevenueShareTiers().size(); i++) {
@@ -260,23 +276,5 @@ public class ServiceRevenueSharePartner implements java.io.Serializable  {
         }
         return buf.toString();
     }
-	
-	@Override
-	public int hashCode(){
-	    return  12* this.mId.hashCode() * this.mPurchaseChannel.hashCode();
-	  }
-	
-	@Override
-	public boolean equals(Object object) {
-		if(object == null||getClass() != object.getClass())
-		{
-			return false;
-		}
-		else{
-			ServiceRevenueSharePartner serviceRevenue = (ServiceRevenueSharePartner) object;
-			return (this.getId() == serviceRevenue.getId() && this.getPurchaseChannel()==serviceRevenue.getPurchaseChannel());
-		}
-	     
-	}
 
 }

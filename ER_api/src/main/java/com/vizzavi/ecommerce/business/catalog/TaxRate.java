@@ -1,39 +1,29 @@
 package com.vizzavi.ecommerce.business.catalog;
 
-import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+public class TaxRate implements java.io.Serializable
+{
+   private    static final long serialVersionUID = -3497324044474717963L;
+    private String mCreatedBy;
+    private String mModifiedBy;
+    private Date mModifiedDate;
+    private char mActiveStatus;
 
-@Entity
-public class TaxRate implements Serializable, CatalogBean	{
-
-	private    static final long serialVersionUID = -3497324044474717963L;
-
-
-	private double mValue;
-	private Date mStartDate;
-	private Date mEndDate;
-
-	private Tax	tax;
+    private double mValue;
+    private Date mStartDate;
+    private Date mEndDate;
 
 
-	private long	key;
+   public TaxRate() {
+   }
 
-	public TaxRate() {
-	}
+   public TaxRate(double value, Date startDate, Date endDate) {
 
-	public TaxRate(double value, Date startDate, Date endDate) {
-
-		mValue = value;
+        mValue = value;
 		mStartDate = startDate;
 		mEndDate = endDate;
-	}
+   }
 
 	public TaxRate(double value) {
 		mValue = value;
@@ -41,63 +31,72 @@ public class TaxRate implements Serializable, CatalogBean	{
 		mEndDate = null;
 	}
 
-	public TaxRate(double value, String createdBy, String modifiedBy, Date modifiedDate, char activeStatus) {
-		//        mCreatedBy = createdBy;
-		//		mModifiedBy = modifiedBy;
-		//        mModifiedDate = modifiedDate;
-		//    	mActiveStatus = activeStatus;
+    public TaxRate(double value, String createdBy, String modifiedBy, Date modifiedDate, char activeStatus) {
+        mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+        mModifiedDate = modifiedDate;
+    	mActiveStatus = activeStatus;
 		mValue = value;
 		mStartDate = null;
 		mEndDate = null;
 	}
-
-	@ManyToOne(optional=false,	targetEntity=Tax.class, fetch=FetchType.EAGER)	
-	Tax getTax()	{
-		return this.tax;
-	}
-
-	void setTax (Tax newTax)	{
-		tax = newTax;
-	}
+    public void setValue(double value) { mValue = value; }
 
 
-
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	public	Long getKey()	{
-		return key;
-	}
-
-	void setKey(long key)	{
-		this.key=key;
-	}
-
-	public void setValue(double value) { mValue = value; }
+    public double getValue() { return mValue; }
 
 
-	public double getValue() { return mValue; }
+    public void setStartDate(Date startDate) { mStartDate = startDate; }
 
 
-	public void setStartDate(Date startDate) { mStartDate = startDate; }
+    public Date getStartDate() { return mStartDate; }
 
 
-	public Date getStartDate() { return mStartDate; }
+    public void setEndDate(Date endDate) { mEndDate = endDate; }
 
 
-	public void setEndDate(Date endDate) { mEndDate = endDate; }
+    public Date getEndDate() { return mEndDate; }
 
+    public String getCreatedBy() {
+        return this.mCreatedBy;
+    }
 
-	public Date getEndDate() { return mEndDate; }
+    public void setCreatedBy(String createdBy) {
+        this.mCreatedBy= createdBy;
+    }
 
+    public String getModifiedBy() {
+        return this.mModifiedBy;
+    }
 
-	@Override
+    public void setModifiedBy(String modifiedBy) {
+        this.mModifiedBy = modifiedBy;
+    }
+
+    public Date getModifiedDate() {
+        return this.mModifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.mModifiedDate = modifiedDate;
+    }
+
+    public char getActiveStatus() {
+        return this.mActiveStatus;
+    }
+
+    public void setActiveStatus(char activeStatus) {
+        this.mActiveStatus = activeStatus;
+    }
+    
+    @Override
 	public String toString()	{
-		StringBuffer sb = new StringBuffer("TaxRate ");
-		sb.append(this.mValue).append('%');
-		if (this.mStartDate!=null)
-			sb.append(" starts ").append(this.mStartDate);
-		if (this.mEndDate!=null)
-			sb.append(" ends ").append(this.mEndDate);
-		return sb.toString();
-	}
+    	StringBuffer sb = new StringBuffer("TaxRate ");
+    	sb.append(this.mValue).append('%');
+    	if (this.mStartDate!=null)
+    		sb.append(" starts ").append(this.mStartDate);
+    	if (this.mEndDate!=null)
+    		sb.append(" ends ").append(this.mEndDate);
+    	return sb.toString();
+    }
 }

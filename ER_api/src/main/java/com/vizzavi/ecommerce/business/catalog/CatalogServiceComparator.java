@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CatalogServiceComparator implements OrderableComparator<CatalogService>
+public class CatalogServiceComparator implements OrderableComparator
 {
 	private List<String>    mAttributes = new ArrayList<String>();
 	private boolean mAscendingOrder = true;
@@ -13,12 +13,15 @@ public class CatalogServiceComparator implements OrderableComparator<CatalogServ
 	public final static String ORDER_BY_ID = "id";
 	public final static String ORDER_BY_NAME = "name";
 
-
+	public CatalogServiceComparator()
+	{
+	}
 
 	@Override
-	public int compare(CatalogService s1, CatalogService s2) 
+	public int compare(Object o1, Object o2)
 	{
-
+		CatalogService s1 = (CatalogService)o1;
+		CatalogService s2 = (CatalogService)o2;
 
 		int rv = 0;
 		if (mAttributes.size()==0) {
@@ -50,10 +53,14 @@ public class CatalogServiceComparator implements OrderableComparator<CatalogServ
 		return rv;
 	}
 
-
+	@Override
+	public boolean equals(Object obj)  
+	{
+		return this.equals(obj);
+	}
 
 	@Override
-	public void orderBy(List<String> attributes) {
+	public void orderBy(List attributes) {
 		mAttributes = attributes;
 	}
 
@@ -62,8 +69,4 @@ public class CatalogServiceComparator implements OrderableComparator<CatalogServ
 	{
 		mAscendingOrder = val;
 	}
-
-
-
-
 }

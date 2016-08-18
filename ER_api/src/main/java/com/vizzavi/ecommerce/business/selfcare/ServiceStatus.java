@@ -37,7 +37,28 @@ public class ServiceStatus
     private final static int[] VALUES = new int[] { 200,201,211,212,221,222,223 };
 
 
-
+//	// Remedy Case 00000417 - returns the equivelent ER4 status given a ER5 status
+//	protected static int getER4Status(int val)
+//	{
+//		switch(val)
+//		{	case BEING_PROVISIONED:
+//				return PECS_PKG_SRV_PKG_PAYMENT_OK_BEING_PROVISIONED;
+//			case ACTIVE:
+//				return PECS_PKG_SRV_ACTIVE;
+//			case INACTIVE:
+//				return PECS_PKG_SRV_INACTIVE;
+//			case DISABLED:
+//				return PECS_PKG_SRV_INACTIVE;
+//			case PROVISION_SUCCESS:
+//				return PECS_PKG_SRV_ACTIVE;
+//			case PROVISION_DELAY:
+//				return PECS_PKG_SRV_PROV_DELAYED;
+//			case PROVISION_FAILED:
+//				return PECS_PKG_SRV_PROV_FAILED;
+//			default:
+//				return val;
+//		}
+//	}
 
     public final static String[] getNames()
     {

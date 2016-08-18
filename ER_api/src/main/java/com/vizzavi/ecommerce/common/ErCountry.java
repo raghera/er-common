@@ -13,78 +13,67 @@ import java.util.Map;
  */
 //TODO add currency and so on from java.util.Currency and remove CountryCode class
 /*
- * select country_name ||'('||country_obj_id||', new Locale("'||iso_language||'", "'||iso_country||'"), "'||DEFAULT_TIMEZONE||'"), ' from er_country order by country_obj_id
+ * select country_name ||'('||country_obj_id||', new Locale("'||iso_language||'", "'||iso_country||'")), ' from er_country
 */
-public enum ErCountry { 
-	Belgium(0, new Locale("fr", "BE"), "Europe/Brussels"), 
-	Switzerland(1, new Locale("de", "CH"), "Europe/Zurich"), 
-	Germany(2, Locale.GERMANY, "Europe/Berlin"), 
-	Spain(3, new Locale("es", "ES"), "Europe/Madrid"), 
-	France(4, Locale.FRANCE, "Europe/Paris"), 
-	UK(5,Locale.UK, "Europe/London"), 
-	Greece(6, new Locale("el", "GR"), "Europe/Athens"), 
-	Hungary(7, new Locale("hu", "HU"), "Europe/Budapest"), 
-	Ireland(8, new Locale("en", "IE"), "Europe/Dublin"), 
-	Italy(9, Locale.ITALY, "Europe/Rome"), 
-	Netherlands(10, new Locale("nl", "NL"), "Europe/Amsterdam"), 
-	Poland(11, new Locale("pl", "PL"), "Europe/Warsaw"), 
-	Portugal(12, new Locale("pt", "PT"), "Europe/Lisbon"), 
-	Romania(13, new Locale("ro", "RO"), "Europe/Bucharest"), 
-	Sweden(14, new Locale("sv", "SE"), "Europe/Stockholm"), 
-	Australia(15, new Locale("en", "AU"), "Australia/Sydney"), 
-	New_Zealand(16, new Locale("en", "NZ"), "Pacific/Auckland"), 
-	Egypt(17, new Locale("ar", "EG"), "Africa/Cairo"), 
-	Austria(18, new Locale("de", "AT"), "Europe/Vienna"), 
-	Bahrain(19, new Locale("ar", "BH"), "Asia/Bahrain"), 
-	Croatia(20, new Locale("hr", "HR"), "Europe/Zagreb"), 
-	Denmark(21, new Locale("da", "DK"), "Europe/Copenhagen"), 
-	Estonia(22, new Locale("et", "EE"), "Europe/Tallinn"), 
-	Finland(23, new Locale("fi", "FI"), "Europe/Helsinki"), 
-	Iceland(24, new Locale("is", "IS"), "Europe/Reykjavik"), 
-	Japan(25, Locale.JAPAN, "Asia/Tokyo"), 
-	Jordan(26, new Locale("ar", "JO"), "Asia/Amman"), 
-	Kuwait(27, new Locale("ar", "KW"), "Asia/Kuwait"), 
-	Luxembourg(28, new Locale("fr", "LU"), "Europe/Luxembourg"), 
-	Malaysia(29, new Locale("ms", "MY"), "Asia/Kuala_Lumpur"), 
-	Malta(30, new Locale("en", "MT"), "Europe/Malta"), 		//MQC9461 - change from Maltese to English to work around a bug in ER atomic
-	Singapore(31, new Locale("zh", "SG"), "Asia/Singapore"), 
-	Slovenia(32, new Locale("sl", "SI"), "Europe/Ljubljana"), 
-	South_Africa(33, new Locale("en", "ZA"), "Africa/Johannesburg"), 
-	Turkey(34, new Locale("tr", "TR"), "Asia/Istanbul"), 
-	USA(35, new Locale("en", "US"), "America/New_York"), 
-	Czech_Republic(36, new Locale("cs", "CZ"), "Europe/Prague"), 
-	Bulgaria(37, new Locale("bg", "BG"), "Europe/Sofia"), 
-	Serbia(38, new Locale("sr", "RS"), "Europe/Belgrade"), 
-	Macedonia(39, new Locale("mk", "MK"), "Europe/Skopje"), 
-	India(40, new Locale("hi", "IN"), "Asia/Delhi"), 
-	Cyprus(41, new Locale("el", "CY"), "Europe/Nicosia"), 
-	Russia(42, new Locale("ru", "RU"), "Europe/Moscow"), 
-	Chile(43, new Locale("es", "CL"), "America/Santiago"), 
-	Democratic_Republic_of_Congo(44, new Locale("fr", "CD"), "Africa/Kinshasa"), 
-	Tanzania(45, new Locale("sw", "TZ"), "Africa/Dar_es_Salaam"), 
-	Ghana(46, new Locale("en", "GH"), "Africa/Accra"), 
-	Qatar(47, new Locale("ar", "QA"), "Asia/Qatar"), 
-	Albania(48, new Locale("sq", "AL"), "Europe/Tirana"), 
-	Fiji(49, new Locale("en", "FJ"), "Pacific/Fiji"), 
-	Argentina(50, new Locale("es", "AR"), "America/Buenos_Aires"), 
-	Brazil(51, new Locale("pt", "BR"), "America/Sao_Paulo"), 
-	Canada(52, new Locale("en", "CA"), "America/Toronto"), 
-	Columbia(53, new Locale("es", "CO"), "America/Bogota"), 
-	Dominican_Republic(54, new Locale("es", "DO"), "America/Santo_Domingo"), 
-	Ecuador(55, new Locale("es", "EC"), "America/Guayaquil"), 
-	El_Salvador(56, new Locale("es", "SV"), "America/El_Salvador"), 
-	Guatemala(57, new Locale("es", "GT"), "America/Guatemala"), 
-	Honduras(58, new Locale("es", "HN"), "America/Tegucigalpa"), 
-	Mexico(59, new Locale("es", "MX"), "America/Mexico_City"), 
-	Nicaragua(60, new Locale("es", "NI"), "America/Managua"), 
-	Paraguay(61, new Locale("es", "PY"), "America/Asuncion"), 
-	Peru(62, new Locale("es", "PE"), "America/Lima"), 
-	Puerto_Rico(63, new Locale("es", "PR"), "America/Puerto_Rico"), 
-	Uruguay(64, new Locale("es", "UY"), "America/Montevideo");
+public enum ErCountry { Belgium(0,new Locale("fr", "BE")), Switzerland(1,new Locale("de", "CH"))
+	, Germany(2, Locale.GERMANY), Spain(3, new Locale("es", "ES"))	
+	, France(4,Locale.FRANCE)	, UK(5, Locale.UK) 
+	, Greece(6,new Locale("el", "GR")), Hungary(7, new Locale("hu", "HU"))		
+	, Ireland(8, new Locale("en", "IE")), Italy(9, Locale.ITALY)
+	, Netherlands(10,new Locale("nl", "NL")), Poland(11,new Locale("pl", "PL"))
+	, Portugal(12,new Locale("pt", "PT")), Romania(13, new Locale("ro", "RO"))
+	, Sweden(14, new Locale("sv", "SE")), Australia(15, new Locale("en", "AU"))
+	, New_Zealand(16, new Locale("en", "NZ")), Egypt(17, new Locale("ar", "EG"))	,
+	Austria(18, new Locale("de", "AT")), 
+	Bahrain(19, new Locale("ar", "BH")), 
+	Croatia(20, new Locale("hr", "HR")), 
+	Denmark(21, new Locale("da", "DK")), 
+	Estonia(22, new Locale("et", "EE")), 
+	Finland(23, new Locale("fi", "FI")), 
+	Iceland(24, new Locale("is", "IS")), 
+	Japan(25, Locale.JAPAN), 
+	Jordan(26, new Locale("ar", "JO")), 
+	Kuwait(27, new Locale("ar", "KW")), 
+	Luxembourg(28, new Locale("fr", "LU")), 
+	Malaysia(29, new Locale("ms", "MY")), 
+	Malta(30, new Locale("en", "MT")), 	//MQC9461 - change from Maltese to English to work around a bug in ER atomic
+	Singapore(31, new Locale("zh", "SG")), 
+	Slovenia(32, new Locale("sl", "SI")), 
+	South_Africa(33, new Locale("en", "ZA")), 
+	Turkey(34, new Locale("tr", "TR")), 
+	USA(35, new Locale("en", "US")), 
+	Czech_Republic(36, new Locale("cs", "CZ")), 
+	Bulgaria(37, new Locale("bg", "BG")), 
+	Serbia(38, new Locale("sr", "RS")), 
+	Macedonia(39, new Locale("mk", "MK")), 
+	India(40, new Locale("hi", "IN")), 
+	Cyprus(41, new Locale("el", "CY")), 
+	Russia(42, new Locale("ru", "RU")), 
+	Chile(43, new Locale("es", "CL")), 
+	Democratic_Republic_of_Congo(44, new Locale("fr", "CD")), 
+	Tanzania(45, new Locale("sw", "TZ")), 
+	Ghana(46, new Locale("en", "GH")), 
+	Qatar(47, new Locale("ar", "QA")), 
+	Albania(48, new Locale("sq", "AL")), 
+	Fiji(49, new Locale("en", "FJ")), 
+	Argentina(50, new Locale("es", "AR")), 
+	Brazil(51, new Locale("pt", "BR")), 
+	Canada(52, new Locale("en", "CA")), 
+	Columbia(53, new Locale("es", "CO")), 
+	Dominican_Republic(54, new Locale("es", "DO")), 
+	Ecuador(55, new Locale("es", "EC")), 
+	El_Salvador(56, new Locale("es", "SV")), 
+	Guatemala(57, new Locale("es", "GT")), 
+	Honduras(58, new Locale("es", "HN")), 
+	Mexico(59, new Locale("es", "MX")), 
+	Nicaragua(60, new Locale("es", "NI")), 
+	Paraguay(61, new Locale("es", "PY")), 
+	Peru(62, new Locale("es", "PE")), 
+	Puerto_Rico(63, new Locale("es", "PR")), 
+	Uruguay(64, new Locale("es", "UY"));
 		 
 	private Integer erId;
 	private Locale locale;
-	private String	defaultTimezone;
 	/** a map of all the countries, indexed by ER ID (eg Portugal is 13) */
 	public final static  Map<Integer, ErCountry> ErCountries ;
 	/**  a map of all the countries, indexed by 2 letter ISO country code (eg DE for Germany) */
@@ -104,10 +93,9 @@ public enum ErCountry {
 		
 	}
 	
-	private ErCountry(Integer id, Locale loc, String defaultTimezone )	{
+	private ErCountry(Integer id, Locale loc )	{
 		erId=id;
 		locale=loc;
-		this.defaultTimezone = defaultTimezone;
 	}
 	
 	/**The COUNTRY_OBJ_ID from the DB (eg Portugal is 13) */
@@ -175,22 +163,18 @@ public enum ErCountry {
 	}
 	
 	/**
-	 * pass in a country code (e.g. 'DE') and get a Locale back - eg {@code Locale.GERMANY} - or null if the country code is not recognised.
+	 * pass in a country code (e.g. 'DE') and get a Locale back - eg {@code Locale.GERMANY}
 	 * @param countryCode a 2 letter ISO 3166 string
 	 * @return
 	 */
 	public static Locale getLocale(String countryCode)	{
-		ErCountry opco = getCountryByCode(countryCode);
-		if (opco!=null)
-			return opco.getLocale();
-		else
-			return null;
+		return getCountryByCode(countryCode).getLocale();
 	}
 
 	/**
 	 * attempts to create a Locale object from the locale String (eg 'en_GB') passed in.<br/>
 	 * You can also pass in just 'GB' or 'DE' and it will try to retrieve the complete Locale (with default language).<br/>
-	 * @param localeString eg 'fr_CH' or 'IT' or even 'en_uk_GB'
+	 * @param localeString eg 'fr_CH' or 'IT'
 	 * @return null if the locale String was null; otherwise a Locale object with at least country populated, and probably language too
 	 */
 	public static Locale parseLocale(String localeString)	{
@@ -198,9 +182,9 @@ public enum ErCountry {
 			return null;
 		Locale locale=null;
 		if (localeString.indexOf('_')>0)	{	//ie language and country specified
-			String[] tokens = localeString.split("_");	//could be ['en', 'GB'] or ['en', 'uk', 'GB']
-			locale = new Locale(tokens[0], tokens[tokens.length-1]);
-		}	else	{	//assume only country specified, since that is required
+			locale = new Locale(localeString.split("_")[0], localeString.split("_")[1]);
+		}	else	{
+			//logger.info("unusual request locale : {}", localeString);
 			
 			if (getCountryByCode(localeString)!=null)	{
 				locale = ErCountry.getCountryByCode(localeString).getLocale();
@@ -210,13 +194,5 @@ public enum ErCountry {
 			}
 		}
 		return locale;
-	}
-
-	/**
-	 * the default timezone for the country, eg "Africa/Johannesburg" for South Africa
-	 * @return
-	 */
-	public String getDefaultTimezone() {
-		return defaultTimezone;
 	}
 }

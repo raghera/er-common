@@ -28,6 +28,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
+		<castor.version>0.9.5.2</castor.version>
 	</properties>
 
 	<dependencies>
@@ -142,6 +143,13 @@
 			<artifactId>jdom</artifactId>
 			<version>1.0b8</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/castor/castor -->
+		<dependency>
+			<groupId>castor</groupId>
+			<artifactId>castor</artifactId>
+			<version>${castor.version}</version>
+		</dependency>
+
 
 	</dependencies>
 

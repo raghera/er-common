@@ -48,18 +48,24 @@ public class UsageAttributes extends RatingAttributes
 
 
 	/**
-	 * sets force purchase flag to false
-	 * @see {@link #forcePurchase()}
+	 * setter methods for the forcePurchaseFlag
+	 *  if true, following scenario is automated:
+	 *  1- Usage(forceUsageFlag is true) failed
+	 *  2- dicoverPurchaseOption returning only one package ID
+	 *  3- Purchase option
+	 *  4- Use service
+	 * @since ER 5.1
 	 */
 	public void diablePurchase(){
 		this.forcePurchaseFlag = false;
 	}
 
 	/**
-	 * set force purchase to true
-	 * @see {@link #diablePurchase()} to set it to false
+	 * setter methods for the forcePurchaseFlag
+	 * if false, normal usage
+	 * @since ER 5.1
 	 */
-	public void forcePurchase()	{
+	public void forcePurchase (){
 		this.forcePurchaseFlag = true;
 	}
 	

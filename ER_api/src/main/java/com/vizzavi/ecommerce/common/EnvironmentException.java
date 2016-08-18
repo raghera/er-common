@@ -4,7 +4,7 @@ package com.vizzavi.ecommerce.common;
 public class EnvironmentException extends EcommerceRuntimeException {
 
    private    static final long serialVersionUID = -1762365784820133107L;
- // private final static String VERSION = "$Revision: 1.1 $";
+ // private final static String VERSION = "$Revision: 1.4 $";
 
 /**
  * Default constructor of the ChargingException class.

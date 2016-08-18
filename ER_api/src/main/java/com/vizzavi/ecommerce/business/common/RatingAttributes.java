@@ -1,11 +1,8 @@
 package com.vizzavi.ecommerce.business.common;
 
-import java.util.Arrays;
 import java.util.Calendar;
 
-
-
-//import com.vizzavi.ecommerce.business.catalog.NetworkCode;
+import com.vizzavi.ecommerce.business.catalog.NetworkCode;
 import com.vizzavi.ecommerce.common.RatingUtils;
 import com.vizzavi.ecommerce.resources.PropertyDataBool;
 import com.vizzavi.ecommerce.resources.PropertyDataInt;
@@ -77,6 +74,16 @@ public class RatingAttributes extends BaseAttributes
                 return ErCoreConst.NCMATCH_WILDCARD;
             }
 	}
+	/**
+	 * Don't use!  The value of NETWORK_CODE_MATCH_METHOD should be retrieved directly from ConfigProvider
+	 * @deprecated this won't work with multi-tenancy.  
+	 * @return
+	 */
+	@Deprecated
+	public void setNetworkCodeMatchMethod(int matchMethod)	{
+                if(mNetworkCodeMatchMethod != null)
+		    mNetworkCodeMatchMethod.setVal(matchMethod);
+	}
 
 	
 
@@ -135,8 +142,6 @@ public class RatingAttributes extends BaseAttributes
 	protected int    mDeviceType = Constants.INT_MATCH_ALL;
 	protected int    mPremiumLevel = Constants.INT_NOT_SET;
 	protected String    mSupplierId = Constants.STRING_NOT_SET;
-	/**@deprecated can we really have multiple user groups as rating attributes or pricepoint attributes?*/
-	@Deprecated
 	protected String[]  mUserGroups = new String[] {Constants.STRING_NOT_SET};
 	protected String[]  mPromoCodes = new String[] {Constants.STRING_NOT_SET};
 	
@@ -193,8 +198,8 @@ public class RatingAttributes extends BaseAttributes
 	
 	
 	//roaming - TODO remove these
-//	protected String mNetworkCodeStr;		// for external clients
-//	protected NetworkCode mNetworkCode;		// for internal use
+	protected String mNetworkCodeStr;		// for external clients
+	protected NetworkCode mNetworkCode;		// for internal use
 	
 	//REMEDY 5685 - subscription has historic pricepoint flag
 	protected boolean mHasHistoricPricePointFlag = false;
@@ -289,10 +294,6 @@ public class RatingAttributes extends BaseAttributes
 	protected String mPartnerEmail;
 	
 	
-	//ET 68 : Addition of partner-name field in ER starts here
-	protected String mPartnerName;
-	//ET 68 : Addition of partner-name field in ER ends here
-	
 	/**
 	 * for CR 2145.  Returns false by default unless the client sets it to true
 	 * @return
@@ -345,12 +346,6 @@ public class RatingAttributes extends BaseAttributes
   	
   	protected boolean mDiscardHiddenInactivePricepoints;
   	
-  	/**
-  	 * JIRA ET169 - discard middle advanced pricepoint from pricepoint rating 
-  	 */
-  	
-  	protected boolean mDiscardMiddleAdvancedPricepoints;
-  	
 	/**
 	 *   Default constructor.
 	 */
@@ -395,8 +390,8 @@ public class RatingAttributes extends BaseAttributes
 			
 			
 			//@hud STKHREQ13076 SP ROAMING
-//			mNetworkCode = attrs.getNetworkCode();
-//			mNetworkCodeStr = attrs.getNetworkCodeStr();
+			mNetworkCode = attrs.getNetworkCode();
+			mNetworkCodeStr = attrs.getNetworkCodeStr();
 
 		   mMultiUsageMode =  new PropertyDataInt();
 		   //mAccessControlSwitch = new PropertyDataBool();
@@ -461,11 +456,6 @@ public class RatingAttributes extends BaseAttributes
 		   this.mPartnerContactInfo = attrs.getPartnerContactInfo();
 		   this.mPartnerEmail = attrs.getPartnerEmail();
 		   //CR CTB-1 Advanced Linked Pricepoint
-
-		   //ET 68 : Addition of partner-name field in ER starts here
-		   this.mPartnerName = attrs.getPartnerName();
-		   //ET 68 : Addition of partner-name field in ER ends here
-		   
 		   this.mSubRenewalCounterToLinkedPricepoint = attrs.getSubRenewalCounterToLinkedPricepoint();
 		   this.mPPtRenewalCounterToLinkedPricepoint = attrs.getPPtRenewalCounterToLinkedPricepoint();
 		   this.mLinkedByTrialPricepoint = attrs.getLinkedByTrialPricepoint();
@@ -474,8 +464,6 @@ public class RatingAttributes extends BaseAttributes
 		   this.mSubPurchaseTransactionTrial = attrs.getSubPurchaseTransactionTrial();
 		   //MQC 9383
 		   this.mDiscardHiddenInactivePricepoints = attrs.getDiscardHiddenInactivePricepoints();
-		   //JIRAET169
-		   this.mDiscardMiddleAdvancedPricepoints = attrs.isDiscardMiddleAdvancedPricepoints();
 		}
 	}
 	
@@ -581,10 +569,9 @@ public class RatingAttributes extends BaseAttributes
 	
 	
 	/**
-	 *  @see {@link #getUserGroup} instead
-	 * @deprecated user groups are set at account level and txns/ subs /pricepoints have a single user group associated
+	 *  Retrieve the user groups.
+	 * This allows a customer to belong to a number of user groups.
 	 */
-	@Deprecated
 	public String[] getUserGroups()
 	{
 		return this.mUserGroups;
@@ -615,8 +602,7 @@ public class RatingAttributes extends BaseAttributes
 	}
 	
 	/**
-	 *  @see {@link #setUserGroup} instead
-	 * @deprecated user groups are set at account level and txns/ subs /pricepoints have a single user group associated
+	 *  Set the user group.
 	 */
 	@Deprecated
 	public void setUserGroups( String[] userGroups )
@@ -625,7 +611,7 @@ public class RatingAttributes extends BaseAttributes
 	}
 	
 	/**
-	 *   Retrieve the payment type.
+	 *   Retrieve the access device type.
 	 */
 	public int getPaymentType()
 	{
@@ -854,9 +840,6 @@ public class RatingAttributes extends BaseAttributes
 		sb.append("mPartnerUrl=" + mPartnerUrl).append(',');
 		sb.append("mPartnerContactInfo=" + mPartnerContactInfo).append(',');
 		sb.append("mPartnerEmail=" + mPartnerEmail).append(',');
-		//ET 68 : Addition of partner-name field in ER starts here
-		sb.append("mPartnerName=" + mPartnerName).append(',');
-		//ET 68 : Addition of partner-name field in ER ends here
 		//CR CTB-1 Advanced Linked Pricepoint
 		sb.append("mSubRenewalCounterToLinkedPricepoint=" + mSubRenewalCounterToLinkedPricepoint).append(',');
 		sb.append("mPPtRenewalCounterToLinkedPricepoint=" + mPPtRenewalCounterToLinkedPricepoint).append(',');
@@ -951,7 +934,7 @@ public class RatingAttributes extends BaseAttributes
 	}
 	/**
 	 *  @version      ER 8.0
-	 *  @author       VFE  PS Team
+	 *  @author       VFE � PS Team
 	 *  @date         15-Aug-2005
 	 *  @description  (Record Undiscounted price on discounted purchases)   The purpose of this method is to get the Tier name from the rating attributes . 
 	 **/
@@ -962,7 +945,7 @@ public class RatingAttributes extends BaseAttributes
 	
 	/**
 	 *  @version      ER 8.0
-	 *  @author       VFE  PS Team
+	 *  @author       VFE � PS Team
 	 *  @date         15-Aug-2005
 	 *  @description  (Record Undiscounted price on discounted purchases)   The purpose of this method is to set the Tier name in the rating attributes. 
 	 **/
@@ -1026,23 +1009,23 @@ public class RatingAttributes extends BaseAttributes
 	 * STKHREQ13076 SP ROAMING
 	 * Network code access
 	 */
-//	public void setNetworkCodeStr(String networkCodeStr)
-//	{
-//		mNetworkCodeStr = networkCodeStr;
-//	}
-//	public String getNetworkCodeStr() 
-//	{
-//		return mNetworkCodeStr;
-//	}
-//	
-//	public void setNetworkCode(NetworkCode networkCode)
-//	{
-//		mNetworkCode = networkCode;
-//	}
-//	public NetworkCode getNetworkCode() 
-//	{
-//		return mNetworkCode;
-//	}
+	public void setNetworkCodeStr(String networkCodeStr)
+	{
+		mNetworkCodeStr = networkCodeStr;
+	}
+	public String getNetworkCodeStr() 
+	{
+		return mNetworkCodeStr;
+	}
+	
+	public void setNetworkCode(NetworkCode networkCode)
+	{
+		mNetworkCode = networkCode;
+	}
+	public NetworkCode getNetworkCode() 
+	{
+		return mNetworkCode;
+	}
 	
 	
 	/**
@@ -1444,17 +1427,6 @@ public class RatingAttributes extends BaseAttributes
 			this.mPartnerEmail = partnerEmail;
 		}
 		
-		//ET 68 : Addition of partner-name field in ER starts here		
-		
-		public String getPartnerName() {
-			return this.mPartnerName;
-		}
-		public void setPartnerName(String partnerName) {
-			this.mPartnerName = partnerName;
-		}
-		
-		//ET 68 : Addition of partner-name field in ER ends here
-		
 		/**
 		 * CR CTB-1 Advanced Linked Pricepoint
 		 * @return the mRenewalCounterToLinkedPricepoint
@@ -1565,414 +1537,6 @@ public class RatingAttributes extends BaseAttributes
 		 */
 		public void setDiscardHiddenInactivePricepoints(boolean discardHiddenInactivePPTs) {
 			this.mDiscardHiddenInactivePricepoints = discardHiddenInactivePPTs;
-		}
-		
-		/**
-		 * JIRAET169 - discard middle advanced pricepoints from pricepoint rating
-		 * @return the mDiscardMiddleAdvancedPricepoints
-		 */
-		public boolean isDiscardMiddleAdvancedPricepoints() {
-			return this.mDiscardMiddleAdvancedPricepoints;
-		}
-		
-		/**
-		 * JIRAET169 - discard middle advanced pricepoints from pricepoint rating
-		 * @param discardMiddleAdvPPTs the mDiscardMiddleAdvancedPricepoints to set
-		 */
-		public void setDiscardMiddleAdvancedPricepoints(boolean discardMiddleAdvPPTs) {
-			this.mDiscardMiddleAdvancedPricepoints = discardMiddleAdvPPTs;
-		}
-		
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = super.hashCode();
-			result = prime * result + (cancellationUsage ? 1231 : 1237);
-			result = prime * result + (enableReIssue ? 1231 : 1237);
-			result = prime * result + (expressPurchaseFlag ? 1231 : 1237);
-			result = prime * result + (hasRenewalPreRate ? 1231 : 1237);
-			result = prime * result + (includeUnavailable ? 1231 : 1237);
-			result = prime * result + (interactiveFlag ? 1231 : 1237);
-			result = prime * result
-					+ ((mAffiliateID == null) ? 0 : mAffiliateID.hashCode());
-			result = prime * result
-					+ ((mAggregatorId == null) ? 0 : mAggregatorId.hashCode());
-			result = prime * result
-					+ ((mAssetID == null) ? 0 : mAssetID.hashCode());
-			result = prime * result
-					+ ((mBearer == null) ? 0 : mBearer.hashCode());
-			result = prime * result + Arrays.hashCode(mBearerIds);
-			result = prime * result + mChannel;
-			result = prime * result + mChargingMethod;
-			result = prime
-					* result
-					+ ((mContentCategory == null) ? 0 : mContentCategory
-							.hashCode());
-			result = prime * result
-					+ ((mContentName == null) ? 0 : mContentName.hashCode());
-			result = prime * result + mDeviceType;
-			result = prime * result
-					+ (mDiscardHiddenInactivePricepoints ? 1231 : 1237);
-			result = prime * result + mDuration;
-			result = prime
-					* result
-					+ ((mEventDateTime == null) ? 0 : mEventDateTime.hashCode());
-			long temp;
-			temp = Double.doubleToLongBits(mEventUnits);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			result = prime * result
-					+ (mHasHistoricPricePointFlag ? 1231 : 1237);
-			result = prime
-					* result
-					+ ((mHistoryStartDate == null) ? 0 : mHistoryStartDate
-							.hashCode());
-			result = prime * result + (mInForcePurchaseFlow ? 1231 : 1237);
-			result = prime * result
-					+ ((mInvoiceText == null) ? 0 : mInvoiceText.hashCode());
-			result = prime * result + (mIsForNextPaymentAmount ? 1231 : 1237);
-			result = prime * result + (mIsForRenewal ? 1231 : 1237);
-			result = prime * result + (mIsMatchTrialPromoCode ? 1231 : 1237);
-			result = prime
-					* result
-					+ ((mLinkPricepointId == null) ? 0 : mLinkPricepointId
-							.hashCode());
-			result = prime * result + (mLinkedByTrialPricepoint ? 1231 : 1237);
-			result = prime * result
-					+ ((mMerchantName == null) ? 0 : mMerchantName.hashCode());
-			temp = Double.doubleToLongBits(mNextCycleDisount);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			result = prime * result + mPPtRenewalCounterToLinkedPricepoint;
-			result = prime
-					* result
-					+ ((mPartnerContactInfo == null) ? 0 : mPartnerContactInfo
-							.hashCode());
-			result = prime * result
-					+ ((mPartnerEmail == null) ? 0 : mPartnerEmail.hashCode());
-			result = prime * result
-					+ ((mPartnerId == null) ? 0 : mPartnerId.hashCode());
-			result = prime * result
-					+ ((mPartnerName == null) ? 0 : mPartnerName.hashCode());
-			result = prime * result
-					+ ((mPartnerUrl == null) ? 0 : mPartnerUrl.hashCode());
-			result = prime
-					* result
-					+ ((mPaymentInformation == null) ? 0 : mPaymentInformation
-							.hashCode());
-			result = prime * result + mPaymentType;
-			result = prime * result + (mPreOrder ? 1231 : 1237);
-			temp = Double.doubleToLongBits(mPreRate);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			result = prime * result + mPremiumLevel;
-			result = prime * result
-					+ ((mProductCode == null) ? 0 : mProductCode.hashCode());
-			result = prime * result + Arrays.hashCode(mPromoCodes);
-			result = prime * result
-					+ ((mPromoPrecode == null) ? 0 : mPromoPrecode.hashCode());
-			result = prime
-					* result
-					+ ((mPromoUniqueCode == null) ? 0 : mPromoUniqueCode
-							.hashCode());
-			result = prime
-					* result
-					+ ((mReceipientMsisdn == null) ? 0 : mReceipientMsisdn
-							.hashCode());
-			result = prime
-					* result
-					+ ((mShortPackageId == null) ? 0 : mShortPackageId
-							.hashCode());
-			result = prime * result
-					+ (mSubPurchaseTransactionTrial ? 1231 : 1237);
-			result = prime * result + mSubRenewalCounterToLinkedPricepoint;
-			result = prime
-					* result
-					+ ((mSubRenewalPricepointId == null) ? 0
-							: mSubRenewalPricepointId.hashCode());
-			result = prime * result
-					+ ((mSupplierId == null) ? 0 : mSupplierId.hashCode());
-			result = prime * result
-					+ ((mTariff == null) ? 0 : mTariff.hashCode());
-			result = prime * result
-					+ ((mTaxCode == null) ? 0 : mTaxCode.hashCode());
-			temp = Double.doubleToLongBits(mTaxRate);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			result = prime
-					* result
-					+ ((mTaxRateAsDouble == null) ? 0 : mTaxRateAsDouble
-							.hashCode());
-			result = prime * result
-					+ ((mTierName == null) ? 0 : mTierName.hashCode());
-			result = prime * result
-					+ ((mUserGroup == null) ? 0 : mUserGroup.hashCode());
-			result = prime * result + Arrays.hashCode(mUserGroups);
-			result = prime * result
-					+ ((mVendorId == null) ? 0 : mVendorId.hashCode());
-			result = prime * result
-					+ (overrideDisallowPreRateFlag ? 1231 : 1237);
-			result = prime * result + (preRatePriceIsGross ? 1231 : 1237);
-			result = prime * result + (reIssueFlagPresent ? 1231 : 1237);
-			temp = Double.doubleToLongBits(renewalPreRate);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			return result;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (!super.equals(obj))
-				return false;
-			if (!(obj instanceof RatingAttributes))
-				return false;
-			RatingAttributes other = (RatingAttributes) obj;
-			if (cancellationUsage != other.cancellationUsage)
-				return false;
-			if (enableReIssue != other.enableReIssue)
-				return false;
-			if (expressPurchaseFlag != other.expressPurchaseFlag)
-				return false;
-			if (hasRenewalPreRate != other.hasRenewalPreRate)
-				return false;
-			if (includeUnavailable != other.includeUnavailable)
-				return false;
-			if (interactiveFlag != other.interactiveFlag)
-				return false;
-			if (mAffiliateID == null) {
-				if (other.mAffiliateID != null)
-					return false;
-			} else if (!mAffiliateID.equals(other.mAffiliateID))
-				return false;
-			if (mAggregatorId == null) {
-				if (other.mAggregatorId != null)
-					return false;
-			} else if (!mAggregatorId.equals(other.mAggregatorId))
-				return false;
-			if (mAssetID == null) {
-				if (other.mAssetID != null)
-					return false;
-			} else if (!mAssetID.equals(other.mAssetID))
-				return false;
-			if (mBearer == null) {
-				if (other.mBearer != null)
-					return false;
-			} else if (!mBearer.equals(other.mBearer))
-				return false;
-			if (!Arrays.equals(mBearerIds, other.mBearerIds))
-				return false;
-			if (mChannel != other.mChannel)
-				return false;
-			if (mChargingMethod != other.mChargingMethod)
-				return false;
-			if (mContentCategory == null) {
-				if (other.mContentCategory != null)
-					return false;
-			} else if (!mContentCategory.equals(other.mContentCategory))
-				return false;
-			if (mContentName == null) {
-				if (other.mContentName != null)
-					return false;
-			} else if (!mContentName.equals(other.mContentName))
-				return false;
-			if (mDeviceType != other.mDeviceType)
-				return false;
-			if (mDiscardHiddenInactivePricepoints != other.mDiscardHiddenInactivePricepoints)
-				return false;
-			if (mDuration != other.mDuration)
-				return false;
-			if (mEventDateTime == null) {
-				if (other.mEventDateTime != null)
-					return false;
-			} else if (!mEventDateTime.equals(other.mEventDateTime))
-				return false;
-			if (Double.doubleToLongBits(mEventUnits) != Double
-					.doubleToLongBits(other.mEventUnits))
-				return false;
-			if (mHasHistoricPricePointFlag != other.mHasHistoricPricePointFlag)
-				return false;
-			if (mHistoryStartDate == null) {
-				if (other.mHistoryStartDate != null)
-					return false;
-			} else if (!mHistoryStartDate.equals(other.mHistoryStartDate))
-				return false;
-			if (mInForcePurchaseFlow != other.mInForcePurchaseFlow)
-				return false;
-			if (mInvoiceText == null) {
-				if (other.mInvoiceText != null)
-					return false;
-			} else if (!mInvoiceText.equals(other.mInvoiceText))
-				return false;
-			if (mIsForNextPaymentAmount != other.mIsForNextPaymentAmount)
-				return false;
-			if (mIsForRenewal != other.mIsForRenewal)
-				return false;
-			if (mIsMatchTrialPromoCode != other.mIsMatchTrialPromoCode)
-				return false;
-			if (mLinkPricepointId == null) {
-				if (other.mLinkPricepointId != null)
-					return false;
-			} else if (!mLinkPricepointId.equals(other.mLinkPricepointId))
-				return false;
-			if (mLinkedByTrialPricepoint != other.mLinkedByTrialPricepoint)
-				return false;
-			if (mMerchantName == null) {
-				if (other.mMerchantName != null)
-					return false;
-			} else if (!mMerchantName.equals(other.mMerchantName))
-				return false;
-			if (Double.doubleToLongBits(mNextCycleDisount) != Double
-					.doubleToLongBits(other.mNextCycleDisount))
-				return false;
-			if (mPPtRenewalCounterToLinkedPricepoint != other.mPPtRenewalCounterToLinkedPricepoint)
-				return false;
-			if (mPartnerContactInfo == null) {
-				if (other.mPartnerContactInfo != null)
-					return false;
-			} else if (!mPartnerContactInfo.equals(other.mPartnerContactInfo))
-				return false;
-			if (mPartnerEmail == null) {
-				if (other.mPartnerEmail != null)
-					return false;
-			} else if (!mPartnerEmail.equals(other.mPartnerEmail))
-				return false;
-			if (mPartnerId == null) {
-				if (other.mPartnerId != null)
-					return false;
-			} else if (!mPartnerId.equals(other.mPartnerId))
-				return false;
-			if (mPartnerName == null) {
-				if (other.mPartnerName != null)
-					return false;
-			} else if (!mPartnerName.equals(other.mPartnerName))
-				return false;
-			if (mPartnerUrl == null) {
-				if (other.mPartnerUrl != null)
-					return false;
-			} else if (!mPartnerUrl.equals(other.mPartnerUrl))
-				return false;
-			if (mPaymentInformation == null) {
-				if (other.mPaymentInformation != null)
-					return false;
-			} else if (!mPaymentInformation.equals(other.mPaymentInformation))
-				return false;
-			if (mPaymentType != other.mPaymentType)
-				return false;
-			if (mPreOrder != other.mPreOrder)
-				return false;
-			if (Double.doubleToLongBits(mPreRate) != Double
-					.doubleToLongBits(other.mPreRate))
-				return false;
-			if (mPremiumLevel != other.mPremiumLevel)
-				return false;
-			if (mProductCode == null) {
-				if (other.mProductCode != null)
-					return false;
-			} else if (!mProductCode.equals(other.mProductCode))
-				return false;
-			if (!Arrays.equals(mPromoCodes, other.mPromoCodes))
-				return false;
-			if (mPromoPrecode == null) {
-				if (other.mPromoPrecode != null)
-					return false;
-			} else if (!mPromoPrecode.equals(other.mPromoPrecode))
-				return false;
-			if (mPromoUniqueCode == null) {
-				if (other.mPromoUniqueCode != null)
-					return false;
-			} else if (!mPromoUniqueCode.equals(other.mPromoUniqueCode))
-				return false;
-			if (mReceipientMsisdn == null) {
-				if (other.mReceipientMsisdn != null)
-					return false;
-			} else if (!mReceipientMsisdn.equals(other.mReceipientMsisdn))
-				return false;
-			if (mShortPackageId == null) {
-				if (other.mShortPackageId != null)
-					return false;
-			} else if (!mShortPackageId.equals(other.mShortPackageId))
-				return false;
-			if (mSubPurchaseTransactionTrial != other.mSubPurchaseTransactionTrial)
-				return false;
-			if (mSubRenewalCounterToLinkedPricepoint != other.mSubRenewalCounterToLinkedPricepoint)
-				return false;
-			if (mSubRenewalPricepointId == null) {
-				if (other.mSubRenewalPricepointId != null)
-					return false;
-			} else if (!mSubRenewalPricepointId
-					.equals(other.mSubRenewalPricepointId))
-				return false;
-			if (mSupplierId == null) {
-				if (other.mSupplierId != null)
-					return false;
-			} else if (!mSupplierId.equals(other.mSupplierId))
-				return false;
-			if (mTariff == null) {
-				if (other.mTariff != null)
-					return false;
-			} else if (!mTariff.equals(other.mTariff))
-				return false;
-			if (mTaxCode == null) {
-				if (other.mTaxCode != null)
-					return false;
-			} else if (!mTaxCode.equals(other.mTaxCode))
-				return false;
-			if (Double.doubleToLongBits(mTaxRate) != Double
-					.doubleToLongBits(other.mTaxRate))
-				return false;
-			if (mTaxRateAsDouble == null) {
-				if (other.mTaxRateAsDouble != null)
-					return false;
-			} else if (!mTaxRateAsDouble.equals(other.mTaxRateAsDouble))
-				return false;
-			if (mTierName == null) {
-				if (other.mTierName != null)
-					return false;
-			} else if (!mTierName.equals(other.mTierName))
-				return false;
-			if (mUserGroup == null) {
-				if (other.mUserGroup != null)
-					return false;
-			} else if (!mUserGroup.equals(other.mUserGroup))
-				return false;
-			if (!Arrays.equals(mUserGroups, other.mUserGroups))
-				return false;
-			if (mVendorId == null) {
-				if (other.mVendorId != null)
-					return false;
-			} else if (!mVendorId.equals(other.mVendorId))
-				return false;
-			if (overrideDisallowPreRateFlag != other.overrideDisallowPreRateFlag)
-				return false;
-			if (preRatePriceIsGross != other.preRatePriceIsGross)
-				return false;
-			if (reIssueFlagPresent != other.reIssueFlagPresent)
-				return false;
-			if (Double.doubleToLongBits(renewalPreRate) != Double
-					.doubleToLongBits(other.renewalPreRate))
-				return false;
-			return true;
-		}
-
-		// ET391 - Add external fields to ER_subscriptions and pass to ERIF & PNH starts here
-   
-		protected String extIdentifier1;
-		protected String extIdentifier2;
-		protected String extIdentifier3;
-		
-		public String getExtIdentifier1() {
-			return extIdentifier1;
-		}
-		public void setExtIdentifier1(String extIdentifier1) {
-			this.extIdentifier1 = extIdentifier1;
-		}
-		public String getExtIdentifier2() {
-			return extIdentifier2;
-		}
-		public void setExtIdentifier2(String extIdentifier2) {
-			this.extIdentifier2 = extIdentifier2;
-		}
-		public String getExtIdentifier3() {
-			return extIdentifier3;
-		}
-		public void setExtIdentifier3(String extIdentifier3) {
-			this.extIdentifier3 = extIdentifier3;
 		}
 		
 }

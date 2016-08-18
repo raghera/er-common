@@ -1,7 +1,6 @@
 package com.vizzavi.ecommerce.business.selfcare;
 
 import java.util.Date;
-import java.util.List;
 
 
 
@@ -20,11 +19,9 @@ public interface SubscriptionFilter extends FilterAttributes
 	//MQC 6056 End
 	
     public int getChargingMethod();
-   
-    @Deprecated
+
     public void setPreOrder(int PreOrder); // @ER7
     
-    @Deprecated
     public int getPreOrder();// @ER7
 
     
@@ -112,8 +109,6 @@ public interface SubscriptionFilter extends FilterAttributes
     /* no - transactions are send (default is 'no'), yes - transactions are not send */
     public void setTransactionsNotRequired(String no);
     
-    //From the V2 Subs flow we shall use List<String> getTransacationTypes();
-    @Deprecated
     public String getTransactionsNotRequired();
     
     //CR-0978 Location Services
@@ -159,33 +154,5 @@ public interface SubscriptionFilter extends FilterAttributes
 	 * @return last payment transaction required
 	 */
 	public boolean isRetrieveLastPaymentTransaction();
-	
-	/**
-	 * added for PPE: filter subscriptions based on multiple package Ids.
-	 */
-	public List<String> getPackageIds();
-	
-	/**
-	 * added for PPE: filter subscriptions based on multiple package Ids.
-	 */
-	public void setPackageIds(List<String> packageIds);
-	
-
-	/**
-	 *  Added following boolean for different transaction types
-	 * 
-	 * This is used specificially for the V2 subscription flow
-	 *
-	 */
-	
-	public boolean includeModifyTxns();
-	public void setIncludeModifyTxns(boolean includeModifyTxns);
-	
-	public boolean includeRefundTxns();
-	public void setIncludeRefundTxns(boolean includeRefundTxns);
-
-	public boolean includePaymentTxns();
-	public void setIncludePaymentTxns(boolean includePaymentTxns);
-	
 	
 }

@@ -99,22 +99,6 @@ public class OneStepData extends ExpressData {
 	   public String getCreditsLeft() {
 		   return mCreditsLeft;
 	   }
-	   
-	   
-	   /**
-	    * PPM136861 refactoring aL. added
-	    * @return
-	    */
-	   public double getCreditsLeftAsDouble(){
-		   double d;
-		   try {
-			   d = Double.parseDouble(mCreditsLeft);
-		   } catch (NumberFormatException e) {
-			   d = 0.0;
-		   }
-
-		   return d;
-	   }
 
 	   /**
 	    * @param mCreditsLeft the mCreditsLeft to set

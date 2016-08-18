@@ -111,18 +111,12 @@ public class FilterAttributesImpl implements FilterAttributes
         return mMaxEvents;
     }
 
-    /**
-     * oldest first 
-     */
     @Override
 	public boolean isAscendingOrder()
     {
         return mOrderEventsAscendingFlag;
     }
 
-    /**
-     * newest first (at least for txns)
-     */
 	@Override
 	public boolean isDescendingOrder()
 	{
@@ -135,9 +129,6 @@ public class FilterAttributesImpl implements FilterAttributes
         mMaxEvents = val;
     }
 
-    /**
-     * set to true and results will be returned oldest first
-     */
 	@Override
 	public void setAscendingOrder(boolean flag)
     {
@@ -146,9 +137,6 @@ public class FilterAttributesImpl implements FilterAttributes
         mOrderEventsDescendingFlag = !flag;
     }
 
-	/**
-	 * this means the newest first (if the flag is set to true)
-	 */
 	@Override
 	public void setDescendingOrder(boolean flag)
 	{

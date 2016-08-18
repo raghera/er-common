@@ -3,7 +3,8 @@ package com.vizzavi.ecommerce.business.common;
 /**
 * This interface translates values returned from back end into sensible presentation values.
 */
-public interface ResourceTranslator	{
+public interface ResourceTranslator
+{
     /**
     * Translate a property.
     */

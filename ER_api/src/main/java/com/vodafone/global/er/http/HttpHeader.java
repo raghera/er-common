@@ -4,28 +4,30 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
- * an implementation of {@link org.apache.http.Header} which overrides hashCode and equals based on the name and value only.
- * The comparison of name is case-insensitive, as per the specification. 
- * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2"> 
- * http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
- * </a>
+ * an implementation of Header which overrides hashCode and equals based on the name and value only.
+ * The comparison of name is case-insensitive
  * @author matt
  *
  */
 public class HttpHeader extends BasicHeader {
 
+	private static final Logger logger = LoggerFactory.getLogger(HttpHeader.class);
 	
 	/**
 	 * an implementation of Header which overrides hashCode and equals based on the name and value only.
-	 * The comparison of name is case-insensitive, as per the specification
+	 * The comparison of name is case-insensitive
 	 * @author matt
 	 *
 	 */
 	public HttpHeader(String name, String value) {
 		super(name, value);
+		if (StringUtils.isBlank(value))
+			logger.info("creating a header with a name ({}) but no value", name);
 	}
 
 	@Override
@@ -45,14 +47,12 @@ public class HttpHeader extends BasicHeader {
 
 	@Override
 	public int hashCode() {
+		//return (getName()!=null?getName().toLowerCase().hashCode():0) * getValue().hashCode();
 		return new HashCodeBuilder(11, 23).
 			       append(getName()!=null?getName().toLowerCase():"").	//could getName ever really be null? probably not
 			       append(getValue()).toHashCode();
 	}
 	
-	/**
-	 * [Header name]: [header value]
-	 */
 	@Override
 	public String toString()	{
 		return getName()+": "+getValue();

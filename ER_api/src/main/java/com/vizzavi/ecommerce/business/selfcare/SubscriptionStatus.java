@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * @author trushantpatel
- *
- */
-public class SubscriptionStatus	{
+public class SubscriptionStatus
+{
 
   public final static int FAILED_START_RANGE = 21;
   public final static int FAILED_END_RANGE = 30;
@@ -63,11 +60,10 @@ public class SubscriptionStatus	{
     public static final int PSEUDO_ACTIVE = 888;
     private static final int[] VALUES;
 
-//    private static final Map<Integer, String> internalStatusMap = new HashMap<Integer, String>();
-    /** A Map of subscription statuses, indexed by Id*/
+    private static final Map<Integer, String> internalStatusMap = new HashMap<Integer, String>();
+    /** A Map of most statuses, indexed by Id*/
     public static final Map<Integer, String> statusMap;
     static	{
-    	Map<Integer, String> internalStatusMap = new HashMap<>();
     	internalStatusMap.put(NEW, "NEW");
     	internalStatusMap.put(ACTIVE, "ACTIVE");
     	internalStatusMap.put(RESERVED, "RESERVED");
@@ -89,26 +85,29 @@ public class SubscriptionStatus	{
     	statusMap=Collections.unmodifiableMap(internalStatusMap);
     	
     	int n=0;
-    	VALUES=new int[statusMap.size()];
-    	for(Integer i: statusMap.keySet()){
+    	VALUES=new int[internalStatusMap.size()];
+    	for(Integer i: internalStatusMap.keySet()){
     		VALUES[n]=i;
     		n++;
     	}
 
     }
 
-    public final static String[] getNames()    {
-    	return statusMap.values().toArray(new String[statusMap.size()]);
+    public final static String[] getNames()
+    {
+    	return internalStatusMap.values().toArray(new String[internalStatusMap.size()]);
         //return NAMES;
     }
 
-    public final static int[] getValues()    {
+    public final static int[] getValues()
+    {
     	//return internalStatusMap.keySet().toArray(new Integer[internalStatusMap.size()]);
     	//can't do the above because the method returns int[] not Integer[] and can't automatically unbox
     	return VALUES;
     }
 
-    public static boolean isActive(int val)    {
+    public static boolean isActive(int val)
+    {
         return val==ACTIVE;
     }
 
@@ -119,31 +118,38 @@ public class SubscriptionStatus	{
     	
     }
     
-    public static boolean isFailed(int val)    {
+    public static boolean isFailed(int val)
+    {
         return ((val>=FAILED_START_RANGE)&&(val<FAILED_END_RANGE));            
     }
 
-    public static boolean isClosed(int val)    {
+    public static boolean isClosed(int val)
+    {
 		return (val == CLOSE);
     }
 
-    public static boolean isInactive(int val)    {
+    public static boolean isInactive(int val)
+    {
         return (val==INACTIVE || ((val>=FAILED_START_RANGE)&&(val<FAILED_END_RANGE)));
     }
 
-    public static boolean isBeingProvisioned(int val)    {
+    public static boolean isBeingProvisioned(int val)
+    {
         return (val==BEING_PROVISIONED );
     }
 
-    public static boolean isPendingPayment(int val)    { 
+    public static boolean isPendingPayment(int val)
+    { 
         return (val==NEW); 
     }
 
-    public static boolean isReserved(int val)    {
+    public static boolean isReserved(int val)
+    {
         return (val == RESERVED);
     }
 
-    public static String getResourceName(int val)    {
+    public static String getResourceName(int val)
+    {
         return "PackageSubscriptionStatus_" + val;
     }
 
@@ -152,7 +158,7 @@ public class SubscriptionStatus	{
      * @param status
      */
 	public static boolean isValidStatus(int status) {
-		return statusMap.keySet().contains(status);
+		return internalStatusMap.keySet().contains(new Integer(status));
 	}
 	
 	/**
@@ -160,7 +166,8 @@ public class SubscriptionStatus	{
 	 * @param val
 	 * @return boolean
 	 */
-	public static boolean isSuspendedorGrace(int val)    {
+	public static boolean isSuspendedorGrace(int val)
+    {
         return (val == SUSPENDED || val == UNDER_GRACE_PERIOD);
     }
 	
@@ -170,15 +177,6 @@ public class SubscriptionStatus	{
 	 * @return String eg "SUSPENDED"
 	 */
 	public static String translate(int status)	{
-		return statusMap.get(status);
+		return internalStatusMap.get(status);
 	}
-	
-    /** 
-     * JIRA ET196 Inactivate subscription promo-code, check for an inactive or equivalent status
-     * @param val
-     * @return boolean
-     */
-    public static boolean isInActiveRange(int val) {
-    	return ((val>=INACTIVE)&&(val<GOODWILL_CREDIT_FAILED));	
-    }
 }

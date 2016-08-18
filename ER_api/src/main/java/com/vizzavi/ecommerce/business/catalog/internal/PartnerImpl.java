@@ -22,10 +22,10 @@ public class PartnerImpl extends Partner
 		mContractType = contractType;
 		mInvVat = "" + invVat;
 		mSalesVat = "" + salesVat;
-//		mCreatedBy = createdBy;
-//		mModifiedBy = modifiedBy;
-//		mModifiedDate = modifiedDate;
-//		mActiveStatus = activeStatus;
+		mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+		mModifiedDate = modifiedDate;
+		mActiveStatus = activeStatus;
         this.versionFk = versionFk;//optimized
     }
 

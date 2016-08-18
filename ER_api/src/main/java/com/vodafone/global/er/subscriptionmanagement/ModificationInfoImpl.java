@@ -11,8 +11,13 @@ import java.io.Serializable;
 import com.vizzavi.ecommerce.business.selfcare.ModificationInfo;
 import com.vizzavi.ecommerce.business.selfcare.TransactionType;
 
-
-public class ModificationInfoImpl implements ModificationInfo, Serializable  {
+/**
+ * @author piotrad
+ *
+ * To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ */
+public class ModificationInfoImpl implements ModificationInfo,Serializable  {
 
    private    static final long serialVersionUID = -7336908049638513553L;
 	protected String mType;
@@ -31,27 +36,8 @@ public class ModificationInfoImpl implements ModificationInfo, Serializable  {
 	{
 	}
     
-	/**
-	 * 
-	 * @param type eg TransactionType.MODIFY_BAN_TYPE
-	 * @param oldValue the old value
-	 * @param newValue the new value
-	 * @param description e.g. reason
-	 */
-	public ModificationInfoImpl(String type, String oldValue, String newValue, String description)	{
-		this.mType=type;
-		mOldValue = oldValue;
-		this.mNewValue = newValue;
-		this.mDescription = description;
-	}
-	
-	/**
-	 * 
-	 * @param val type|oldValue|newValue|description
-	 * @deprecated stop using this ridiculous constructor and use {@link #ModificationInfoImpl(String type, String oldValue, String newValue, String description)} instead
-	 */
-	@Deprecated
-	public ModificationInfoImpl(String val)	{
+	public ModificationInfoImpl(String val)
+	{
 		parse(val);
 	}
     

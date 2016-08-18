@@ -40,47 +40,28 @@ public class ErHttpException extends Exception {
     public static final String E2000 = "Unable to find valid trusted certificate to requested target";
     public static final String E2001 = "Counter party certificate expired";
     public static final String E2002 = "Counter party certificate authentication has failed. " + E2001 + "?";
-
-
-	private int	statusCode;
     
 
-    public ErHttpException() {
 
+
+    public ErHttpException() {
+        // TODO Auto-generated constructor stub
     }
 
     public ErHttpException(String arg0) {
         super(arg0);
-
+        // TODO Auto-generated constructor stub
     }
 
     public ErHttpException(Throwable arg0) {
         super(arg0);
-
+        // TODO Auto-generated constructor stub
     }
 
     public ErHttpException(String arg0, Throwable arg1) {
         super(arg0, arg1);
-
+        // TODO Auto-generated constructor stub
     }
 
-    public ErHttpException(String message, int statusCode) {
-        super(message);
-        this.statusCode = statusCode;
-    }
-    
-    public ErHttpException(String message, int statusCode, Throwable t) {
-        super(message, t);
-        this.statusCode = statusCode;
-    }
-    
-    /**
-     * the http status code - might be 0 if it the request never made it across the network
-     * @return
-     */
-    public int getStatusCode()	{
-    	return statusCode;
-    }
-    
 }
 

@@ -53,8 +53,21 @@ public class TaxRatedEvent extends RatedEvent implements java.io.Serializable
      */
     protected double mAlternativeTaxAmount;
     
+    //[1] CQ14118 -start
+    //The value set in er2.properties for the rounding accuracy.     
     public static final String ROUND_NTH_DECIMAL = "ROUND_NTH_DECIMAL";
+    //if equals to -1, means no rounding
+    //MQC 6016 - move retrieval of property to local method of where it is used
+    //private static int round_nth_decimal = -1;
     
+    //static {
+    	//Round to decimal place set in er2.properties, if specified
+    //    if(PropertyServer.getProperty(ROUND_NTH_DECIMAL)!=null)
+    //    {
+    //        round_nth_decimal = Integer.parseInt(PropertyServer.getProperty(ROUND_NTH_DECIMAL));
+    //    }
+    //}    
+    //[1] CQ14118 - end
     
     public TaxRatedEvent()
     {
@@ -114,7 +127,13 @@ public class TaxRatedEvent extends RatedEvent implements java.io.Serializable
     {
  
     	int round_nth_decimal = ConfigProvider.getPropertyAsInteger(ROUND_NTH_DECIMAL, -1);
+//    	int round_nth_decimal = -1;
+//        if(PropertyServer.getProperty(ROUND_NTH_DECIMAL)!=null)
+//        {
+//            round_nth_decimal = Integer.parseInt(PropertyServer.getProperty(ROUND_NTH_DECIMAL));
+//        }
         
+        //[1] CQ14118 - start
     	if (round_nth_decimal == -1) {
     		return (getNetRate() + getTaxAmount());
     	}
@@ -168,13 +187,17 @@ public class TaxRatedEvent extends RatedEvent implements java.io.Serializable
     }
 
     @Override
-    public String toString() {
-    	return "TaxRatedEvent [mTaxRate=" + mTaxRate + ", mTaxCode=" + mTaxCode
-    			+ ", mTaxAmount=" + mTaxAmount + ", mAlternativeTaxCode="
-    			+ mAlternativeTaxCode + ", mAlternativeTaxRate="
-    			+ mAlternativeTaxRate + ", mAlternativeTaxAmount="
-    			+ mAlternativeTaxAmount + "]";
+	public String toString()
+    {
+        StringBuffer buf = new StringBuffer(super.toString());
+        buf.append("taxCode=").append(getTaxCode()).append(',');
+        buf.append("taxRate=").append(getTaxRate()).append(',');
+        buf.append("taxAmount=").append(getTaxAmount()).append(',');
+        buf.append("rate=").append(getRate()).append(',');
+        buf.append("standardRate=").append(getStandardRate()).append(',');
+        return buf.toString();
     }
+
 
   public void setAlternativeTaxCode(String mAlternativeTaxCode)
   {
@@ -182,9 +205,7 @@ public class TaxRatedEvent extends RatedEvent implements java.io.Serializable
   }
 
 
-
-
-public String getAlternativeTaxCode()
+  public String getAlternativeTaxCode()
   {
     return mAlternativeTaxCode;
   }
@@ -209,60 +230,4 @@ public String getAlternativeTaxCode()
   {
     return mAlternativeTaxAmount;
   }
-
-@Override
-public int hashCode() {
-	final int prime = 31;
-	int result = super.hashCode();
-	long temp;
-	temp = Double.doubleToLongBits(mAlternativeTaxAmount);
-	result = prime * result + (int) (temp ^ (temp >>> 32));
-	result = prime
-			* result
-			+ ((mAlternativeTaxCode == null) ? 0 : mAlternativeTaxCode
-					.hashCode());
-	temp = Double.doubleToLongBits(mAlternativeTaxRate);
-	result = prime * result + (int) (temp ^ (temp >>> 32));
-	temp = Double.doubleToLongBits(mTaxAmount);
-	result = prime * result + (int) (temp ^ (temp >>> 32));
-	result = prime * result + ((mTaxCode == null) ? 0 : mTaxCode.hashCode());
-	temp = Double.doubleToLongBits(mTaxRate);
-	result = prime * result + (int) (temp ^ (temp >>> 32));
-	return result;
 }
-
-@Override
-public boolean equals(Object obj) {
-	if (this == obj)
-		return true;
-	if (!super.equals(obj))
-		return false;
-	if (!(obj instanceof TaxRatedEvent))
-		return false;
-	TaxRatedEvent other = (TaxRatedEvent) obj;
-	if (Double.doubleToLongBits(mAlternativeTaxAmount) != Double
-			.doubleToLongBits(other.mAlternativeTaxAmount))
-		return false;
-	if (mAlternativeTaxCode == null) {
-		if (other.mAlternativeTaxCode != null)
-			return false;
-	} else if (!mAlternativeTaxCode.equals(other.mAlternativeTaxCode))
-		return false;
-	if (Double.doubleToLongBits(mAlternativeTaxRate) != Double
-			.doubleToLongBits(other.mAlternativeTaxRate))
-		return false;
-	if (Double.doubleToLongBits(mTaxAmount) != Double
-			.doubleToLongBits(other.mTaxAmount))
-		return false;
-	if (mTaxCode == null) {
-		if (other.mTaxCode != null)
-			return false;
-	} else if (!mTaxCode.equals(other.mTaxCode))
-		return false;
-	if (Double.doubleToLongBits(mTaxRate) != Double
-			.doubleToLongBits(other.mTaxRate))
-		return false;
-	return true;
-}
-}
-	

@@ -1,7 +1,6 @@
 package com.vodafone.global.er.subsmngmnt;
 
 import com.vizzavi.ecommerce.business.common.EcommerceException;
-import com.vodafone.global.er.common.ErCoreErrorId;
 
 /**
  *
@@ -27,11 +26,11 @@ public class SubsManagementException extends EcommerceException {
 	}
 
 
-    public SubsManagementException(ErCoreErrorId errorId) {
+    /*public SubsManagementException(ErCoreErrorId errorId) {
         super();
         this.setErrorId(errorId.getCode());
         this.setErrorDescription(errorId.getResourceName());
-    }
+    }*/
 
 
 }

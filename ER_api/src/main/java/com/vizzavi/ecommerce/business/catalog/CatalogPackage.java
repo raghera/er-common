@@ -1,9 +1,5 @@
 package com.vizzavi.ecommerce.business.catalog;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,17 +7,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.persistence.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vizzavi.ecommerce.business.catalog.internal.PricePointsImpl;
 import com.vizzavi.ecommerce.business.catalog.internal.model.PricingModel;
 import com.vizzavi.ecommerce.business.common.ChargingMethod;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
 import com.vizzavi.ecommerce.business.common.Constants;
-import com.vizzavi.ecommerce.common.EnvironmentException;
+import com.vizzavi.ecommerce.common.Utils;
+import static org.apache.commons.lang.StringUtils.isNotBlank; 
+
 
 /**
  * CatalogPackage aggregates a number of services.
@@ -36,12 +31,9 @@ import com.vizzavi.ecommerce.common.EnvironmentException;
  * A Catalog Package has a number of price points.
  *
  */
-@Entity
-@Table(name="package")
-@Access(AccessType.FIELD)
-public class CatalogPackage implements Serializable, CatalogBean	{
-	
-	private static final long serialVersionUID = -1080643286921795316L;
+public class CatalogPackage implements java.io.Serializable
+{
+	private    static final long serialVersionUID = -1080643286921795316L;
 	public static String DEFAULT_ID = "default";
 
 	private static final Logger logger = LoggerFactory.getLogger(CatalogPackage.class);
@@ -61,24 +53,15 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	public final static String CALENDAR_PACKAGE_TYPE = "Calendar";
 	public final static String EVENT_PACKAGE_TYPE = "Event";
 	//public final static String TOKEN_PACKAGE_TYPE = "Token";
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="`KEY`")
 	protected Long mKey;
-
-	@Transient
+	protected String mCreatedBy;
+	protected String mModifiedBy;
+	protected Date mModifiedDate;
 	protected char mActiveStatus;
-	
-//	PPM136861 refactoring aL. START
-//	@Transient
-//	protected String mPricingModelFk;
+	protected String mPricingModelFk;
 
 	/** ER 7 Compliant Custom fields for pricing text */
-	//@Column(name="pricingText1")
-	@Transient
 	protected String mPricingText1 = "";
-	//@Column(name="pricingText2")
-	@Transient
 	protected String mPricingText2 = "";
 
 	/**
@@ -88,16 +71,12 @@ public class CatalogPackage implements Serializable, CatalogBean	{
             2. A combination of the package id defined in the priceplan and a rate plan name.
                 This package does have a price as it defines the purchase attributes selected.
 	 */
-//	@Id
-	@Column(name="Id")
 	protected String mId;
 
 	/** The name of the package */
-	@Transient
 	protected String mName;
 
 	/** The package description */
-	@Column(name="description")
 	protected String mDescription;
 
 	// The following fields are stored in the catalog and are set by the pricing tool.
@@ -106,37 +85,30 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/** The list of names in multiple languages including the default language. 
 	 * Key is the language code.  
 	 * Since ER9 **/
-	@Transient
-	protected Map<String, String> names = null;
+	protected HashMap<String, String> names = null;
 
 	/** The list of description in multiple languages including the default language.  
 	 * Key is the language code. 
 	 * Since ER 9**/    
-	@Transient
-	protected Map<String, String> descriptions = null;
+	protected HashMap<String, String> descriptions = null;
 
 	/** The package notification category */
-	@Column(name="notificationCategory")
 	protected String mNotificationCategory;
 
 	/** The package payment content information */
-	@Transient
 	protected PaymentContent mPaymentContent;
 
 	/** This can be set in the pricing tool and can be retrieved by the ecom client applications*/
-	@Column(name="url")
 	protected String mUrl;
 
 	/** custom fields defined in catalog using <custom_field> tag */
-	@Transient
-	protected Map<String, String> mCustomFields = new HashMap<>();
+	protected Map<String, String> mCustomFields = new HashMap<String, String>();
 
 	/** Custom fields for pricing text */
 	/** The list of pricing text1 in multiple languages including the default language. 
 	 * Key is the language code.  
 	 * Since ER9 **/
-	@Transient
-	protected Map<String, String> pricingTextList1 = null;
+	protected HashMap<String, String> pricingTextList1 = null;
 
 	//ER 7 compliant
 	protected String pricingText1 = null;
@@ -144,42 +116,33 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/** The list of pricing text2 in multiple languages including the default language.  
 	 * Key is the language code. 
 	 * Since ER 9**/    
-	@Transient
-	protected Map<String, String> pricingTextList2 = null;    
+	protected HashMap<String, String> pricingTextList2 = null;    
 
 	// [1] Mod Start
-	@Column(name="protectedType")
 	protected String mProtectedType = "";
-	@Column(name="DynamicProtectedValue")
 	protected String mDynamicProtectedValue = "";
 	// [1] Mod End
 	// end of catalog fields
 
-	/** The map of services (CatalogService) in the package, indexed by serviceId */
-	@Transient
-	protected Map<String, CatalogService> mServices = new HashMap<>();
+	/** The list of services (CatalogService) in the package */
+	protected Map<String, CatalogService> mServices = new HashMap<String, CatalogService>();
 
 	/** The list of all available rate plan selectors */
-	@Transient
-	protected PricePoints mPricePoints = new PricePoints();
+	protected PricePoints mPricePoints;
 
 	/** The selected price point */
-	@Transient
 	protected PricePoint mPricePoint;
 
 	/** flag which if true indicates that the package should be bought in a two phase reserve-capture way */
-	@Column(name="reserveOnly")
 	protected boolean mReserveOnly;
 
 	/** This is used to store the type of package */
-	@Column(name="PackageType")
 	protected String mPackageType;
 
 	/* name of package deal */
 	// This is moved from catalogpackageimpl for
 	// Partner revenue share phase2
 
-	@Column(name="PurchaseMethod")
 	protected String mPurchaseMethod = "";
 
 	//CR0586 KPI Reporting Fields
@@ -187,15 +150,12 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	protected String kpiPackageType = "";
 	//CR0586 End
 
-	@Column(name="taxcode")
 	protected String mTaxCode;
 
 	/** Refund Disallowance attributes AV
 	 * @since ER 5.1
 	 * */
-	@Column(name="Refundable")
 	protected boolean mRefundable = true;
-	@Column(name="NonRefundableDescription")
 	protected String mNonRefundableDescription = "";
 
 
@@ -203,42 +163,33 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * DRMType attribute
 	 * @since ER 5.1
 	 */
-//	protected DRMType m_DRMType;
+	protected DRMType m_DRMType;
 
 	/** ADDED FOR EGYPT ER6 STUB **/
-	@Column(name="ExpressPurchase")
 	protected boolean mExpressPurchase=false;
 
 	//Added for ER6 requirement
-	@Column(name="RecieptingFlag")
 	protected boolean mReceiptingFlag=false;
 
 	/** ADDED FOR EGYPT ER7 STUB **/
-	@Column(name="PricePointOrder")
 	protected boolean mPricePointOrder=false;
 
 	/** ADDED FOR ER7 STUB **/
-	@Column(name="SuperPackage")
 	protected boolean mSuperPackage;
 
 	//Added for ER7
-	@Column(name="RevenueShareByUsage")
 	protected boolean mRevenueShareByUsage=false;
 
 	//Added for ER7
-	@Column(name="DynamicDefault")
 	protected boolean mDynamicDefault=false;
 
 	//Added for ER7
-	@Column(name="Priority")
 	protected int mPriority;
 
 	//Added for ER 8
-	@Transient
 	protected boolean mACEPackage = false;
 
 	//Added for ER 8 PH 2
-	@Column(name="UpSell")
 	protected boolean mUpSell = false;
 
 	// Added for R9 STKHREQ16
@@ -248,43 +199,33 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
 	 * The multiple language support Partner Information Text
 	 */
-	@Transient
-	protected Map<String, String> partnerInfoMap = null;
+	protected HashMap<String, String> partnerInfoMap = null;
 
 
 	///////////////////////////////////////////////////////////////
 	//@hud STKHREQ36
-//	@Column(name="HasMicroService")
-	@Transient
 	protected boolean mHasMicroService = false;
 
-	//PPM136861 refactoring aL. START
-//	/**
-//	 * Remedy 5538 
-//	 */
-//	@Transient
-//	protected Map<String, PricingModel> priceModels = new HashMap<String, PricingModel>();
+	/**
+	 * Remedy 5538 
+	 */
+	protected HashMap<String, PricingModel> priceModels = new HashMap<String, PricingModel>();
 	protected Boolean isPackageModel = Boolean.FALSE;
 
 	//[2] Mod Start
 	/**
 	 * Added for ER9 for Ring Back Tones (RBT)
 	 */
-	@Column(name="parentPackage")
 	protected boolean mParentPackage = false;
-	@Column(name="parentPackageId")
 	protected String mParentPackageId = "";
 	//[2] Mod End
 
 	//RBT Enhancements Start
-	@Transient
-	protected List<String> childPackageIdList = null;
-	@Transient
+	protected ArrayList<String> childPackageIdList = null;
 	protected boolean childServicesAreInParent = false;
 	//RBT Enhancements End
 
 	//ES FUP Enhancement CR Start - a list of comma sepearted service ids which are not in the package fair usage policy when configured
-	@Column(name="svcsNotInPackFUPolicyList")
 	protected String servicesNotInPackageFairUsagePolicy = null;
 	//ES FUP Enhancement CR End
 	/**
@@ -296,36 +237,28 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
     MQC 5485 - This is used internally by the ER system
 	 */
-	@Column(name="hasParentSubSusResProv")
-//	@Transient
 	protected boolean hasParentSubSuspendedResProv = false;
 	protected int parentSubStatus;
 
 	//CR1113 - Prevent Subscription Cancellation
-	@Column(name="DisallowCancellations")
 	protected boolean mDisallowCancellations = false;
 
 	//CR 1212 - add sales model
-	@Column(name="SalesModel")
 	protected String mSalesModel = "";
 
 	//CR1193 - Data Tariff Reporting Enhancement
-	@Column(name="DataVoiceTariffInclusive")
 	protected boolean mDataVoiceTariffInclusive = false;
 
 	//CR1193 - Data Tariff Reporting Enhancement
-	@Column(name="NominalValue")
 	protected double mNominalValue = 0.0;
 
 	//CR 1209 add package class
-	@Column(name="PackageClass")
 	protected String mPackageClass = null;
 
 	//CR 1409 - Prevent Duplicate package purchase 
 	protected String disallowDuplicateSubPurchase = "";
 
 	//CR1209AR - VFES defrag
-	@Column(name="UseBeingDeprovisionedStatus")
 	protected boolean mUseBeingDeprovisionedStatus = false;
 
 	//CR1564 -Utctimezone for diff region in country
@@ -343,25 +276,21 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * CR2006 - Reusable Promo Codes
 	 * The promocodes assigned to this package
 	 */
-	@Transient
 	protected HashMap<String, PromoCode> mPromoCodes = null;
 	
 	// MPAY replacement.  Goodwill credit.
-	@Column(name="goodwillCredit")
 	protected boolean isGoodwillCredit = false;
 
     // CR2210 - MPay Rate Card
 	/**
 	 * The 'mUseRateCardService' flag determines whether rate card service or standard service applies to revenue share.
 	 */
-	@Column(name="useRateCardService")
 	protected boolean mUseRateCardService	= false;
 
 	/**
 	 * The 'mRateCardServiceId' holds the service id for the rate card service,
 	 * and this field is populated when the 'mUseRateCardService' flag is set.
 	 */
-	@Column(name="RateCardServiceId")
 	protected String mRateCardServiceId		= "";
     // CR2210 - Ends
 
@@ -370,82 +299,26 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * CR 2245 upsell discount prorate
 	 * The 'mUpsellDiscountProrated' flag determines whether the package supports upsell discount prorated functionality.
 	 */
-	@Column(name="UpsellDiscountProrated")
 	protected boolean mUpsellDiscountProrated = false;
 	/**
 	 * CR 2245 upsell discount prorate
 	 * The 'mDisallowPrerate' flag determines whether the package supports prerate on purchase or renewals.
 	 */
-	@Column(name="DisallowPrerate")
 	protected boolean mDisallowPrerate = false;
 	
-	@ManyToOne(optional=true, targetEntity=Priceplan.class, fetch=FetchType.LAZY)	
-	@Access(AccessType.FIELD)
-//	@ManyToOne(optional=false, targetEntity=Priceplan.class, fetch=FetchType.LAZY)	
-//	@Access(AccessType.FIELD)
-	private Priceplan priceplan;
 	
-	//PPM136861 refactoring aL. moved here from impl
-	@Transient
-	protected boolean mIsOriginal = false;
-	
-	//PPM136861 refactoring aL. START
-//	@Transient
-//	protected Map<String, String> mPricingModels = new HashMap<String, String>();
-	
-    /**
-     * //CR2303p5 defaultPartnerProvisioningId for Global Handler Notificaiton Service
-     * This string is used by ER Core for the provisioning message to ERIF only if 
-     * the partner id is not provided in the request (e.g. from customer care app)
-     */
-    @Column(name="DefaultPartnerProvisioningId")
-    protected String mDefaultPartnerProvisioningId;
-  	
-    /**
-     * JIRA-ET271 - Enable User group comparison at renewal config at Catalog Package level
-     * This string is used by ER Core to determine what action to take on renewal of a 
-     * usergroup pricepoint where the msidn no longer belongs to that usergroup.
-     * SYSTEM - (default) carry on the renewal based on the system config of compare_account_usergroups_on_renewal (true / false)
-	 * and compare_usergroup_pricepoints_on_renewal (true / false)
-     * CONTINUE_SUB - carry on the renewal of the current pricepoint, even if the msisdn does not belong to the usergroup anymore
-     * INACTIVATE_SUB - inactivate the subscription. Same as 'compare_account_usergroups_on_renewal' in system config.
-     * ALTERNATIVE_PRICEPOINT - renew to a cheaper / same cost usergroup pricepoint (same chargingmethod & duration) 
-     * which the msisdn now belongs. Same as 'compare_usergroup_pricepoints_on_renewal' in system config.
-     */
-    @Column(name="UserGroupComparisonAtRenewal")
-    protected String mUserGroupComparisonAtRenewal;
-    
-    public final static String USERGROUP_COMPARISON_ON_RENEWAL_SYSTEM = "SYSTEM";
-    public final static String USERGROUP_COMPARISON_ON_RENEWAL_CONTINUE = "CONTINUE_SUB";
-    public final static String USERGROUP_COMPARISON_ON_RENEWAL_INACTIVATE_SUB = "INACTIVATE_SUB";
-    public final static String USERGROUP_COMPARISON_ON_RENEWAL_ALTERNATIVE_PRICEPOINT = "ALTERNATIVE_PRICEPOINT";
-    
     /**
 	 * @return Returns the priceModels.
 	 */
-	@Transient
-	@Deprecated
-	public Map<String, PricingModel> getPriceModels() {
-		//PPM136861 refactoring aL. START
-		return null;
-//		return priceModels;
+	public HashMap<String, PricingModel> getPriceModels() {
+		return priceModels;
 	}
 
 	/**
-	 * @param priceModels The priceModels to set.		super();
-		setId(id);
-		//REMEDY 6149 - removed comments
-		mName = name;
-		mDescription = desc;
-		setName(name);
-		setDescription(name);
-		mPricePoints = new PricePointsImpl();
+	 * @param priceModels The priceModels to set.
 	 */
-	@Deprecated
 	public void setPriceModels(HashMap<String, PricingModel> priceModels) {
-		//PPM136861 refactoring aL. START
-		//do nothing
-//		this.priceModels = priceModels;
+		this.priceModels = priceModels;
 	}
 
 
@@ -456,8 +329,77 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	@Override
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer(getSimplePackageId()).append(" (" );
-		sb.append(getName() ).append(")" );
+		StringBuffer sb = new StringBuffer(mId);
+		sb.append("\nmKey=").append( mKey).append("\n" );
+//		sb.append("mCreatedBy=").append( mCreatedBy).append("\n" );
+//		sb.append("mModifiedBy=").append( mModifiedBy).append("\n" );
+//		sb.append("mModifiedDate=").append( mModifiedDate).append("\n" );
+//		sb.append("mActiveStatus=").append( mActiveStatus).append("\n" );
+		sb.append("mRefundable=").append( mRefundable).append("\n" );
+		sb.append("mReceiptingFlag=").append( mReceiptingFlag).append("\n" );
+		sb.append("mNonRefundableDescription=").append( mNonRefundableDescription).append("\n" );
+		//sb.append( "mName=").append(mName ).append("\n" );
+		//sb.append( "mDescription=").append(mDescription ).append("\n" );
+		sb.append( "mName=").append(getName() ).append("\n" );
+		sb.append( "mDescription=").append(getDescription() ).append("\n" );        
+		sb.append("mNotificationCategory=").append( mNotificationCategory ).append("\n" );
+		if( mPaymentContent != null ) {
+			sb.append( "mPaymentContent=").append(mPaymentContent.toString()).append("\n" );
+		}
+		sb.append( "mServices=").append(Utils.StringifyList(mServices.keySet())).append("\n" );
+		if( mPricePoints != null ) {
+			sb.append( "mPricePoints=").append(mPricePoints.toString()  ).append("\n" );
+		}else sb.append( "mPricePoints= null \n");
+		if( mPricePoint != null ) {
+			sb.append( "mPricePoint=").append(mPricePoint.toString() ).append("\n" );
+		} else sb.append( "mPricePoint= null \n");
+		sb.append( "mReserveOnly=").append(mReserveOnly).append("\n"  );
+		if(m_DRMType != null)
+		{
+			sb.append("m_DRMType =").append(m_DRMType.toString()).append("\n");
+		}
+		sb.append("mExpressPurchase= ").append(mExpressPurchase).append("\n");
+		sb.append("mPricePointOrder= ").append(mPricePointOrder).append("\n");
+		sb.append("mSuperPackage= ").append(mSuperPackage).append("\n");
+		sb.append("mRevenueShareByUsage= ").append(mRevenueShareByUsage).append("\n");
+		//[1] Mod Start
+		sb.append("mProtectedType= ").append(mProtectedType +"\n");
+		sb.append("mDynamicProtectedValue= ").append(mDynamicProtectedValue +"\n");
+		//[1] Mod End
+		sb.append("mDynamicDefault= ").append(mDynamicDefault).append("\n");
+		sb.append("mPriority= ").append(mPriority).append("\n");
+		sb.append("mACEPackage= ").append(mACEPackage).append("\n");
+		sb.append("mUpSell= ").append(mUpSell).append("\n");
+		//CR0586 KPI Reporting Field
+		sb.append("kpiPackageProductCategory= ").append(kpiPackageProductCategory).append("\n");
+		sb.append("kpiPackageType= ").append(kpiPackageType).append("\n");
+		//CR0586 End
+		//[2] Mod Start
+		sb.append("mParentPackage= ").append(mParentPackage).append("\n");
+		sb.append("mParentPackageId= ").append(mParentPackageId).append("\n");
+		//[2] Mod End
+		//ES FUP Enhancement CR Start
+		sb.append("servicesNotInPackageFairUsagePolicy= ").append(servicesNotInPackageFairUsagePolicy).append("\n");
+		//ES FUP Enhancement CR End
+		//CR1113 - Prevent Subscription Cancellation
+		sb.append("mDisallowCancellations= ").append(mDisallowCancellations).append("\n");
+		//CR 1212 - add sales model
+		sb.append("mSalesModel= ").append(mSalesModel).append("\n");
+		//CR1193 - Data Tariff Reporting Enhancement
+		sb.append("mDataVoiceTariffInclusive= ").append(mDataVoiceTariffInclusive).append("\n");
+		sb.append("mNominalValue= ").append(mNominalValue).append("\n");
+		//CR 1209 add package class
+		sb.append("mPackageClass= ").append(mPackageClass).append("\n");
+		//CR1209AR - VFES defrag changes
+		sb.append("mUseBeingDeprovisionedStatus=").append(mUseBeingDeprovisionedStatus).append("\n");
+		//CR1409
+		sb.append("disallowDuplicateSubPurchase=").append(disallowDuplicateSubPurchase).append("\n");
+	    // CR2210 - MPay Rate Card
+		sb.append("mUseRateCardService="	).append(mUseRateCardService	).append("\n");
+		sb.append("mRateCardServiceId="		).append(mRateCardServiceId	).append("\n");
+		//CR 2245 upsell discount prorate
+		sb.append("mUpsellDiscountProrated=").append(mUpsellDiscountProrated).append("\n");
+		sb.append("mDisallowPrerate=").append(mDisallowPrerate).append("\n");
 		return sb.toString();
 	}
 
@@ -470,33 +412,34 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		//ER7 Compliant
 	}
 
-	//PPM136861 refactoring aL. START
-	public CatalogPackage(String id, HashMap<String, String> names, HashMap<String, String> desc){
-		mId = id;
-		setNames(names);
-		setDescriptions(desc);
-		//REMEDY 6149 - set name and description
-		mName = getName(null);
-		mDescription = getDescription(null);
-		mPricePoints = new PricePointsImpl();
-	}
-	
 	public CatalogPackage(Long key, String id, String name, String createdBy, String modifiedBy, Date modifiedDate, char activeStatus)
 	{
 		mKey = key;
+		mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+		mModifiedDate = modifiedDate;
 		mActiveStatus = activeStatus;
+
 		mId = id;
 		setName(name);
+
+		//ER7 Compliant
 		mName = name;
+		//ER7 Compliant
 	}
 	public CatalogPackage(String id, String name, List<CatalogService> services, String desc,
 			PricePoints pts, String notificationCategory, PaymentContent paymentContent, boolean reserveOnly)
 	{
 		mId = id;
+
 		setName(name);
 		setDescription(desc);
+
+		//ER7 Compliant
 		mName = name;
 		mDescription = desc;
+		//ER7 Compliant
+
 		mPricePoints = pts;
 		mNotificationCategory = notificationCategory;
 		mPaymentContent = paymentContent;
@@ -513,12 +456,21 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 			String createdBy, String modifiedBy, Date modifiedDate, char activeStatus)
 	{
 		mKey = key;
+		mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+		mModifiedDate = modifiedDate;
 		mActiveStatus = activeStatus;
+
 		mId = id;
+
 		setName(name);
 		setDescription(desc);
+
+		//ER7 Compliant
 		mName = name;
 		mDescription = desc;
+		//ER7 Compliant
+
 		mPricePoints = pts;
 		mNotificationCategory = notificationCategory;
 		mPaymentContent = paymentContent;
@@ -553,18 +505,23 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	public CatalogPackage(CatalogPackage pack)
 	{
 		this.mKey = pack.mKey;
+		this.mCreatedBy = pack.mCreatedBy ;
+		this.mModifiedBy = pack.mModifiedBy;
+		this.mModifiedDate = pack.mModifiedDate;
 		this.mActiveStatus = pack.mActiveStatus;
-		
-//		PPM136861 refactoring aL. START
-//		this.mPricingModelFk = pack.mPricingModelFk;
+		this.mPricingModelFk = pack.mPricingModelFk;
 		//		this.mProductFk = pack.mProductFk;
 
 		this.mId = pack.mId;
 
 		setName(pack.getName());
 		setDescription(pack.getDescription());
+
+		//ER7 Compliant
 		mName = pack.mName;
 		mDescription = pack.mDescription;
+		//ER7 Compliant
+
 		this.setNames(pack.getNames());
 		this.setDescriptions(pack.getDescriptions());
 
@@ -589,7 +546,7 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		this.mTaxCode = pack.getTaxCode();
 		this.mRefundable = pack.mRefundable;
 		this.mNonRefundableDescription = pack.mNonRefundableDescription;
-//		this.m_DRMType =  pack.m_DRMType;
+		this.m_DRMType =  pack.m_DRMType;
 		this.mExpressPurchase = pack.mExpressPurchase;
 		this.mReceiptingFlag = pack.mReceiptingFlag;
 		this.mPricePointOrder = pack.mPricePointOrder;
@@ -618,8 +575,7 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		 * Remedy 5538
 		 */
 		this.isPackageModel = pack.isPackageModel;
-		//PPM136861 refactoring aL. START
-//		this.priceModels = pack.priceModels;
+		this.priceModels = pack.priceModels;
 
 		//[2] Mod Start
 		//Added for Ring Back Tones (RBT)
@@ -660,18 +616,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		//CR 2245 upsell discount prorate
 		this.mUpsellDiscountProrated = pack.mUpsellDiscountProrated;
 		this.mDisallowPrerate = pack.mDisallowPrerate;
-
-		//QC 10630 missing payment content from payment Auth call
-        this.mPaymentContent = pack.mPaymentContent;
-        
-        // CR2303p5 DefaultPartnerProvisioningId for Global Handler Notification
-		// service
-        this.mDefaultPartnerProvisioningId = pack.mDefaultPartnerProvisioningId;
-		//ET126 missing fields in response for ES
-        this.kpiPackageProductCategory = pack.kpiPackageProductCategory;
-        this.kpiPackageType = pack.kpiPackageType;
-        //JIRA-ET271 - Enable User group comparison at renewal config at Catalog Package level
-        this.mUserGroupComparisonAtRenewal = pack.mUserGroupComparisonAtRenewal;
     }
 
 	/**
@@ -702,12 +646,11 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 
 	/**
 	 * Returns the full identifier for a package pricepoint: 
-	 * (e.g. p003__X__package:p003_TAX_2_1_3_blabla) 
+ (e.g. p003__X__package:p003_TAX_2_1_3_blabla) 
 	 * @return
 	 * @deprecated if you want the simple package Id, use getSimplePackageId() - if you want the pricepoint, do getPricepoint()
 	 */
 	@Deprecated
-	@Transient
 	public String getFullPackagePricepointId() {
 	
 		String fullId = null;
@@ -721,26 +664,39 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		return fullId;
 	}
 	
-	/**
-	 * this will be used as the database primary key in the priceplan refactor
-	 * @return
-	 */
 	public Long getKey() {
 		return mKey;
 	}
 
-	private void setKey(Long key){
-		mKey = key;
+	public String getCreatedBy() {
+		return mCreatedBy;
 	}
 
+	public String getModifiedBy() {
+		return mModifiedBy;
+	}
+
+	public Date getModifiedDate() {
+		return mModifiedDate;
+	}
 
 	/**
 	 * this is probably not used any more
 	 * @return
 	 */
-	@Transient
 	public char getActiveStatus() {
-		return isActive()?'A':'I';
+		//MQC 7733 - package is active if at least one of its pricepoints is active
+		if (mActiveStatus == '\u0000' && this.mPricePoints != null && this.mPricePoints.size() > 0) {
+			mActiveStatus = 'I';
+			for (PricePoint ppt : this.mPricePoints) {
+				if (ppt.isActive(new Date())) {
+					mActiveStatus = 'A';
+					break;
+				}
+            }
+		}
+		
+		return mActiveStatus;
 	}
 
 	
@@ -748,15 +704,14 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * Get the package id without the pricepoint id concatenated. eg p003
 	 * @see #getId()
 	 */
-	@Transient
-	public String getSimplePackageId()	{
+	public String getSimplePackageId()
+	{
 		return mId;
 	}
 
 	/**
 	 * The name of the package for default language
 	 */
-	@Access(AccessType.PROPERTY)
 	public String getName()
 	{
 		return getName(Constants.DEFAULT_LANGUAGE_CODE);
@@ -781,74 +736,24 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
 	 * @return the payment content for this package.
 	 */
-//	@AttributeOverrides({
-//		@AttributeOverride(name="description",column=@Column(name="pay_content_desc")),
-//	})
-//	@Embedded
-	@Transient
 	public PaymentContent getPaymentContent()
 	{
 		return mPaymentContent;
 	}
 
 	/**
-	 * @return List<CatalogService> a list of the services in the package, or null sometimes
-	 */	
-	@ManyToMany(fetch=FetchType.LAZY)
-	@JoinTable(name="PACKAGE_SERVICE",
-	           joinColumns={@JoinColumn(name="PACKAGE_KEY")},
-	            inverseJoinColumns={@JoinColumn(name="SERVICE_KEY")})
-	public List<CatalogService> getServices()	{
+	 * @return CatalogService[] an array of the services in the package
+	 */
+	public CatalogService[] getServices()
+	{
 		if (mServices!=null && mServices.values()!=null) {
-			return new ArrayList<CatalogService>(mServices.values());
+			return mServices.values().toArray(new CatalogService[] {});
 		} else {
 			return null;
 		}
 	}
-	
-	/**
-	 * use {@link #getServices} instead.
-	 * @return CatalogService[] an array view of the services in the package, (never null)
-	 */
-	@Deprecated
-	@Transient
-	public CatalogService[] getServiceArray()	{
-		//added to keep pricing tool happy
-		if (mServices!=null)
-				return mServices.values().toArray(new CatalogService[mServices.size()]);
-		else
-			return new CatalogService[0];
-	}
 
-	/**
-	 * JIRA-ET231 - Separation of Local & Global notification messages, return true if this package contains both local and global notification services
-	 * @return boolean
-	 */
-	public boolean containsGlobalAndLocalNotificationServices () {
-		boolean rv = false;
-		
-		int noGlobalNotificationServices = 0;
-		int noLocalNotificationServices = 0;
-		
-		if (mServices!=null) {
-			for(CatalogService serv: getServices())	{
-				if (serv.mGlobalHandlerNotification) {
-					noGlobalNotificationServices++;
-				} else {
-					noLocalNotificationServices++;
-				}
-				if (noGlobalNotificationServices > 0 && noLocalNotificationServices > 0) {
-					rv = true;
-					break;
-				}
-			}
-		}
-		
-		return rv;
-	}
-	
 	//@hud
-	@Transient
 	public Map<String, CatalogService> getServiceMap() {
 		return mServices;
 	}
@@ -857,37 +762,28 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * Sets a new set of services
 	 */
 	// added to reset the services. Required as a product feature.
-	public void setServices(Map<String, CatalogService> newServices)
+	// Bruno Meseguer,2005-DEC-07,LIT-PATCH-er_batch_jboss_7.0.1_rc002_LIT20050930_2005-12-07
+	public void setServices(HashMap<String, CatalogService> newServices)
 	{
 		mServices = newServices;
-	}
-	
-	/**
-	 * Add Charging Services
-	 * @param services
-	 */
-	public void setServices(List<CatalogService> services){
-
-		mServices = new HashMap<String, CatalogService>();
-
-		for ( CatalogService o: services)  {
-			addService(o);
-		}
-	}
-	
-	/**
-	 * Add Charging Service
-	 * @param serv
-	 */
-	public void addService(CatalogService servImpl)	{
-		mServices.put(servImpl.getId(), servImpl);
 	}
 
 	/**
 	 * @return true if the package has the service
 	 */
-	public boolean hasService(CatalogService service)	{
-		return service!=null && mServices.containsKey(service.getId());
+	public boolean hasService(CatalogService service)
+	{
+
+		boolean rv = false;
+
+		if (service!=null) {
+			if (mServices.get(service.getId())!=null) {
+				rv = true;
+			}
+		}
+
+
+		return rv;
 	}
 
 
@@ -895,7 +791,8 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * Returns the service specified. Returns null if the package does not have the service
 	 * @return the catalog service
 	 */
-	public CatalogService getService(String id)	{
+	public CatalogService getService(String id)
+	{
 		return mServices.get(id);
 	}
 
@@ -904,19 +801,23 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
         @return true if the package is an event package
 	 */
-	@Transient
 	public boolean isEventPackage()
 	{
-		if (isNotBlank(mPackageType))
+		if (mPackageType!=null)
 			return mPackageType.equals(EVENT_PACKAGE_TYPE);
 
 		boolean rv = false;
-		if (getPricePoints()!=null &&!getPricePoints().isEmpty())	{
-			rv = ChargingMethod.isEvent(getPricePoints().get(0).getChargingMethod());
-		}
-		if (rv==true && isBlank(mPackageType)) {
-			logger.warn("package type for {} was [{}] but should have been Event", mId, mPackageType );
-			mPackageType = EVENT_PACKAGE_TYPE;
+		if (getPricePoints()!=null)	{
+//			PricePoint[] pts = getPricePoints().getAll();
+//			if (pts!=null && pts.length>0) {
+//				PricePoint pt = pts[0];
+//				//MQc8385 TODO - iterate through all ppts, don't just choose first one
+//				if (pt != null) {
+//					rv = ChargingMethod.isEvent(pt.getChargingMethod());
+//				}
+//			}
+			if (!getPricePoints().isEmpty())
+				rv = ChargingMethod.isEvent(getPricePoints().get(0).getChargingMethod());
 		}
 		return rv;
 	}
@@ -924,7 +825,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
         Check the current selected price point to see if the ChargingMethod is recurring
 	 */
-	@Transient
 	public boolean isRecurringPackage()
 	{
 		boolean rv = false;
@@ -946,15 +846,7 @@ public class CatalogPackage implements Serializable, CatalogBean	{
         @return the package type
 	 */
 	public String getPackageType() {
-		if (isNotBlank(mPackageType))
-			return mPackageType;
-		//ET205 - work around problem in priceplan where packageType is empty
-		if (isCalendarPackage())
-			return CALENDAR_PACKAGE_TYPE;
-		else if (isEventPackage())
-			return EVENT_PACKAGE_TYPE;
-		logger.warn("can't work out package type for {}", getId());
-		return null;
+		return mPackageType;
 	}
 
 	/**
@@ -973,10 +865,16 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * @since ER 5.1
 	 */
 	public boolean isRefundable(){
-		for(CatalogService s: getServices())	{
-			if(!s.isRefundable()){
+		CatalogService[] catalogServices = getServices();
+		if(catalogServices != null){
+			int count = 0;
+			for(int i=0; i<catalogServices.length; i++){
+				if(!catalogServices[i].isRefundable()){
+					count++;
+				}
+			}
+			if(count > 0){
 				this.mRefundable = false;
-				break;
 			}
 		}
 		return this.mRefundable;
@@ -985,18 +883,28 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
         @return true if the package is a calendar package (subscription package)
 	 */
-	@Transient
-	public boolean isCalendarPackage()	{
+	public boolean isCalendarPackage()
+	{
 		boolean rv = false;
 
-		if (isNotBlank(mPackageType))	{
+		if (mPackageType!=null)	{
 			return mPackageType.equals(CALENDAR_PACKAGE_TYPE);
-		} else if (getPricePoints()!=null && !getPricePoints().isEmpty())	{
-			// all ppts in the package have the same charging method so just choose the first one
-			rv = ChargingMethod.isCalendar(getPricePoints().get(0).getChargingMethod());
+		} else {
+			if (getPricePoints()!=null)	{
+//				PricePoint[] pts = getPricePoints().getAll();
+//	
+//				if (pts!=null && pts.length>0) {
+//					PricePoint pt = pts[0];
+//					//MQc8385 TODO - iterate through all ppts, don't just choose first one
+//					if (pt != null) {
+//						rv = ChargingMethod.isCalendar(pt.getChargingMethod());
+//					}
+//				}
+				if (!getPricePoints().isEmpty())
+					rv = ChargingMethod.isCalendar(getPricePoints().get(0).getChargingMethod());
+			}
 		}
-		if (rv==true && isBlank(mPackageType)) {
-			logger.warn("package type for {} was [{}] but should have been Calendar", mId, mPackageType );
+		if (rv==true && mPackageType==null) {
 			mPackageType = CALENDAR_PACKAGE_TYPE;
 		}
 		return rv;
@@ -1005,29 +913,18 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
         Return all of the price points in the package
 	 */
-	@Transient
-	public PricePoints getPricePoints()	{
+	public PricePoints getPricePoints()
+	{
 		return mPricePoints;
 	}
 
-	@OneToMany(mappedBy="pack", targetEntity=PricePoint.class, fetch=FetchType.LAZY)
-	//@ForeignKey(name = "onepackage_manyppts")	//only for the ddl generation to give the constraint a readable name
-	@Access(AccessType.PROPERTY)
-	List<PricePoint> getPricePointList()	{
-		return getPricePoints();
-	}
-	
-	void setPricePointList(List<PricePoint> ps){
-		mPricePoints = new PricePoints(ps);
-	}
-	
 	/**
         Returns the current selected price point
         @deprecated as per MQC8385
 	 */
 	@Deprecated
-	@Transient
-	public PricePoint getPricePoint()	{
+	public PricePoint getPricePoint()
+	{
 		return mPricePoint;
 	}
 
@@ -1039,7 +936,8 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 
 	 */
 	@Deprecated
-	public void setPricePoint(PricePoint pt)	{
+	public void setPricePoint(PricePoint pt)
+	{
 		logger.debug("setting pricepoint to {}", pt!=null?pt.getId():null);
 		mPricePoint = pt;
 	}
@@ -1051,7 +949,8 @@ public class CatalogPackage implements Serializable, CatalogBean	{
         @deprecated as per MQC8385
 	 */
 	@Deprecated
-	public void setPricePoint(String pricePointId)	{
+	public void setPricePoint(String pricePointId)
+	{
 		if (mPricePoints!=null) {
 			logger.debug("setting pricepoint to {}", pricePointId);
 			mPricePoint = mPricePoints.getPricePoint(pricePointId);
@@ -1065,7 +964,7 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * @return
 	 */
 	@Deprecated
-	public double getRate() {
+	public float getRate() {
 		return getRate(new Date());
 	}
 
@@ -1075,10 +974,11 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * @return
 	 */
 	@Deprecated
-	public double getRate(Date date)	{
+	public float getRate(Date date)
+	{
 		//MQC8385 TODO
 		if (getPricePoint()!=null) {
-			return getPricePoint().getRate(date);
+			return (float)getPricePoint().getRate(date);
 		}
 		return -1;
 	}
@@ -1101,7 +1001,8 @@ public class CatalogPackage implements Serializable, CatalogBean	{
         0 is returned as 0.00 or 0,00
         1.5 is returned as 1.50 or 1,50
 	 */
-	public String getRateAsString(Locale loc, Date date)	{
+	public String getRateAsString(Locale loc, Date date)
+	{
 		//MQC8385 TODO
 		String rv = null;
 		if (getPricePoint()!=null) {
@@ -1111,11 +1012,26 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	}
 
 
+//	/** Modified for pre-Rate and date-Time in Purchase.
+//	 * 
+//	 */
+//	@SuppressWarnings("deprecation")
+//	public boolean isComplex()
+//	{
+//		//MQC8385 TODO
+//		boolean rv = false;
+//
+//		if (getPricePoint()!=null) {
+//			return getPricePoint().isComplex();
+//		}
+//
+//		return rv;
+//	}
 	/**
 	 * The type of currency
 	 */
-	@Transient
-	public ChargingResource getResource()	{
+	public ChargingResource getResource()
+	{
 		//MQC8385 TODO
 		if (getPricePoint()!=null) {
 			return getPricePoint().getResource();
@@ -1131,7 +1047,8 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	}
 
 	/** A catalog field */
-	public String getUrl()	{
+	public String getUrl()
+	{
 		return mUrl;
 	}
 
@@ -1139,8 +1056,8 @@ public class CatalogPackage implements Serializable, CatalogBean	{
         Used to store special pricing information.
         A catalog field
 	 */
-	@Access(AccessType.PROPERTY)
-	public String getPricingText1()	{
+	public String getPricingText1()
+	{
 		return getPricingText1(Constants.DEFAULT_LANGUAGE_CODE);
 	}
 
@@ -1148,8 +1065,8 @@ public class CatalogPackage implements Serializable, CatalogBean	{
         Used to store special pricing information.
         A catalog field
 	 */
-	@Access(AccessType.PROPERTY)
-	public String getPricingText2()	{
+	public String getPricingText2()
+	{
 		return getPricingText2(Constants.DEFAULT_LANGUAGE_CODE);
 	}
 	// [1] Mod Start
@@ -1180,9 +1097,18 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
         Returns all of the custom fields
 	 */
-	@Transient
 	public Map<String, String> getCustomFields() {
 		return mCustomFields;
+	}
+
+	/**
+	 *   Used to store the package under different types of deals
+	 *   Not used by client applications
+	 *   
+	 */
+	public String getDealName()
+	{
+		return "";
 	}
 
 	/**
@@ -1222,8 +1148,11 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		this.kpiPackageType = packageType; 
 	}
 
-
-	@Transient
+	//CR0586 End
+	/**
+	 * @deprecated
+	 */
+	@Deprecated
 	public boolean isActive() {
 		return isActive(new Date());
 	}
@@ -1235,6 +1164,20 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 */
 	public boolean isActive(Date date)
 	{
+//		boolean rv = false;
+//		PricePoints pts = getPricePoints();
+//
+//		if (pts!=null) {
+//			PricePoint[] ptsArr = pts.getAll();
+//
+//			for (int index=0; ptsArr!=null && index<ptsArr.length; index++) {
+//				if (ptsArr[index].isActive(date)) {
+//					rv = true;
+//					break;
+//				}
+//			}
+//		}
+//		return rv;
 		for (PricePoint pt: getPricePoints())	{
 			if (pt.isActive(date))
 				return true;
@@ -1242,27 +1185,46 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		return false;
 	}
 
-	public String getTaxCode()	{
+	public String getTaxCode()
+	{
 		return mTaxCode;
 	}
 
 
-	@Transient
-	public String[] getPricingModels()	{
-//		String[] tempString = {""};
-//		return tempString;
-		return new String[0];
+	public String[] getPricingModels()
+	{
+		//REMEDY 7010
+		//This method should not be used. The method to be used is in the CatalogPackageImpl
+		//throw new RuntimeException("This is implemented in the implementation class");
+		String[] tempString = {""};
+		return tempString;
 	}
 
-
+	/**
+	 * get the DRM flag associated with the package
+	 * @param none
+	 * @return DRMType the flag associated with the package
+	 * @since ER 5.1
+	 */
+	public DRMType getDRMType()
+	{
+		return m_DRMType;
+	}
 
 	/**
 	 * is this the default package?
 	 * @return
 	 */
-	@Transient
-	public boolean isDefault()	{
-		return getSimplePackageId().equals(DEFAULT_ID);
+	public boolean isDefault()
+	{
+		boolean rv = false;
+		//MQC 7883 = the getId() method is not consistent over time.  If a user purchases the default package, it will return default__X__package:default_TAX_1_1_10010_999_999_*_*
+		//if (getId().equals(DEFAULT_ID)) {
+		if (getSimplePackageId().equals(DEFAULT_ID))	{
+			rv = true;
+		}
+
+		return rv;
 	}
 
 	/** ADDED FOR EGYPT ER6 STUB **/
@@ -1274,8 +1236,10 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	public boolean isRecieptingFlag() {
 		return mReceiptingFlag;
 	}
-
-
+	public String getPricingModelFk()
+	{
+		return mPricingModelFk;
+	}
 	/** ADDED FOR ER7 Requirement **/
 	public boolean isPricePointOrder() {
 		return mPricePointOrder;
@@ -1297,40 +1261,41 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	}
 
 	/** ADDED FOR ER7 Requirement **/
-	public int getPriority()	{
+	public int getPriority()
+	{
 		return mPriority;
 	}
 
-	@Transient
-	public boolean getACEPackage()	{
+	/** Added FOR ER 8 Requirement */
+	public boolean getACEPackage()
+	{
 		return mACEPackage;
 	}
 
 	/** Added FOR ER 8 Ph 2 Requirement */
-	public boolean isUpSell()	{
+	public boolean isUpSell()
+	{
 		return mUpSell;
 	}
 
 	// Added since ER 9 - Start
-	@Transient
-	public Map<String, String> getDescriptions() {
+	public HashMap<String, String> getDescriptions() {
 		return descriptions;
 	}
 
-	public void setDescriptions(Map<String, String> descriptions) {
+	public void setDescriptions(HashMap<String, String> descriptions) {
 		this.descriptions = descriptions;
 	}
 
-	@Transient
-	public Map<String, String> getNames() {
+	public HashMap<String, String> getNames() {
 		return names;
 	}
 
-	public void setNames(Map<String, String> names) {
+	public void setNames(HashMap<String, String> names) {
 		this.names = names;
 	}
 
-	public String getName(String languageCode)	{
+	public String getName(String languageCode){
 		if (names == null || names.isEmpty()){
 			return null;
 		}
@@ -1403,21 +1368,19 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		setDescription(Constants.DEFAULT_LANGUAGE_CODE, description);
 	}	
 
-	@Transient
-	public Map<String, String> getPricingTextList1() {
+	public HashMap<String, String> getPricingTextList1() {
 		return pricingTextList1;
 	}
 
-	public void setPricingTextList1(Map<String, String> pricingTextList1) {
+	public void setPricingTextList1(HashMap<String, String> pricingTextList1) {
 		this.pricingTextList1 = pricingTextList1;
 	}
 
-	@Transient
-	public Map<String, String> getPricingTextList2() {
+	public HashMap<String, String> getPricingTextList2() {
 		return pricingTextList2;
 	}
 
-	public void setPricingTextList2(Map<String, String> pricingTextList2) {
+	public void setPricingTextList2(HashMap<String, String> pricingTextList2) {
 		this.pricingTextList2 = pricingTextList2;
 	}
 
@@ -1518,12 +1481,11 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		this.logoId = logoId;
 	}
 
-	@Transient
-	public Map<String, String> getPartnerInfoMap() {
+	public HashMap<String, String> getPartnerInfoMap() {
 		return partnerInfoMap;
 	}
 
-	public void setPartnerInfoMap(Map<String, String> partnerInfoMap) {
+	public void setPartnerInfoMap(HashMap<String, String> partnerInfoMap) {
 		this.partnerInfoMap = partnerInfoMap;
 	}
 
@@ -1624,12 +1586,10 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 
 	//RBT Enhancements Start
 
-	public void setChildPackages(List<String> childPackageIdList){
+	public void setChildPackages(ArrayList<String> childPackageIdList){
 		this.childPackageIdList = childPackageIdList;
 	}
-	
-	@Transient
-	public List<String> getChildPackages(){
+	public ArrayList<String> getChildPackages(){
 		return childPackageIdList;
 	}
 
@@ -1652,8 +1612,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	public void setServicesNotInPackageFairUsagePolicy(String servicesNotInPackageFairUsagePolicyList){
 		this.servicesNotInPackageFairUsagePolicy = servicesNotInPackageFairUsagePolicyList;
 	}
-	
-	//@Column(name="svcsNotInPackFUPolicyList")
 	public String getServicesNotInPackageFairUsagePolicyList(){
 		return servicesNotInPackageFairUsagePolicy;
 	}
@@ -1693,8 +1651,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * MQC 5485 - This is used internally by the ER system
 	 * True if any parent subscription exists for this package and is in a reserved, suspended or being provisioned status
 	 */
-//	@Column(name="hasParentSubSusResProv")
-//	@Access(AccessType.PROPERTY)
 	public boolean isHasParentSubSuspendedResProv() {
 		return hasParentSubSuspendedResProv;
 	}
@@ -1702,7 +1658,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	/**
     MQC 5485 - This is used internally by the ER system
 	 */
-//	@Column(name="hasParentSubSusResProv")
 	public void setHasParentSubSuspendedResProv(boolean hasSubSuspendedResProv) {
 		this.hasParentSubSuspendedResProv = hasSubSuspendedResProv;
 	}
@@ -1837,8 +1792,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	}
 
 	// CR 1409 Start
-	@Column(name="disallowsubpch")
-	@Access(AccessType.PROPERTY)
 	public String getDisallowDuplicateSubPurchase() {
 		return disallowDuplicateSubPurchase;
 	}
@@ -1854,20 +1807,20 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 */
 	@Deprecated
 	public int getNoActivePricepoints() {
-		/*return getNoActivePricepoints(new Date());//ET-153
+		return getNoActivePricepoints(new Date());
 	}
 
 	//CR1564 -Utctimezone for diff region in country
 	//CR 1542 - return the number of active pricepoints
 	public int getNoActivePricepoints(Date date) {
-*/
+
 		int rv = 0;
 
 		if ( mPricePoints != null) {
 			//PricePoint[] pts = mPricePoints.getAll();
 			for (PricePoint pt : mPricePoints) {
 				//MQC 6051 - also regard historic pricepoints as active as existing subscriptions may still have active subscriptions against these
-				if (pt.isActive(/*date*/) || pt.isHistoric()) {
+				if (pt.isActive(date) || pt.isHistoric()) {
 					rv++;
 				}
 			}
@@ -1911,19 +1864,16 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	//CR1564 -end
 
 	//CR1564 -Utctimezone for diff region in country - set to true if you want to disable dyanamic calculation of values in mPricePoint and mPricePoints
-	
-//ET-153 | commented the time zone code | start	
-//	public void setUseStaticValues(boolean useStaticValues) {
-//		if (mPricePoint != null) {
-//			mPricePoint.setUseStaticValues(useStaticValues);
-//		}
-//		if (mPricePoints != null) {
-//			for (PricePoint pp : mPricePoints) {
-//				pp.setUseStaticValues(useStaticValues);
-//			}
-//		}
-//	}
-//	ET-153 | commented the time zone code | end	
+	public void setUseStaticValues(boolean useStaticValues) {
+		if (mPricePoint != null) {
+			mPricePoint.setUseStaticValues(useStaticValues);
+		}
+		if (mPricePoints != null) {
+			for (PricePoint pp : mPricePoints) {
+				pp.setUseStaticValues(useStaticValues);
+			}
+		}
+	}
 
 	//MQC 6289 - return true if package contains active recurring pricepoint
 	public boolean isRecurringPricePointPackage(Date date) {
@@ -1999,8 +1949,7 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * CR2006 - Reusable Promo Codes
 	 * return the promo code hashmap 
 	 * */
-	@Transient
-	public Map<String, PromoCode> getPromoCodeMap() {
+	public HashMap<String, PromoCode> getPromoCodeMap() {
 		return mPromoCodes;
 	}
 
@@ -2045,13 +1994,10 @@ public class CatalogPackage implements Serializable, CatalogBean	{
      * MPAY replacement.  Is the package a goodwill credit package or not?
      * @return true (it is a goodwill credit package) or false (it isn't)
      */
-	@Column(name="goodwillCredit")
-    @Transient
 	public boolean isGoodwillCredit() {
 		return isGoodwillCredit;
 	}
 	
-	@Column(name="goodwillCredit")
 	public void setIsGoodwillCredit(boolean isGoodwillCredit) {
 		this.isGoodwillCredit = isGoodwillCredit;
 	}
@@ -2059,11 +2005,31 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	
 	/**
 	 * MQC 7733 - return the status of the package as a String
-	 * @return "ACTIVE" or "INACTIVE"
+	 * @return String
 	 */
-	@Transient
 	public String getActiveStatusAsString() {
-		return isActive()?PACKAGE_STATUS_ACTIVE:PACKAGE_STATUS_INACTIVE;
+		
+		String rv = PACKAGE_STATUS_UNKNOWN;
+		
+		//MQC 7733 - package is active if at least one of its pricepoints is active
+		if (mActiveStatus == '\u0000' && this.mPricePoints != null && this.mPricePoints.size() > 0) {
+			mActiveStatus = 'I';
+			for (PricePoint ppt : this.mPricePoints) {
+				if (ppt.isActive(new Date())) {
+					mActiveStatus = 'A';
+					break;
+				}
+            }
+		}
+		
+		if (mActiveStatus == 'A') {
+			rv = PACKAGE_STATUS_ACTIVE;
+		}
+		else if (mActiveStatus == 'I') {
+			rv = PACKAGE_STATUS_INACTIVE;
+		}
+		
+		return rv;
 	}
 
 	// CR2210 - MPay Rate Card
@@ -2086,7 +2052,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 	 * CR2238 - return true if package contains active calendar user group pricepoint
 	 * @return boolean
 	 */
-	@Transient
 	public boolean isUserGroupCalendarPricePointPackage() {
 
 		boolean rv = false;
@@ -2194,8 +2159,12 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 			return false;
 		}
 		
+//		PricePoint[] pts = null;
+				
+//		pts = mPricePoints.getAll();
+		
 		for (PricePoint pt : mPricePoints) {
-			if (pt.isActive() && (isNotBlank(pt.getPricepointIdLink())) ) {
+			if (pt.isActive(new Date()) && (isNotBlank(pt.getPricepointIdLink())) ) {
 				rv = true;
 				break;
 			}
@@ -2203,377 +2172,6 @@ public class CatalogPackage implements Serializable, CatalogBean	{
 		
 		return rv;
 	}
-
-	
-	/**
-	 * JIRA ET237 - Linking of Non-TRIAL pricepoints - return the link pricepoint order if the pricepoint belongs to a linked price model
-	 * @param pricePoint
-	 * @return int
-	 */
-	public int getLinkedPricepointOrder (PricePoint pricePoint) {
-		
-		int rv = -1; //default value, not a pricepoint in a link model
-		
-		//Event pricepoints cannot be linked
-		if (pricePoint == null || pricePoint.isEvent()) {
-			return rv;
-		}
-		
-		//a non-recurring TRIAL pricepoint cannot be linked
-		if (pricePoint.isTrial() && pricePoint.isNonRecurring()) {
-			return rv;
-		}
-				
-		//a recurring TRIAL pricepoint must be linked and will always be the first pricepoint in the link model
-		if (pricePoint.isTrial() && pricePoint.isRecurring()) {
-			rv = 1;
-			return rv;
-		}
-		
-		//a recurring non-TRIAL with a link pricepoint id, if the pricpoint itself is not a 
-		//linked pricepoint then this must be first pricepoint in the link model, if it is a linked pricepoint then it must
-		//be the second pricepoint in the link model
-		if (pricePoint.isRecurring() && isNotBlank(pricePoint.getPricepointIdLink())) {
-			rv = 1;
-			if (this.mPricePoints != null) {
-				for (PricePoint pt : mPricePoints) {
-					if ( (pt.isActive() || pt.isHistoric()) && (isNotBlank(pt.getPricepointIdLink()) && pt.getPricepointIdLink().equals(pricePoint.getId()))) {
-						rv = 2;
-						break;
-					}
-				}
-			}
-			return rv;
-		}
-		
-		//for the non-recurring or recurring calendar without a link pricepoint id, if the pricepoint itself is a linked pricepoint, if the master pricepoint is a TRIAL then
-		//this pricepoint must be the second pricepoint in the link model. If the master pricepoint is not TRIAL then check this
-		//pricepoint is itself a linked one, then this will be the third pricepoint in the link model
-		else {
-			PricePoint masterPricePoint = null;
-			if (this.mPricePoints != null) {
-				for (PricePoint pt : mPricePoints) {
-					if ((pt.isActive() || pt.isHistoric()) && (isNotBlank(pt.getPricepointIdLink()) && pt.getPricepointIdLink().equals(pricePoint.getId()))) {
-						masterPricePoint = pt;
-						break;
-					}
-				}
-				if (masterPricePoint != null) {
-					if (masterPricePoint.isTrial()) {
-						rv = 2;
-						return rv;
-					} else {
-						for (PricePoint pt : mPricePoints) {
-							if ((pt.isActive() || pt.isHistoric()) && (isNotBlank(pt.getPricepointIdLink()) && pt.getPricepointIdLink().equals(masterPricePoint.getId()))) {
-								rv = 3;
-								return rv;
-							}
-						}
-					}
-					//if rv is still not set and this is a non-recurring pricepoint which is a link or this is a recurring pricepoint 
-					//with a blank link, then it can only be the second pricepoint in the link model
-					if (rv == -1 && ( (pricePoint.isNonRecurring()) || (pricePoint.isRecurring() && isBlank(pricePoint.getPricepointIdLink())) ) ) {
-						rv = 2;
-					} 
-				}
-			}
-		}
-				
-		return rv;
-	}
-	
-	/**
-	 * JIRA ET237 - Linking of Non-TRIAL pricepoints - return true if pricepoint belongs to a link model
-	 * @param pricePoint
-	 * @return
-	 */
-	public boolean isPricepointInLinkModel (PricePoint pricePoint) {
-		boolean rv = false;
-		
-		if (pricePoint != null && getLinkedPricepointOrder(pricePoint)>0) {
-			rv = true;
-		}
-		
-		return rv;
-	}
-	
-//PPM136861 refactoring aL. START
-//	@ManyToOne(optional=false, targetEntity=Priceplan.class, fetch=FetchType.LAZY)	
-//	@Access(AccessType.PROPERTY)
-	Priceplan getPriceplan() {
-		return priceplan;
-	}
-
-//PPM136861 refactoring aL. START changed default to public
-	public void setPriceplan(Priceplan priceplan) {
-		this.priceplan = priceplan;
-	}
-
-//PPM136861 refactoring aL. START moved here from impl
-	@Deprecated
-	public void addPricingModel(String val) {
-		//PPM136861 refactoring aL. START do nothing
-//		if (! mPricingModels.containsKey(val))
-//			mPricingModels.put(val,null);
-	}
-
-	/**
-	 * Remove Charging Service
-	 * @param serv
-	 */
-	public void removeService(CatalogService servImpl) {
-		mServices.remove(servImpl.getId());
-	}
-
-	/**
-	    Returns true if package has a purchase range
-	 */
-	public boolean hasStartEndDate() {
-		return true;
-		// this should cycle through the price points and work this out
-		// we should have a setStartDate and setExpiryDate as well
-		// which sets all price points
-	
-		/*        if (getStartDate()==null || getExpiryDate()==null) {
-	        return false;
-	    } else {
-	        return true;
-	    }
-		 */
-	}
-
-	public Date getStartDate() {
-		//TODO wtf?  
-		return new Date();
-	}
-
-	public Date getExpiryDate() {
-		return new Date();
-	}
-
-	public void setPackageId(String Id) {
-		mId = Id;
-	}
-
-	public void setActiveStatus(char activeStatus) {
-		mActiveStatus = activeStatus;
-	}
-
-	public void setUrl(String url) {
-		mUrl = url;
-	}
-
-	public String[] getServiceNames() {
-			List<String> rv = new ArrayList<String>();
-	//		CatalogService[] packs = getServices();
-			for (CatalogService pack : getServices()) {
-				rv.add(pack.getName());
-			}
-			return rv.toArray(new String[] {});
-		}
-
-	public void setId(String val) {
-		try {
-			Long.parseLong(val);
-			throw new EnvironmentException("The package id cannot be a number " + val);
-		} catch (Exception e) {
-			// this is okay
-		}
-		mId = val;
-	}
-
-	public void setPackageType(String type) {
-		mPackageType = type;
-	}
-
-	public void setPurchaseMethod(String purchaseMethod) { mPurchaseMethod = purchaseMethod; }
-
-	public void setReserveOnly(boolean isReserveOnly) { mReserveOnly = isReserveOnly; }
-
-
-	public void setNotificationCategory(String val) {
-		mNotificationCategory = val;
-	}
-
-	/**
-	 * Sets a custom field for the package.
-	 * Custom fields appear in <custom_field> tags in the catalog XML.
-	 */
-	public void setCustomField(String name, String value) {
-		mCustomFields.put(name, value);
-	}
-
-	public boolean isOriginal() {
-		return mIsOriginal;
-	}
-
-	public void setIsOriginal() {
-		mIsOriginal = true;
-	}
-
-	public String getPricingModel() {
-		String rv = null;
-		String [] val = getPricingModels();
-		if (val.length>0) {
-			rv = val[0];
-		}
-	
-		return rv;
-	}
-
-//	PPM136861 refactoring aL. START
-	public void setPricingModelFk(String pricingModelFk) {
-//		mPricingModelFk = pricingModelFk;
-	}
-
-	public void setPricingModel(String val) {
-//		mPricingModels.put(val,val);
-	}
-
-	public void deletePricingModelData() {
-//			if (getPricePoints()!=null) {
-//	//			PricePoint[] pts = getPricePoints().getAll();
-//	//			for (int index=0; pts!=null && index<pts.length; index++) {
-//				for (PricePoint p: getPricePoints())	{
-//					PricePointImpl impl = (PricePointImpl)p;
-//					impl.deletePricingModelData();
-//				}
-//			}
-		}
-
-	public void deletePricingModel(String pricingModel) {
-//			mPricingModels.remove(pricingModel);
-//			if (getPricePoints()!=null) {
-//	//			PricePoint[] pts = getPricePoints().getAll();
-//	//			for (int index=0; pts!=null && index<pts.length; index++) {
-//				for (PricePoint p: getPricePoints())	{
-//					PricePointImpl impl = (PricePointImpl)p;
-//					impl.deletePricingModel(pricingModel);
-//				}
-//			}
-		}
-
-	public void deletePricingModelTier(String pricingModel, String tierId) {
-//			if (getPricePoints()!=null) {
-//	//			PricePoint[] pts = getPricePoints().getAll();
-//	//			for (int index=0; pts!=null && index<pts.length; index++) {
-//				for (PricePoint p: getPricePoints())	{
-//					PricePointImpl impl = (PricePointImpl)p;
-//					impl.deletePricingModelTier(pricingModel, tierId);
-//				}
-//			}
-		}
-//	PPM136861 refactoring aL. END
-	
-	/**
-	 * @param string
-	 */
-	public void setTaxCode(String string) {
-		mTaxCode = string;
-	}
-
-//	PPM136861 refactoring aL. START
-//	/**
-//	 * @param id
-//	 * @return
-//	 */
-//	public boolean containsPricingModel(String id) {
-//		if (mPricingModels != null && id != null) return mPricingModels.containsKey(id);
-//		return false;
-//	}
-
-	/**
-	 * @param refundable
-	 */
-	public void setNonRefundable(boolean bool) {
-		mRefundable = !bool;
-	}
-
-
-	/** ADDED FOR EGYPT ER6 STUB **/
-	public void setExpressPurchase(boolean expressPurchase) {
-		mExpressPurchase = expressPurchase;
-	}
-
-	/** ADDED FOR ER6 Requirement **/
-	public void setRecieptingFlag(boolean receiptingFlag) {
-		mReceiptingFlag = receiptingFlag;
-	}
-
-	/** ADDED FOR EGYPT ER7 STUB **/
-	public void setPricePointOrder(boolean pricePointOrder) {
-		mPricePointOrder = pricePointOrder;
-	}
-
-	/** ADDED FOR ER7 STUB **/
-	public void setRevenueShareByUsage(boolean revenueShareByUsage) {
-		mRevenueShareByUsage = revenueShareByUsage;
-	}
-
-	/** ADDED FOR ER7 STUB **/
-	public void setDynamicDefault(boolean dynamicDefault) {
-		mDynamicDefault = dynamicDefault;
-	}
-
-	/** ADDED FOR ER7 STUB **/
-	public void setPriority(int priority) {
-		mPriority = priority;
-	}
-
-	/** ADDED FOR ER7 STUB **/
-	public void setSuperPackage(boolean superPackage) {
-		mSuperPackage = superPackage;
-	}
-
-	/** ADDED FOR ER8  **/
-	public void setACEPackage(boolean ACEPackage) {
-		mACEPackage = ACEPackage;
-	}
-
-	/** ADDED FOR ER8 Ph 2  **/
-	public void setUpSell(boolean UpSell) {
-		mUpSell = UpSell;
-	}
-
-	/**
-	 * @param mUseRateCardService the mUseRateCardService to set
-	 */
-	public void setmUseRateCardService(boolean useRateCardService) {
-		this.mUseRateCardService = useRateCardService;
-	}
-
-	/**
-	 * @param mRateCardServiceId the mRateCardServiceId to set
-	 */
-	public void setmRateCardServiceId(String rateCardServiceId) {
-		this.mRateCardServiceId = rateCardServiceId;
-	}
-	// CR2210 - Ends
-	//PPM136861 refactoring aL. END
-	// CR2303p5
-	public String getDefaultPartnerProvisioningId() {
-		return mDefaultPartnerProvisioningId;
-	}
-	// CR2303p5
-	public void setDefaultPartnerProvisioningId(String defaultPartnerProvisioningId) {
-		this.mDefaultPartnerProvisioningId = defaultPartnerProvisioningId;
-	}
-	
-	/**
-     * JIRA-ET271 - Enable User group comparison at renewal config at Catalog Package level
-     * @return the user group comparison at renewal value
-     */
-    public String getUserGroupComparisonAtRenewal() {
-    	return this.mUserGroupComparisonAtRenewal;
-    }
-    
-    /**
-     * JIRA-ET271 - Enable User group comparison at renewal config at Catalog Package level
-     * @return set the user group comparison at renewal value
-     */
-    public void setUserGroupComparisonAtRenewal(String userGroupComparisonAtRenewal) {
-    	this.mUserGroupComparisonAtRenewal = userGroupComparisonAtRenewal;
-    }
 }
 
 

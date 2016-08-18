@@ -8,7 +8,8 @@ import java.util.Locale;
     The attributes that the user can set when getting back a transaction history
 
 */
-public interface FilterAttributes extends Serializable	{
+public interface FilterAttributes extends Serializable
+{
 	//@hud STKHREQ12557
 	public void setLanguageLocale(Locale lanLocale);
 	public Locale getLanguageLocale();

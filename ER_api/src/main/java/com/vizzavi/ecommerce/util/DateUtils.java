@@ -13,7 +13,7 @@ public class DateUtils {
     private static SimpleDateFormat sYear = new SimpleDateFormat("yyyy");
 
 
-//    private static SimpleDateFormat sMonth = new SimpleDateFormat("MM");
+    private static SimpleDateFormat sMonth = new SimpleDateFormat("MM");
 
 
     private static SimpleDateFormat sDay = new SimpleDateFormat("dd");

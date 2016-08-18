@@ -125,15 +125,6 @@ public class RefundAuthorization extends BaseAuthorization {
 			this.mIsSuccess = true;
     }
 
-    /**
-     * 
-     * @param transactionId
-     * @param tran the refund transaction
-     * @param paymentTransaction the original payment transaction
-     * @param code
-     * @param errorId
-     * @param errorDescription
-     */
     public RefundAuthorization(long transactionId, Transaction tran, Transaction paymentTransaction,
             ReasonCode code, String errorId, String errorDescription)
         {

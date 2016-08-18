@@ -1,7 +1,6 @@
 package com.vodafone.global.er.subscriptionmanagement;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -107,7 +106,6 @@ public class SubscriptionFilterImpl extends FilterAttributesImpl implements Subs
 	@Override
 	public void setPackageId(String PackageId)
 	{
-		//TODO refactor to use the list instead
 		mPackageId = PackageId;
 	}
 
@@ -257,10 +255,6 @@ public class SubscriptionFilterImpl extends FilterAttributesImpl implements Subs
 		 stringBuffer.append( mRetrieveLastPaymentTransaction ) ;
 		 }
 		 stringBuffer.append(", maxEvents ").append(getMaxEvents());
-		 
-	    // MQC 9655 - add parent package id to subscription filter
-		stringBuffer.append(", mParentPackageId=");
-		stringBuffer.append(mParentPackageId);
 
 		 return stringBuffer.toString() ;
 	 }
@@ -352,9 +346,7 @@ public class SubscriptionFilterImpl extends FilterAttributesImpl implements Subs
 	 {
 		 transactionsNotRequired = no;
 	 }
-	 
-	 //From the V2 Subs flow we shall use List<String> getTransacationTypes();
-	 @Deprecated
+
 	 @Override
 	 public String getTransactionsNotRequired()
 	 {
@@ -428,58 +420,4 @@ public class SubscriptionFilterImpl extends FilterAttributesImpl implements Subs
 	public boolean isRetrieveLastPaymentTransaction() {
 		return mRetrieveLastPaymentTransaction;
 	}
-       
-
-	/**
-	 * Added a List of PackageIds
-	 */
-	
-	public List<String> packageIds;
-
-	public List<String> getPackageIds() {
-		return packageIds;
-	}
-
-	public void setPackageIds(List<String> packageIds) {
-		this.packageIds = packageIds;
-	}	
-	
-
-	/**
-	 *  Added following boolean for different transaction types
-	 * 
-	 * This is used specificially for the V2 subscription flow
-	 *
-	 */
-	
-	public boolean includeModifyTxns=false;
-	
-	public boolean includeRefundTxns=false;
-	
-	public boolean includePaymentTxns=false;
-
-	public boolean includeModifyTxns() {
-		return includeModifyTxns;
-	}
-
-	public void setIncludeModifyTxns(boolean includeModifyTxns) {
-		this.includeModifyTxns = includeModifyTxns;
-	}
-
-	public boolean includeRefundTxns() {
-		return includeRefundTxns;
-	}
-
-	public void setIncludeRefundTxns(boolean includeRefundTxns) {
-		this.includeRefundTxns = includeRefundTxns;
-	}
-
-	public boolean includePaymentTxns() {
-		return includePaymentTxns;
-	}
-
-	public void setIncludePaymentTxns(boolean includePaymentTxns) {
-		this.includePaymentTxns = includePaymentTxns;
-	}
-	
 }

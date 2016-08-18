@@ -29,8 +29,13 @@ public class ChargingMethod {
         the package expires, the recurring batch will take payment again and extend the expiry date.
         @return true if a recurring subscription, false otherwise
     */
-    public static boolean isRecurring(int code)    {
-        return code == RECURRING;
+    public static boolean isRecurring(int code)
+    {
+        boolean rv = false;
+        if (code == RECURRING) {
+            rv = true;
+        }
+        return rv;
     }
 
     /**
@@ -39,23 +44,35 @@ public class ChargingMethod {
         is not purchased again.
         @return true if a non-recurring calendar package, false otherwise
     */
-    public static boolean isNonRecurring(int code)   {
-        return code == NON_RECURRING;
+    public static boolean isNonRecurring(int code)
+    {
+        boolean rv = false;
+        if (code == NON_RECURRING) {
+            rv = true;
+        }
+        return rv;
     }
 
     /**
         Calendar means that it is a time-based package. (It has a start and end date)
         @return return true if a calendar package
     */
-    public static boolean isCalendar(int code)    {
-        return isRecurring(code) || isNonRecurring(code) ;
+    public static boolean isCalendar(int code)
+    {
+        boolean rv = false;
+        if (isRecurring(code) || code == NON_RECURRING) {
+            rv = true;
+        }
+        return rv;
+
     }
 
     /**
         The package is not time based.
         @return true if not time based.
     */
-    public static boolean isEvent(int code)    {
+    public static boolean isEvent(int code)
+    {
     	return code == EVENT;// ||code==999;	//maybe include this
     }
 
@@ -100,7 +117,7 @@ public class ChargingMethod {
     	case EVENT: return "Event";
     	case RECURRING: return "Recurring";
     	case NON_RECURRING: return "Non-recurring";
-    	case 999 : return "Default (event)";
+    	case 999 : return "Default(event)";
     	}
     	return null;
 

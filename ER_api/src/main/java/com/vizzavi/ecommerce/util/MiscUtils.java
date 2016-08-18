@@ -1,24 +1,29 @@
 package com.vizzavi.ecommerce.util;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.vizzavi.ecommerce.common.ErCountry;
-import com.vizzavi.ecommerce.common.Utils;
+import java.util.*;
 
 
-public class MiscUtils	{
+public class MiscUtils
+{
+//	/**
+//	 * @deprecated should use CountryCode.getLocale(String countryCode)
+//	 * @param isoCode
+//	 * @return
+//	 */
+//    @Deprecated
+//	public static Locale getLocaleFromIsoCode(String isoCode)
+//    {
+//    	if("GB".equals(isoCode)) return Locale.UK;
+//        if("DE".equals(isoCode)) return Locale.GERMANY;
+//        if("FR".equals(isoCode)) return Locale.FRANCE;
+//        if("IT".equals(isoCode)) return Locale.ITALY;
+//        return null;
+//    }
 
-
-    public static List<String> splitToVector( String s, String sep )
+    public static Vector splitToVector( String s, String sep )
     {
         StringTokenizer st = new StringTokenizer( s, sep );
-        List<String> ret = new ArrayList<String>( st.countTokens() );
+        Vector ret = new Vector( st.countTokens() );
         while (st.hasMoreTokens()) {
             ret.add( st.nextToken() );
         }
@@ -54,33 +59,5 @@ public class MiscUtils	{
       return Math.round(d * Math.pow(10, nthDecimal)) 
       		/ Math.pow(10,nthDecimal);
     }    
-    
-    /**
-     * This method provides the set of ErCountry objects representing the countries batch was configured for at startup(using eg -o or -O params when running jbctl) 
-     * 
-     * Going forward we shall use this method from this class and get rid of all the duplicate code in the Application.
-     * 
-     * @return - Set of {@link ErCountry} objects - may be empty but never null
-     */
-    public static Set<ErCountry> getCountriesFromStartupParams() {
-
-		Set<ErCountry> countriesCoreIsConfiguredFor = new HashSet<ErCountry>();
-		
-		Set<String> countries = new HashSet<String>();
-		
-		//so if one country is specified with -o use that
-		if (StringUtils.isNotBlank(System.getProperty("db.centralpricing.country")))
-			countries.addAll(Utils.parseList(System.getProperty("db.centralpricing.country")));
-		//else use all the countries specified with -O
-		else if (StringUtils.isNotBlank(System.getProperty("db.centralpricing.countries")))
-			countries.addAll(Utils.parseList(System.getProperty("db.centralpricing.countries")));
-		
-		
-		for (String opco: countries){
-			countriesCoreIsConfiguredFor.add(ErCountry.ErCountriesByCode.get(opco));
-		}
-		
-		return countriesCoreIsConfiguredFor;
-	}
 
 }

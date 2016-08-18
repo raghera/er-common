@@ -15,30 +15,6 @@ public class PurchaseOptionsAuthorization implements Serializable {
 	
 	private ArrayList<CatalogPackage> mCatalogPackages = null;
 	
-	//MQC 13096 - DE Opco needs more information in response for the case of Account Not 
-	//validated by the external system, so adding the below fields will serve the purpose - start
-	
-	private String errId;
-	private String errDescription;
-	
-	public String getErrId() {
-		return errId;
-	}
-
-	public void setErrId(String errId) {
-		this.errId = errId;
-	}
-
-	public String getErrDescription() {
-		return errDescription;
-	}
-
-	public void setErrDescription(String errDescription) {
-		this.errDescription = errDescription;
-	}
-
-	//MQC 13096 code ends
-
 	public boolean isSuccess() {
 		return success;
 	}

@@ -6,9 +6,9 @@
  */
 package com.vodafone.global.er.subscriptionmanagement;
 
-import com.vizzavi.ecommerce.business.selfcare.PurchasedService;
-
 import java.util.Date;
+
+import com.vizzavi.ecommerce.business.selfcare.PurchasedService;
 
 
 public class ERPurchasedService extends PurchasedService implements DirtyMarker {
@@ -59,9 +59,8 @@ public class ERPurchasedService extends PurchasedService implements DirtyMarker 
 	 * @param integer
 	 */
 	@Override
-	public void setStatus(Integer status) {
-		if(status != null)
-			super.setStatus(status);
+	public void setStatus(int status) {
+		super.setStatus(status);
 		setDirty();
 	}
 
@@ -69,9 +68,8 @@ public class ERPurchasedService extends PurchasedService implements DirtyMarker 
 	 * @param integer
 	 */
 	@Override
-	public void setProvStatus(Integer provStatus) {
-		if(provStatus != null)
-			super.setProvStatus(provStatus);
+	public void setProvStatus(int provStatus) {
+		super.setProvStatus(provStatus);
 		setDirty();
 	}
 	
@@ -81,12 +79,12 @@ public class ERPurchasedService extends PurchasedService implements DirtyMarker 
 		this.setDirty();
 	}
 	
-//	JIRA ET-331:part2 - USAGE_COUNT field removal from API and DB	
-//	@Override
-//	public void increaseCount(){
-//		super.increaseCount();
-//		this.setDirty();
-//	}
+	
+	@Override
+	public void increaseCount(){
+		super.increaseCount();
+		this.setDirty();
+	}
 
 	//CR 1209 add service class
 	@Override
@@ -176,7 +174,7 @@ public class ERPurchasedService extends PurchasedService implements DirtyMarker 
 	 * 
 	 * @return
 	 */
-	public ERPurchasedService(String aServiceId, String aProvTag){
+	public ERPurchasedService(String aServiceId,String aProvTag){
 		this.provisioningTag = aProvTag;
 		this.serviceId = aServiceId;
 		setNew();    	
@@ -189,7 +187,7 @@ public class ERPurchasedService extends PurchasedService implements DirtyMarker 
 	 * @return
 	 */ // copied from ERPurchasedService(String aServiceId,String aProvTag)
 
-	public ERPurchasedService(String aServiceId, String aProvTag, boolean isProvisionOnUsage){
+	public ERPurchasedService(String aServiceId,String aProvTag,boolean isProvisionOnUsage){
 		this.provisioningTag = aProvTag;
 		this.serviceId = aServiceId;
 		this.isProvisionOnUsage = isProvisionOnUsage;

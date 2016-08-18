@@ -2,7 +2,6 @@ package com.vizzavi.ecommerce.business.selfcare;
 
 import java.io.Serializable;
 import java.util.Locale;
-import java.util.Set;
 
 /*
 nayera Min Subscription Period - German Migration 
@@ -30,48 +29,6 @@ public class CustcareAttributes implements Serializable
 	//CR1349 - add flag to override the disallow cancellation flag, set true for ER Batch
 	boolean overrideDisallowCancellationFlag = false;
 	
-	//CR2303p5 START
-	/**
-	 * all user's subscriptions to enable ER Core to determine whether a de-provision involves the last subscription
-	 * for a given partner id in order to notify PNH
-	 */ 
-	Subscription[] allSubscriptions;
-	/**
-	 * Flag to indicate getSubscriptions was already called for user and won't need to be called again during de-provisioning
-	 * if global PNH is required. It's not essential but setting it to true makes it clear getSubscriptions has already
-	 * been called.
-	 */
-	boolean hasNoOtherSubscriptions = false;
-	
-	/**
-	 * Long story - set during changeMsisdn so that deactivate provision calls
-	 * will set sub status to beingProvisioned AFTER provision message sub status has been added
-	 * but BEFORE count of active subs is performed 
-	 * to fulfil last_serviceclass_sub functionality 
-	 */
-	boolean setBeingProvisioned = false;
-	
-	/**
-	 * Longer story - set during inactivateAccount so that deactivate provision calls
-	 * will keep track of which provision messages include subcontext = LAST_SERVICECLASS_SUB
-	 * so that don't send twice in order to fulfil last_serviceclass_sub functionality 
-	 * @return
-	 */
-	Set<String> lastServiceClassSent;
-	//CR2303p5 END
-	
-	/**
-	 * set during inactivateAccount so that deactivate provision calls
-	 * will keep track of which provision messages include subcontext = LAST_PARTNER_SUB
-	 * so that don't send twice in order to fulfil last_partner_sub functionality 
-	 * 
-	 */
-	Set<String> lastPartnerSubSent;
-	
-	
-	
-	//JIRA-ET486 - Add optional context field to inactivate-subscription decoupling call
-	String context;
 	
 	public boolean isApplyPenaltyCharge(){
 
@@ -238,96 +195,5 @@ public class CustcareAttributes implements Serializable
 	public void setInactivateGraceOrSuspendedSubscription ( boolean x ){
 	
 		inactivateGraceOrSuspendedSubscription = x;
-	}
-	
-	//CR2303p5 START
-	public Subscription[] getAllSubscriptions() {
-		return allSubscriptions;
-	}
-
-	public void setAllSubscriptions(Subscription[] allSubscriptions) {
-		this.allSubscriptions = allSubscriptions;
-	}
-
-	public boolean hasNoOtherSubscriptions() {
-		return hasNoOtherSubscriptions;
-	}
-
-	public void setNoOtherSubscriptions(boolean hasNoOtherSubscriptions) {
-		this.hasNoOtherSubscriptions = hasNoOtherSubscriptions;
-	}
-
-	public boolean isSetBeingProvisioned() {
-		return setBeingProvisioned;
-	}
-
-	public void setSetBeingProvisioned(boolean setBeingProvisioned) {
-		this.setBeingProvisioned = setBeingProvisioned;
-	}
-
-	public Set<String> getLastServiceClassSent() {
-		return lastServiceClassSent;
-	}
-
-	public void setLastServiceClassSent(Set lastServiceClassSent) {
-		this.lastServiceClassSent = lastServiceClassSent;
-	}
-	
-	
-	//CR2303p5 END
-	 
-	//JIRA ET148 Add SMS blacklist flag to opt out of courtesy SMS notifications
-	boolean suppressCourtesyNotifications = false;
-	
-	/**
-	 * - not to be used in ER - only used by VISION from the accounts table
-     * - default true
-     * - only accurate if account is retrieved by msisdn
-     * Gets the value of the suppressCourtesyNotifications property.
-     * 
-     */
-    public boolean getSuppressCourtesyNotifications() {
-        return suppressCourtesyNotifications;
-    }
-
-    /**
-     * not to be used in ER - only used by VISION from the accounts table
-     * - default true
-     * - only accurate if account is retrieved by msisdn
-     * Sets the value of the suppressCourtesyNotifications property.
-     * 
-     */
-    public void setSuppressCourtesyNotifications(boolean value) {
-        this.suppressCourtesyNotifications = value;
-    }
-    
-	/**
-	 * @return the lastPartnerSubSent
-	 */
-	public Set<String> getLastPartnerSubSent() {
-		return lastPartnerSubSent;
-	}
-
-	/**
-	 * set the lastPartnerSubSentSent
-	 * @param lastPartnerSubSent
-	 */
-	public void setLastPartnerSubSent(Set<String> lastPartnerSubSent) {
-		this.lastPartnerSubSent = lastPartnerSubSent;
-	}
-	/**
-	 * JIRA-ET486 - Add optional context field to inactivate-subscription decoupling call
-	 * @return String
-	 */
-	public String getContext() {
-		return context;
-	}
-
-	/**
-	 * JIRA-ET486 - Add optional context field to inactivate-subscription decoupling call
-	 * @param context
-	 */
-	public void setContext(String context) {
-		this.context = context;
 	}
 }

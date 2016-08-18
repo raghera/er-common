@@ -1,15 +1,14 @@
 package com.vizzavi.ecommerce.business.charging;
 
+import com.vizzavi.ecommerce.business.common.Constants;
+import com.vizzavi.ecommerce.business.common.RatingAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vizzavi.ecommerce.business.common.Constants;
-import com.vizzavi.ecommerce.business.common.RatingAttributes;
 
 /**
     The attributes that the user can set when purchasing a package.
@@ -195,16 +194,34 @@ public class PurchaseAttributes extends RatingAttributes
     mPromotionalExpiryDate = newMPromotionalExpiryDate;
   }
 
-//  public boolean isBatchProcessor()
-//  {
-//    return mBatchProcessor;
-//  }
-//
-//  public void setBatchProcessor(boolean newMBatchProcessor)
-//  {
-//    mBatchProcessor = newMBatchProcessor;
-//  }
+  public boolean isBatchProcessor()
+  {
+    return mBatchProcessor;
+  }
 
+  public void setBatchProcessor(boolean newMBatchProcessor)
+  {
+    mBatchProcessor = newMBatchProcessor;
+  }
+
+//   /**
+//        This is used internally by the ER2 system
+//        @deprecated
+//    */
+//    @Deprecated
+//	public Hashtable getFlistInfo() {
+//        return null;
+//    }
+//
+//    /**
+//        Used for complex rating of a purchase. This is set to the data returned by a call to ratePackageMsisdn.
+//        It is not recommended to use this functionality.
+//        @deprecated
+//    */
+//    @Deprecated
+//	public void setFlistInfo(Hashtable mFlistInfo) {
+//       // flistInfo = mFlistInfo;
+//    }
  
    /**
         This is used internally by the ER2 system

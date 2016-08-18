@@ -6,24 +6,32 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.vizzavi.ecommerce.business.common.ReasonCode;
 import com.vizzavi.ecommerce.business.selfcare.BasicAccount;
 import com.vizzavi.ecommerce.business.selfcare.UserGroup;
-import com.vizzavi.ecommerce.common.ErCountry;
 
-/**
- *
- */
 public class ERAccount extends BasicAccount implements Serializable, DirtyMarker {
     private boolean dirty = false;
 
     private static final long serialVersionUID = -5225927636112403967L;
 
+    //CR1231
+    //protected static final LWLogger logger = LWSupportFactoryImpl.getInstance()
+            //.getLogger(ERAccount.class);
 
     private boolean newInstance = true;
 
+    private Long account_obj_id;
+
+    private int countryObjId;
+
+    //private Date lastValidateCallTime;
+    
+    //STKHREQ 127 - Alignment with External Billing Cycles
+    //private int billingCycleDate;    
 
     //REMEDY 6934
-//    private ReasonCode accountStatus = ReasonCode.OK;
+    private ReasonCode accountStatus = ReasonCode.OK;
     //END REMEDY 6934
     
 	//MQC7141 - start
@@ -33,63 +41,7 @@ public class ERAccount extends BasicAccount implements Serializable, DirtyMarker
     
     public ERAccount() {
     }
-    
 
-    /**
-     * @param acc
-     */
-    public ERAccount(BasicAccount acc)	{
-    	this(acc.getMsisdn(), acc.getBan(), acc.getLocale(), acc.getAccountObjId(), acc.getBillingCycleDate(), acc.getChildSpId(), acc.getSpId(), acc.getSpType(), 
-    			acc.getLastValidateCallTime(), acc.getIsPrepay(), acc.getTimestamp(), acc.getCountry(), acc.getUserGroupList(), (acc.getSuppressCourtesyNotifications()!=null?acc.getSuppressCourtesyNotifications():false),
-    			acc.getStatus());
-    }
-    
-    /**
-     * @param msisdn
-     * @param ban
-     * @param locale
-     * @param accountObjId
-     * @param billingCycleDate
-     * @param childSpid
-     * @param spId
-     * @param spType
-     * @param lastValidateCallTime
-     * @param isPrepay
-     * @param timestamp
-     * @param country
-     * @param userGroupList
-     * @param suppressCourtesyNotifications
-     */
-    public ERAccount(String msisdn, String ban, Locale locale, Long accountObjId, int billingCycleDate, String childSpid, String spId, String spType, 
-			Date lastValidateCallTime, String isPrepay, Date timestamp, String country, List<UserGroup> userGroupList, boolean suppressCourtesyNotifications, int status) {
-        this.msisdn = msisdn;
-        this.ban = ban;
-        setLocale(locale);
-        // Temp setting the account obj id
-        this.id = accountObjId;
-        
-        this.setBillingCycleDate(billingCycleDate);
-        this.setChildSpId(childSpid);
-        this.setSpId(spId);
-        this.setSpType(spType);
-        this.setLastValidateCallTime(lastValidateCallTime);
-        this.setIsPrepay(isPrepay);
-        this.setTimestamp(timestamp);
-        this.setCountry(country);
-        this.setUserGroupList(userGroupList);
-        
-        
-        if (userGroupList != null && userGroupList.size()>0) {
-            userGroups = new ArrayList<>();
-            for (UserGroup userGrp : userGroupList) {
-                userGroups.add(new ERUserGroup( userGrp.getName(), "", null, ""));
-            }
-        }
-        
-        this.setSuppressCourtesyNotifications(suppressCourtesyNotifications);
-        this.setStatus(status);
-    }
-    
     public ERAccount(String msisdn, String ban, Locale locale, Long account_obj_id) { 
        this(msisdn, ban, locale, account_obj_id, null);
 
@@ -112,10 +64,10 @@ public class ERAccount extends BasicAccount implements Serializable, DirtyMarker
             ERUserGroup[] userGrps, int billingCycleDate) {
         this.msisdn = msisdn;
         this.ban = ban;
-        setLocale(locale);
+        this.locale = locale;
         // Temp setting the account obj id
-        this.id = account_obj_id;
-        userGroups = new ArrayList<>();
+        this.account_obj_id = account_obj_id;
+        userGroups = new ArrayList<UserGroup>();
         if (userGrps != null) {
             for (ERUserGroup userGrp : userGrps) {
                 userGroups.add((userGrp));
@@ -125,6 +77,37 @@ public class ERAccount extends BasicAccount implements Serializable, DirtyMarker
     
     
     
+    /**
+     * Accessor to get the external billing cycle date
+     * 
+     * @return external billing cycle date
+     */
+    @Override
+	public int getBillingCycleDate() {
+        return billingCycleDate;
+    }
+
+    /**
+     * Mutator to set the external billing cycle date
+     * 
+     * @param billingCycleDate
+     */
+    @Override
+	public void setBillingCycleDate(int billingCycleDate) {
+        this.billingCycleDate = billingCycleDate;
+    }
+
+    // @since5.1
+    // setter getter methods for last validate call time
+    @Override
+	public void setLastValidateCallTime(Date lastValidate) {
+        this.lastValidateCallTime = lastValidate;
+    }
+
+    @Override
+	public Date getLastValidateCallTime() {
+        return this.lastValidateCallTime;
+    }
 
     // Setter methods for Msisdn
     public void setMsisdn(String msisdn) {
@@ -141,24 +124,27 @@ public class ERAccount extends BasicAccount implements Serializable, DirtyMarker
     // Setter methods for Locale
     public void setLocale(Locale locale) {
         this.dirty = true;
-    	setCountry(ErCountry.getByLocale(locale).getCode());
+        this.locale = locale;
     }
 
     // Setter getter methods for Account Obj Id
     public void setAccountObjId(Long account_obj_id) {
         this.dirty = true;
-        this.id = account_obj_id;
+        this.account_obj_id = account_obj_id;
     }
 
+    public Long getAccountObjId() {
+        return account_obj_id;
+    }
 
     // Setter getter methods for Country Obj Id
     public void setCountryObjId(int countryObjId) {
         this.dirty = true;
-        this.countryId = countryObjId;
+        this.countryObjId = countryObjId;
     }
 
     public int getCountryObjId() {
-        return countryId;
+        return countryObjId;
     }
 
     // Setter methods for Name
@@ -187,22 +173,38 @@ public class ERAccount extends BasicAccount implements Serializable, DirtyMarker
     @Override
 	public UserGroup[] getUserGroups() {
         if (userGroups != null) {
-            return userGroups.toArray((new UserGroup[userGroups.size()]));
+            return userGroups.toArray((new UserGroup[] {}));
         } else
             return null;
     }
 
     public void setUserGroups(ERUserGroup[] userGrps) {
-        userGroups = new ArrayList<>();
+        userGroups = new ArrayList<UserGroup>();
         if (userGrps != null) {
             for (ERUserGroup userGrp : userGrps) {
-            	userGroups.add(userGrp);
+                userGroups.add(new ERUserGroup(userGrp.getName(),
+                        userGrp.getDescription(), userGrp
+                                .getAccount_obj_id(), userGrp
+                                .getChangeFlag(), userGrp.isDirty(),
+                        userGrp.isNew()));
             }
         }
     }
 
+    public String[] getUserGroupNames() {
+        if (userGroups != null) {
+            List<String> userGroupName = new ArrayList<String>();
+            for (int i = 0; i < userGroups.size(); i++) {
+                UserGroup thisUserGroup = userGroups.get(i);
+                userGroupName.add(thisUserGroup.getName());
+            }
+            return userGroupName.toArray((new String[] {}));
+        } else
+            return null;
+    }
+
     public void removeUserGroupsWithChangeFlag(String changeFlag) {
-        List<UserGroup> validUserGroups = new ArrayList<>();
+        List<UserGroup> validUserGroups = new ArrayList<UserGroup>();
         if (userGroups != null) {
             for (int i = 0; i < userGroups.size(); i++) {
                 ERUserGroup thisUserGroup = ((ERUserGroup) userGroups.get(i));
@@ -285,8 +287,37 @@ public class ERAccount extends BasicAccount implements Serializable, DirtyMarker
         newInstance = false;
     }
 
-
+    //REMEDY 6934
+    public ReasonCode getAccountStatus()
+    {
+    	return this.accountStatus;
+    }
     
-
+    public void setAccountStatus(ReasonCode accountStatus)
+    {
+    	this.accountStatus = accountStatus;
+    }
+    //END REMEDY 6934
+    
+  //MQC7141 - start
+  	public void setErrorDescription(String errordDescription)
+  	{
+  		this.errorDescription = errordDescription;
+  	}
+  	
+  	public void setErrorId(String errordId)
+  	{
+  		this.errorId = errordId;
+  	}
+  	
+  	public String getErrorDescription()
+  	{
+  		return this.errorDescription;
+  	}
+  	
+  	public String getErrorId()
+  	{
+  		return this.errorId;
+  	}
   	//MQC7141 - end
 }

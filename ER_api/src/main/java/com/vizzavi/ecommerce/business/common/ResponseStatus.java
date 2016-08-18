@@ -53,9 +53,9 @@ public enum ResponseStatus	{
    * @param name e.g. ACCEPTED
    * @param id e.g. 1
    * @return {@link ResponseStatus}
-   * @throws IllegalArgumentException if the name and id don't correspond to a valid ResponseStatus
+   * @throws EcommerceException if the name and id don't correspond to a valid ResponseStatus
    */
-  public static ResponseStatus get(String name, int id) throws IllegalArgumentException {
+  public static ResponseStatus get(String name, int id) throws EcommerceException {
     if (isAccepted(name) && id == 1)
       return ACCEPTED;
     if (isDenied(name) && id == 0)
@@ -64,7 +64,7 @@ public enum ResponseStatus	{
       return REJECTED;
     if (isError(name) && id == 4)
       return ERROR;
-    throw new IllegalArgumentException(name +" and id "+id+" are not a valid response status");
+    throw new EcommerceException(name +" and id "+id+" are not a valid response status");
   }
 
 	/**ACCEPTED, REJECTED, DENIED or ERROR <br/>
@@ -89,11 +89,6 @@ public enum ResponseStatus	{
 		return this.equals(ERROR);
 	}
 
-	/**
-	 * returns true if the String is "ACCEPTED", false otherwise.  Handles nulls without throwing exceptions.
-	 * @param status
-	 * @return
-	 */
 	public static boolean isAccepted(String status)		{
 		try	{
 			return ResponseStatus.valueOf(status).equals(ACCEPTED);
@@ -159,5 +154,5 @@ public enum ResponseStatus	{
 		}
 	}
 
-	
+
 }

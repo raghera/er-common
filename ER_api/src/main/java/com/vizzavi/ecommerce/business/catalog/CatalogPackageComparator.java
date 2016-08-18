@@ -58,7 +58,8 @@ public class CatalogPackageComparator implements OrderableComparator<CatalogPack
 				//MQC 8385 start - CatalogPackage packageId refactor
 				
 				//rv = s1.getId().toLowerCase().compareTo(s2.getId().toLowerCase());
-				if ( s1.getFullPackagePricepointId() != null && s2.getFullPackagePricepointId() != null  ) {
+				if ( s1.getFullPackagePricepointId() != null && s1.getFullPackagePricepointId() != null 
+						&& s2.getFullPackagePricepointId() != null && s2.getFullPackagePricepointId() != null ) {
 					
 					rv = s1.getFullPackagePricepointId().toLowerCase().compareTo(s2.getFullPackagePricepointId().toLowerCase());
 				

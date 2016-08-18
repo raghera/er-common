@@ -1,5 +1,7 @@
 package com.vizzavi.ecommerce.business.charging;
 
+import java.util.Map;
+
 import com.vizzavi.ecommerce.business.catalog.CatalogPackage;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 
@@ -252,20 +254,18 @@ public interface PurchaseApi extends java.io.Serializable
 
      /**
       * CR2040 MPAY replacement.
-      * CR - Add Invoice Text to goodwill credit request - consolidated attributes into GoodwillCreditAttributes class
       * Credit a customer's account with specified "goodwill" amount.
+      * @param clientId - id of calling application
       * @param msisdn - customer's MSISDN
-      * @param goodwillCreditAttributes - following goodwill credit attributes
-      * 	clientId - id of calling application
-      * 	partnerId - the Approved Payment Intermediary
-      * 	merchantId - the merchant associated with the partner
-      * 	packageId - the package id in the price plan for revenue share/reporting
-      * 	preRate - the pre-rated amount to give to customer
-      * 	invoiceText - the text to be presented on the customer bill for this transaction
+      * @param partnerId - the Approved Payment Intermediary
+      * @param merchantId - the merchant associated with the partner
+      * @param packageId - the package id in the price plan for revenue share/reporting
+      * @param preRate - the pre-rated amount to give to customer
       * @return GoodwillCreditAuthorization indicating success or failure to credit account.
       * @throws GoodwillCreditAuthorizationException
       */
-	public GoodwillCreditAuthorization goodwillCredit(String msisdn, GoodwillCreditAttributes goodwillCreditAttributes) throws GoodwillCreditAuthorizationException ;
+	public GoodwillCreditAuthorization goodwillCredit(String clientId, String msisdn, String partnerId,
+			String merchantId, String packageId, double preRate) throws GoodwillCreditAuthorizationException ;
 
 
 

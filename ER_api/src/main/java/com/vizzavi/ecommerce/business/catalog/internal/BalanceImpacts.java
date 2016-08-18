@@ -2,7 +2,6 @@ package com.vizzavi.ecommerce.business.catalog.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,11 +44,7 @@ public class BalanceImpacts  extends ArrayList<BalanceImpact>
 
 
 
-    public BalanceImpacts(Collection<BalanceImpact> impacts) {
-		super(impacts);
-	}
-
-	public BalanceImpact getImpact(String id)
+    public BalanceImpact getImpact(String id)
     {
 //        BalanceImpact[] impacts = getImpacts();
         BalanceImpact match = null;
@@ -106,11 +101,11 @@ public class BalanceImpacts  extends ArrayList<BalanceImpact>
 
     public BalanceImpact[] getNonCurrencyImpacts()
     {
-//        Iterator<BalanceImpact> iter =  super.iterator();
+        Iterator<BalanceImpact> iter =  super.iterator();
         List<BalanceImpact> rv = new ArrayList<BalanceImpact>();
-//        while (iter.hasNext()) {
-//            BalanceImpact impact = iter.next();
-        for(BalanceImpact impact: this)	{
+        while (iter.hasNext()) {
+            BalanceImpact impact = iter.next();
+
             if (!impact.isCurrency()) {
                 rv.add(impact);
             }
@@ -186,9 +181,13 @@ public class BalanceImpacts  extends ArrayList<BalanceImpact>
         return getRate(res, 0.0, date);
     }
 
-
+    //CR1564 -Utctimezone for diff region in country
+    /**
+     * @deprecated 
+     */
+    @Deprecated
 	public double getRate(ChargingResource res, double volumeAmount) {
-        return getRate(res, volumeAmount, null);
+        return getRate(res, volumeAmount, new Date());
     }
 
 	//CR1430START
@@ -254,35 +253,22 @@ public class BalanceImpacts  extends ArrayList<BalanceImpact>
     }
 	//CR1430END
 
-    /**
-     * returns the ChargingResource of the first BalanceImpact which is a currency
-     * @return
-     */
     public ChargingResource getCurrency()
     {
-//        ChargingResource rv = null;
-//        Iterator<BalanceImpact> iter =  super.iterator();
-//        while (iter.hasNext()) {
-//            BalanceImpact impact = iter.next();
-//
-//            if (impact.isCurrency()) {
-//                rv = impact.getResource();
-//                break;
-//            }
-//        }
-//
-//        return rv;
-    	for (BalanceImpact impact: this)	{
-    		if (impact.isCurrency()) 
-    			return impact.getResource();
-    	}
-    	return null;
+        ChargingResource rv = null;
+        Iterator<BalanceImpact> iter =  super.iterator();
+        while (iter.hasNext()) {
+            BalanceImpact impact = iter.next();
+
+            if (impact.isCurrency()) {
+                rv = impact.getResource();
+                break;
+            }
+        }
+
+        return rv;
     }
 
-    /**
-     * returns the LAST BalanceImpact in the List which is not a currency but which has +ve fixed or scaled amount
-     * @return
-     */
     public ChargingResource getNonCurrencyResource()
     {
 
@@ -290,7 +276,7 @@ public class BalanceImpacts  extends ArrayList<BalanceImpact>
         ChargingResource rv = null;
         while (iter.hasNext()) {
             BalanceImpact impact = iter.next();
-
+        	// Added by Nyo for Remedy 3682
         	// if Non Currency Charging Resource should be +ve value 
             if (!impact.isCurrency() && (impact.getFixedAmount() >  0.0 || impact.getScaledAmount() > 0.0)) {
                 rv = impact.getResource();

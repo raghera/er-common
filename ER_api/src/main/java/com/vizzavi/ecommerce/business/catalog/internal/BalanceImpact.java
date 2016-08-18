@@ -1,28 +1,20 @@
 
 package com.vizzavi.ecommerce.business.catalog.internal;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
-
-import com.vizzavi.ecommerce.business.catalog.PricePoint;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
+import com.vizzavi.ecommerce.business.common.Constants;
 
-@Entity
-public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
-	
+public class BalanceImpact implements java.io.Serializable, Comparable<BalanceImpact>
+{
 	private static final long serialVersionUID = 4314537948791993420L;
 	private Long mKey;
-
+//	private String mCreatedBy;
+//	private String mModifiedBy;
+//	private Date mModifiedDate;
+//	private char mActiveStatus;
 
     protected ChargingResource mResource;
     protected double mFixedAmount = 0;
@@ -53,7 +45,7 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
     /** ADDED FOR ER7 STUB **/
     protected String mType;
     //protected String mSuperCreditText;
-//    private static final String SUPER_CREDIT = "SUPER_CREDIT";
+    private static final String SUPER_CREDIT = "SUPER_CREDIT";
     private static final String CREDIT = "CREDIT";
     //[1] Mod End
     
@@ -61,8 +53,7 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
      * The multi language support super credit text list.
      * @since R9
      */
-//    private HashMap<String, String> superCreditTextList = null;
-	private PricePoint	ppt;
+    private HashMap<String, String> superCreditTextList = null;
     
     public BalanceImpact(ChargingResource res, double fixedAmount)
     {
@@ -91,15 +82,13 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
             mType = CREDIT;
         else
         	mType = type;
-
+        if ( (mType != null) && mType.equalsIgnoreCase(SUPER_CREDIT)) {
+        	mResource.setSuperCredit(true);
+            setSuperCreditText( superCreditText);
+        }
     }
     
     public BalanceImpact(ChargingResource res, double fixedAmount, double scaledAmount, String type, HashMap<String, String> superCreditText)
-    {
-        this(res, fixedAmount, scaledAmount, type);
-    }    
-    
-    public BalanceImpact(ChargingResource res, double fixedAmount, double scaledAmount, String type)
     {
         mResource = res;
         mFixedAmount = fixedAmount;
@@ -109,12 +98,20 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
             mType = CREDIT;
         else
         	mType = type;
-    }  
+        if ( (mType != null) && mType.equalsIgnoreCase(SUPER_CREDIT)) {
+        	mResource.setSuperCredit(true);
+            setSuperCreditTextList( superCreditText);
+        }
+    }    
     
 	public BalanceImpact(Long key, ChargingResource res, double fixedAmount, double scaledAmount,
                          String createdBy, String modifiedBy, Date modifiedDate, char activeStatus)
     {
 		mKey = key;
+//        mCreatedBy = createdBy;
+//		mModifiedBy = modifiedBy;
+//        mModifiedDate = modifiedDate;
+//    	mActiveStatus = activeStatus;
 
         mResource = res;
         mFixedAmount = fixedAmount;
@@ -132,6 +129,10 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
     public BalanceImpact(BalanceImpact impact)
     {
 		mKey = impact.mKey;
+//        mCreatedBy = impact.mCreatedBy;
+//		mModifiedBy = impact.mModifiedBy;
+//        mModifiedDate = impact.mModifiedDate;
+//    	mActiveStatus = impact.mActiveStatus;
 
         mResource = impact.mResource;
         mFixedAmount = impact.mFixedAmount;
@@ -143,19 +144,14 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
 			mType = impact.mType;
         else
             mType = CREDIT;
-       // setSuperCreditTextList( impact.getSuperCreditTextList());
+        setSuperCreditTextList( impact.getSuperCreditTextList());
         
         //CR1430 START
         mPriceChangeStartDate = impact.mPriceChangeStartDate;
 		//CR1430 END
        
     }
-    
-    public BalanceImpact()    {/*default xtr for hibernate*/  }
-    
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="`KEY`")
+
 	public Long getKey() {
 		return mKey;
 	}
@@ -164,26 +160,47 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
 		mKey = key;
 	}
 
-
+//	public String getCreatedBy() {
+//		return this.mCreatedBy;
+//	}
+//
+//	public void setCreatedBy(String createdBy) {
+//		this.mCreatedBy= createdBy;
+//	}
+//
+//	public String getModifiedBy() {
+//		return this.mModifiedBy;
+//	}
+//
+//	public void setModifiedBy(String modifiedBy) {
+//		this.mModifiedBy = modifiedBy;
+//	}
+//
+//	public Date getModifiedDate() {
+//		return this.mModifiedDate;
+//	}
+//
+//	public void setModifiedDate(Date modifiedDate) {
+//		this.mModifiedDate = modifiedDate;
+//	}
+//
+//	public char getActiveStatus() {
+//		return this.mActiveStatus;
+//	}
+//
+//	public void setActiveStatus(char activeStatus) {
+//		this.mActiveStatus = activeStatus;
+//	}
 
     @Override
-	public String toString()    {
-        return mResource + ": " + mFixedAmount + "; scaled  " + mScaledAmount + "; NotificationThreshold:" + mNotificationThreshold
+	public String toString()
+    {
+        return mResource + ":" + mFixedAmount + ":" + mScaledAmount + ":mNotificationThreshold:" + mNotificationThreshold
   
-                + ": mType:" + mType ;
+                + ":mType:" + mType + ":mSuperCreditText:" + getSuperCreditText();
   
     }
 
-	@Column(name="chg_res")
-	int getChargingResourceId()	{
-		return mResource.getCode();
-	}
-
-	void setChargingResourceId(int id)	{
-		mResource = ChargingResource.getResource(id);
-	}
-
-    @Transient
     public ChargingResource getResource()
     {
         return mResource;
@@ -200,14 +217,12 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
         return mFixedAmount + mScaledAmount*volumeAmount;
     }
 
-    @Transient
     public boolean isCurrency()
     {
 
         return ChargingResource.isCurrencyResource(mResource.getCode());
     }
 
-    @Transient
     public boolean isResource()
     {
 
@@ -224,7 +239,6 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
         return "" + code.getCode();
     }
 
-    @Transient
     public String getId()
     {
         return getId(getResource());
@@ -266,7 +280,7 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
         mNotificationThreshold = notificationThreshold;
     }
 
-    @Transient
+    /** ADDED FOR ER7 STUB **/
     public String getType() {
     	return mType;
     }
@@ -277,61 +291,62 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
     		mType = type;
         else
             mType = CREDIT;
-
+                                                       //12-05-05 SUPER_CREDITS to SUPER_CREDIT
+        if ( (mType != null) && mType.equalsIgnoreCase(SUPER_CREDIT)) {
+        	mResource.setSuperCredit(true);
+        }
     }
 
-//    /** ADDED FOR ER7 STUB **/
-//    /** Changed in R( */
-//    @Transient
-//    public String getSuperCreditText() {
-//    	return getSuperCreditText(Constants.DEFAULT_LANGUAGE_CODE);
-//    }
-//
-//    /** ADDED FOR ER7 STUB **/
-//    public void setSuperCreditText(String superCreditText) {
-//    	setSuperCreditText(Constants.DEFAULT_LANGUAGE_CODE, superCreditText);
-//    }
-//    
-//    public String getSuperCreditText(String languageCode){
-//		if (superCreditTextList == null || superCreditTextList.isEmpty()){
-//			return null;
-//		}
-//		
-//		if (languageCode == null || languageCode.length() <= 0){
-//			languageCode = Constants.DEFAULT_LANGUAGE_CODE;
-//		}
-//		
-//		if (superCreditTextList.get(languageCode) != null){
-//			return superCreditTextList.get(languageCode);
-//		}
-//		
-//		return superCreditTextList.get(Constants.DEFAULT_LANGUAGE_CODE);	
-//    }
-//    
-//    public void setSuperCreditText(String language, String text){
-//		if (superCreditTextList == null){
-//			superCreditTextList = new HashMap<String, String>();
-//		}
-//		
-//		if (language == null || language.length() <= 0){
-//			language = Constants.DEFAULT_LANGUAGE_CODE;
-//		}
-//		
-//        if (superCreditTextList == null){
-//        	text = new String();
-//        }
-//        
-//        superCreditTextList.put(language, text);    	
-//    }
-//
-//    @Transient
-//    public HashMap<String, String> getSuperCreditTextList() {
-//		return superCreditTextList;
-//	}
-//
-//	public void setSuperCreditTextList(HashMap<String, String> superCreditTextList) {
-//		this.superCreditTextList = superCreditTextList;
-//	}
+    /** ADDED FOR ER7 STUB **/
+    /** Changed in R( */
+    public String getSuperCreditText() {
+    	return getSuperCreditText(Constants.DEFAULT_LANGUAGE_CODE);
+    }
+
+    /** ADDED FOR ER7 STUB **/
+    public void setSuperCreditText(String superCreditText) {
+    	setSuperCreditText(Constants.DEFAULT_LANGUAGE_CODE, superCreditText);
+    }
+    
+    public String getSuperCreditText(String languageCode){
+		if (superCreditTextList == null || superCreditTextList.isEmpty()){
+			return null;
+		}
+		
+		if (languageCode == null || languageCode.length() <= 0){
+			languageCode = Constants.DEFAULT_LANGUAGE_CODE;
+		}
+		
+		if (superCreditTextList.get(languageCode) != null){
+			return superCreditTextList.get(languageCode);
+		}
+		
+		return superCreditTextList.get(Constants.DEFAULT_LANGUAGE_CODE);	
+    }
+    
+    public void setSuperCreditText(String language, String text){
+		if (superCreditTextList == null){
+			superCreditTextList = new HashMap<String, String>();
+		}
+		
+		if (language == null || language.length() <= 0){
+			language = Constants.DEFAULT_LANGUAGE_CODE;
+		}
+		
+        if (superCreditTextList == null){
+        	text = new String();
+        }
+        
+        superCreditTextList.put(language, text);    	
+    }
+
+	public HashMap<String, String> getSuperCreditTextList() {
+		return superCreditTextList;
+	}
+
+	public void setSuperCreditTextList(HashMap<String, String> superCreditTextList) {
+		this.superCreditTextList = superCreditTextList;
+	}
 
 	//CR1430START
 	/* 
@@ -346,7 +361,7 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
 		}
 
 		Date thisPCSD = this.getPriceChangeStartDate();
-
+		//BalanceImpact thatBI = (BalanceImpact)o;
 		Date thatPCSD = thatBI.getPriceChangeStartDate();
 
 		if (thisPCSD == null && thatPCSD == null){
@@ -374,13 +389,5 @@ public class BalanceImpact implements Serializable, Comparable<BalanceImpact>	{
 	}
 	//CR1430END
 
-	@ManyToOne(optional=false, targetEntity=PricePoint.class, fetch=FetchType.LAZY)	
-	public PricePoint getPricePoint()	{
-		return ppt;
-	}
-	
-	public void setPricePoint(PricePoint ppt)	{
-		this.ppt = ppt;
-	}
 }
 

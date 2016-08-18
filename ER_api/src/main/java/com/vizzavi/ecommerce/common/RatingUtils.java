@@ -161,8 +161,9 @@ public final class RatingUtils {
 	   }
 	   else
 	   {
-	     for (String element : val2) {
-	       if ((val1 != null) && val1.equals(element))
+	     for (int index = 0; (val2 != null) && (index < val2.length); index++)
+	     {
+	       if ((val1 != null) && val1.equals(val2[index]))
 	       {
 	         rv = true;
 	         break;

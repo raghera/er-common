@@ -79,10 +79,10 @@ public class ServiceRevenueSharePartnerImpl extends ServiceRevenueSharePartner{
         ,String purchaseChannel) {//[1] Mod Signature
 
 		mKey = key;
-//        mCreatedBy = createdBy;
-//		mModifiedBy = modifiedBy;
-//        mModifiedDate = modifiedDate;
-//    	mActiveStatus = activeStatus;
+        mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+        mModifiedDate = modifiedDate;
+    	mActiveStatus = activeStatus;
 
         mId = id;
         //[1] Mod Start
@@ -100,13 +100,13 @@ public class ServiceRevenueSharePartnerImpl extends ServiceRevenueSharePartner{
     }
     public void setKey(Long key) { mKey = key; }
 
-//    public void setCreatedBy(String createdBy) { mCreatedBy = createdBy; }
-//
-//    public void setModifiedBy(String modifiedBy) { mModifiedBy = modifiedBy; }
-//
-//    public void setModifiedDate(Date modifiedDate) { mModifiedDate = modifiedDate; }
-//
-//    public void setActiveStatus(char activeStatus) { mActiveStatus = activeStatus; }
+    public void setCreatedBy(String createdBy) { mCreatedBy = createdBy; }
+
+    public void setModifiedBy(String modifiedBy) { mModifiedBy = modifiedBy; }
+
+    public void setModifiedDate(Date modifiedDate) { mModifiedDate = modifiedDate; }
+
+    public void setActiveStatus(char activeStatus) { mActiveStatus = activeStatus; }
 
     public void setId(String id) { mId = id; }
 

@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vizzavi.ecommerce.business.catalog.CatalogPackage;
+import com.vizzavi.ecommerce.business.catalog.DRMObject;
+import com.vizzavi.ecommerce.business.catalog.DRMType;
 import com.vizzavi.ecommerce.business.catalog.PricePoint;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
 import com.vizzavi.ecommerce.business.common.EcomApiFactory;
@@ -16,12 +18,10 @@ import com.vizzavi.ecommerce.business.common.ReasonCode;
 import com.vizzavi.ecommerce.business.common.ResponseStatus;
 import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
 import com.vizzavi.ecommerce.business.selfcare.Subscription;
-import com.vodafone.config.ConfigProvider;
 import com.vodafone.global.er.business.selfcare.MicroServiceStatus;
 import com.vodafone.global.er.payment.PaymentAuthStatus;
 import com.vodafone.global.er.rating.RatedEvent;
 import com.vodafone.global.er.rating.TaxRatedEvent;
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * Encapsulates the result of a authorization call to the charging subsystem.
@@ -130,7 +130,7 @@ public class BaseAuthorization extends TaxRatedEvent implements java.io.Serializ
 	 */
 	protected PricePoint mPricePoint;
 
-//	protected DRMObject m_DRMObject;
+	protected DRMObject m_DRMObject;
 
 	protected double receiptingCreditBalanceImpact;
 	protected int  receiptingUsageTypeAttribute = NO_RECEIPT; 
@@ -170,7 +170,10 @@ public class BaseAuthorization extends TaxRatedEvent implements java.io.Serializ
 	}
 
     //CR1564 -Utctimezone for diff region in country
-
+    /**
+     * @deprecated 
+     */
+    @Deprecated
 	public BaseAuthorization(RatedEvent event) {
         this(event, new Date());
     }
@@ -426,7 +429,6 @@ public class BaseAuthorization extends TaxRatedEvent implements java.io.Serializ
         If the ReasonCode object is a system error, the error id is set to id returned by the ER billing system.
         If the OpCo has implemented the ERIf developer guidelines of March 2013, this value will be one of the following:
         <ul>
-        <li>OK</li>
         <li>CONTENT_BLOCKED</li>
         <li>USER_SPEND_LIMIT</li>
         <li>SPEND_LIMIT</li>
@@ -648,22 +650,36 @@ public class BaseAuthorization extends TaxRatedEvent implements java.io.Serializ
 		 return mPackage;
 	 }
 
-	 /**
-	  * this is probably a service-level pricepoint (e.g. for a usage), not the package-level pricepoint
-	  * @return
-	  */
-	 public PricePoint getPricePoint()	 {
-		 if (mPricePoint == null) {
-			 try {
+	 public PricePoint getPricePoint()
+	 {
+
+		 try
+		 {
+			 if (mPricePoint == null) {
 				 logger.warn("pricepoint is null - retrieving via ecom / delegate layer");
-				 mPricePoint= EcomApiFactory.getPricePoint(mMatchingAttributes);
-			 }	 catch (EcommerceException e)	 {
-				 e.printStackTrace();
+				 return EcomApiFactory.getPricePoint(mMatchingAttributes);
+			 } else {
+				 return mPricePoint;
 			 }
 		 }
-		 return mPricePoint;
+		 catch (EcommerceException e)
+		 {
+			 e.printStackTrace();
+			 return null;
+		 }
 	 }
 
+	 /**
+	  * Get the DRM type assocaiated with the package
+	  * @return DRMType
+	  * @since ER 5.1
+	  */
+	 public DRMType getDRMType()
+	 {
+         if(mPackage != null)
+             return mPackage.getDRMType();
+         return null;
+	 }
 
 	 /**
 	  * Set the reason code for an authorization result
@@ -765,23 +781,23 @@ public class BaseAuthorization extends TaxRatedEvent implements java.io.Serializ
 	  
 	  
 
-//	 /**
-//	  * @since ER 5.1
-//	  * @return DRMObject
-//	  */
-//	 public DRMObject getDRMObject()
-//	 {
-//		  return m_DRMObject;
-//	 }
-//	  
-//	  /**
-//	   * @since ER 5.1
-//	   * @param drmobject
-//	   */
-//	  public void setDRMObject(DRMObject drmobject)
-//	  {
-//		  m_DRMObject = drmobject;
-//	  }
+	 /**
+	  * @since ER 5.1
+	  * @return DRMObject
+	  */
+	 public DRMObject getDRMObject()
+	 {
+		  return m_DRMObject;
+	 }
+	  
+	  /**
+	   * @since ER 5.1
+	   * @param drmobject
+	   */
+	  public void setDRMObject(DRMObject drmobject)
+	  {
+		  m_DRMObject = drmobject;
+	  }
 
 	  public void setPackageSubscriptionId(String newPackageSubscriptionId )
 	  {
@@ -946,24 +962,4 @@ public class BaseAuthorization extends TaxRatedEvent implements java.io.Serializ
 		this.mPartnerId = partnerId;
 	}
 
-	/**
-	 * MQC-11978 - purchase failure when ZERORATE_PURCHASE_PAYMENT_CALL parameter is set to OFF
-	 * If an ACCEPTED payment auth has been received from the opco, then the auth code must be mandatory,
-	 * unless zero cost payment has been configured to not to send to the opco, then the auth code is ok to be blank.
-	 * If REJECTED, DENIED or ERROR returned by the opco then return true
-	 * 
-	 * @return boolean
-	 */
-	public boolean isValid() {
-		boolean rv = true;
-		
-		if (getStatusEnum().isAccepted()) {
-			boolean ZERO_PURCHASE_PAYMENT_HANDLER_CALL = ConfigProvider.getPropertyAsBoolean("transctrl.bl.PurchaseTransaction.ZERORATE_PURCHASE_PAYMENT_CALL", true);
-			if (isBlank(getAuthCode()) && ZERO_PURCHASE_PAYMENT_HANDLER_CALL) {
-				rv = false;
-			}
-		} 
-		
-		return rv;
-	}
 }

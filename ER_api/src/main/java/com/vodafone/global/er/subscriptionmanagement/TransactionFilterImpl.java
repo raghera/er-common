@@ -2,8 +2,6 @@ package com.vodafone.global.er.subscriptionmanagement;
 
 import java.util.Calendar;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.vizzavi.ecommerce.business.selfcare.TransactionFilter;
 
 
@@ -31,7 +29,12 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
     private int _currentPage = -1;
 
 	// get all transacions for this Subscription ID
-
+    //@hud RFRFRF
+    /**
+     * @deprecated
+     */
+    @Deprecated
+	protected String mSubscriptionId = null;
     protected long mSubscriptionIdLong = -1;
 
 
@@ -41,7 +44,12 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
 	protected String mTransactionType = ALL_TRANSACTIONS;
 
     // the returned collection object should have only one transaction, whose transaction id is set
-
+	//@hud RFRFRF
+	/**
+	 * @deprecated
+	 */
+	@Deprecated
+	protected String mTransactionId = null;
 	protected long mTransactionIdLong = -1;
 
 	// this variable needs to be set in TransactionDao
@@ -62,9 +70,18 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
 	//Remedy 3418 get this modify transaction only
 	protected Long mModifyId = null ;
 
-
-     // SelfCare Module: Parent transaction used to group together transactions for multiple packages
- 
+ /* Added: 13-09-05
+     * Added for ER8 phase2
+     * Added by : VFE - PS team
+     * Purpose: Usage of credits from multiple packages
+     * SelfCare Module: Parent transaction used to group together transactions for multiple packages
+     * Description: parentTransactionId variable
+     */
+	/**
+	 * @deprecated
+	 */
+	@Deprecated
+	protected String  mParentTransactionId = null;
 	protected long mParentTransactionIdLong = -1;
 
 	//	@mawn R8.0 STKHREQ10301 missing implementation.  Added in R9.0 CQPRD00015358
@@ -143,8 +160,7 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
         return isTransactionTypeSet(REFUND_TRANSACTIONS_ONLY);
     }
 
-    /**@deprecated - use {@link #isRefundEventsOnly} instead*/
-    @Override
+   @Override
 	public boolean isRefundPaymentsEventsOnly()
     {
         return isTransactionTypeSet(REFUND_PAYMENT_TRANSACTIONS_ONLY);
@@ -191,17 +207,13 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
     }
 
     /**
-     * pass in null to reset the filter
      * @deprecated use setSubscriptionIdLong instead
      */
     @Deprecated
 	@Override
 	public void setSubscriptionId(String subscriptionId)
     {
-        if (StringUtils.isNotBlank(subscriptionId))
-        	mSubscriptionIdLong=Long.parseLong(subscriptionId);
-        else 
-        	mSubscriptionIdLong=-1;
+        mSubscriptionId = subscriptionId;
     }
 
     /**
@@ -210,10 +222,12 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
     @Deprecated
 	public String getSubscriptionId()
     {
-    	if (mSubscriptionIdLong > 0)
-    		return String.valueOf(mSubscriptionIdLong);
-    	else
-    		return null;
+    	if (mSubscriptionId == null) {
+    		if (mSubscriptionIdLong > 0) {
+    			mSubscriptionId = Long.toString(mSubscriptionIdLong);
+    		}
+    	}
+        return mSubscriptionId;
     }
 
     //@hud RFRFRF
@@ -224,7 +238,17 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
     
     @Override
     public long getSubscriptionIdLong() {
-
+    	if (mSubscriptionIdLong <= 0) { //REMEDY 6583
+    		if (mSubscriptionId != null) {
+    			try {
+    				mSubscriptionIdLong = Long.parseLong(mSubscriptionId);
+    			}
+    			catch (NumberFormatException ne) {
+    				// nothing
+    				mSubscriptionIdLong = -2;
+    			}
+    		}
+    	}
     	return mSubscriptionIdLong;
     }
     
@@ -258,13 +282,13 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
 
     /**
         This chooses which type of transaction to return.
-        The choice is<ul>
-            <li>ALL_TRANSACTIONS (default)</li>
-            <li>REFUND_TRANSACTIONS_ONLY</li>
-            <li>REFUND_PAYMENT_TRANSACTIONS_ONLY</li>
-            <li>PAYMENT_TRANSACTIONS_ONLY</li>
-            <li>MODIFY_TRANSACTIONS_ONLY</li>
-		</ul>
+        The choice is
+            ALL_TRANSACTIONS (default)
+            REFUND_TRANSACTIONS_ONLY
+            REFUND_PAYMENT_TRANSACTIONS_ONLY
+            PAYMENT_TRANSACTIONS_ONLY
+            MODIFY_TRANSACTIONS_ONLY
+
     */
     @Override
 	public void setTransactionType(String val)
@@ -286,33 +310,49 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
 
 	// Setter getter methods for Transaction Id
     /**
-     * @deprecated use {@link #getTransactionIdLong} instead
+     * @deprecated
      */
 	@Deprecated
-	public String getTransactionId()   {
-
-		if (mTransactionIdLong > 0) 
-			return String.valueOf(mTransactionIdLong);
-		else
-			return null;
+	public String getTransactionId()
+    {
+		if (mTransactionId == null) {
+			if (mTransactionIdLong > 0) {
+				mTransactionId = Long.toString(mTransactionIdLong);
+			}
+		}
+        return mTransactionId;
     }
 
     /**
-     * pass in null or "" to reset the filter
      * @deprecated use {@link #setTransactionIdLong} instead
      */
     @Deprecated
 	public void setTransactionId(String trId)
     {
-    	if (StringUtils.isNotBlank(trId))
-    		mTransactionIdLong = Long.parseLong(trId);
-    	else
-    		mTransactionIdLong=-1;
+        mTransactionId = trId;
+
+        if (trId == null) {
+        	mTransactionIdLong = -1;
+        }
+        else {
+        	mTransactionIdLong = Long.parseLong(trId);
+        }
     }
 
     //@hud RFRFRF
     @Override
 	public long getTransactionIdLong() {
+    	if (mTransactionIdLong <= 0) {
+    		if (mTransactionId != null) {
+    			try {
+    				mTransactionIdLong = Long.parseLong(mTransactionId);
+    			}
+    			catch (NumberFormatException ne) {
+    				// nothing
+    				mTransactionIdLong = -2;
+    			}
+    		}
+    	}
 
     	return mTransactionIdLong;
     }
@@ -400,8 +440,7 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
 	@Override
 	public void setParentTransactionId(String  parentTransactionId)
 	{
-//		mParentTransactionId = parentTransactionId;
-		mParentTransactionIdLong = Long.parseLong(parentTransactionId);
+		mParentTransactionId = parentTransactionId;
 	}
 	public void setParentTransactionIdLong(long id) {
 		mParentTransactionIdLong = id;
@@ -419,20 +458,20 @@ public class TransactionFilterImpl extends FilterAttributesImpl implements Trans
 	@Override
 public String getParentTransactionId()
    {
-	   return String.valueOf(mParentTransactionIdLong);
+	   return mParentTransactionId;
    }
 
    public long getParentTransactionIdLong() {
-//	   if (mParentTransactionIdLong == -1) {
-//		   if (mParentTransactionId != null) {
-//			   try {
-//				   mParentTransactionIdLong = Long.parseLong(mParentTransactionId);
-//			   }
-//			   catch (NumberFormatException ne) {
-//				   // nothing
-//			   }
-//		   }
-//	   }
+	   if (mParentTransactionIdLong == -1) {
+		   if (mParentTransactionId != null) {
+			   try {
+				   mParentTransactionIdLong = Long.parseLong(mParentTransactionId);
+			   }
+			   catch (NumberFormatException ne) {
+				   // nothing
+			   }
+		   }
+	   }
 
 	   return mParentTransactionIdLong;
    }
@@ -533,19 +572,4 @@ public String getParentTransactionId()
 		sbuf.append(", mTransactionType=").append(mTransactionType);
 		return sbuf.toString() ;
     }
-    
-    /** 
-     * JIRAET183 - is partnerid set to ALL_PARTNER_TRANSACTIONS
-     */
-    @Override
-    public boolean isAllPartnerTransactionsPartnerId() {
-    	boolean rv = false;
-    	
-    	if (StringUtils.isNotBlank(mPartnerId) && mPartnerId.equals(ALL_PARTNER_TRANSACTIONS)) {
-    		rv = true;
-    	}
-    	
-    	return rv;
-    }
-    
 }

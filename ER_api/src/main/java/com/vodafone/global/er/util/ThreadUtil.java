@@ -6,8 +6,8 @@ import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkManager;
 
 import org.jboss.mx.util.MBeanServerLocator;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * some utility methods for running background / async tasks <b>in jboss only</b>

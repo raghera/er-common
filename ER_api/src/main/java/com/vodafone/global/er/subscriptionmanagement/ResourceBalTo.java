@@ -25,14 +25,20 @@ public class ResourceBalTo extends ResourceBalance implements DirtyMarker {
 	// Fileds from ER_transaction_types table
 
 	public ResourceBalTo() {
+
 	}
-	
 	public ResourceBalTo(ResourceBalance res) {
 		 this.mBalance = res.getBalance();
 		 this.mThreshold = res.getThreshold();
 		 if (res.getResource()!=null) this.mRes = res.getResource();
 	}
-
+	/*public ResourceBalTo(ChargingResource mRes,double mBalance,String mSubscriptionId,String mPackageId)
+	{
+	   this.mRes = mRes;
+	   this.mBalance = mBalance;
+	   this.mSubscriptionId = mSubscriptionId;
+	   this.mPackageId = mPackageId;
+	}*/
 
 	public void setResource(ChargingResource mRes) {
 
@@ -47,7 +53,6 @@ public class ResourceBalTo extends ResourceBalance implements DirtyMarker {
 		dirty = true;
 
 	}
-	
     /**
      * Setter method for the threshold value
      * @param mThreshold The notification threshold value from the database
@@ -62,14 +67,19 @@ public class ResourceBalTo extends ResourceBalance implements DirtyMarker {
 	 * @removed
 	 * @param mSubscriptionId
 	 */
+	//public void setSubscriptionId(String mSubscriptionId) {
+	//	dirty = true;
+	//}
 	public void setSubscriptionIdLong(long id) {
 		super.setSubscriptionIdLong(id);
 		dirty = true;
 	}
 
 	public void setPackageId(String mPackageId) {
+
 		this.mPackageId = mPackageId;
 		dirty = true;
+
 	}
 
     /**
@@ -86,7 +96,6 @@ public class ResourceBalTo extends ResourceBalance implements DirtyMarker {
         mLockId = new Long(id);
         dirty = true;
     }
-    
     /**
      * Getter method for the lock id
      * @return the lock id value associated with the ResourceBalnceTo object

@@ -14,6 +14,7 @@ import com.vizzavi.ecommerce.business.selfcare.SelfcareApi;
 import com.vizzavi.ecommerce.business.selfcare.SubscriptionFilter;
 import com.vizzavi.ecommerce.business.selfcare.TransactionFilter;
 import com.vodafone.config.ConfigProvider;
+import com.vodafone.global.er.partner.PartnerApi;
 
 /**
 * This class should be used to instantiate implementations of the ER
@@ -88,8 +89,6 @@ public class EcomApiFactory
 
    
     private static String DRV_MICRO_SERVICE_FILTER;
-   
-    static String DRV_OPCODATA;
     
     static {
         
@@ -111,7 +110,6 @@ public class EcomApiFactory
 	        DRV_SELFCARE =  "com.vodafone.global.er.delegate.SelfcareApiDelegateImpl";
 	        DRV_CUSTCARE =  "com.vodafone.global.er.delegate.SelfcareApiDelegateImpl";
 	        DRV_PROVISION =  "com.vodafone.global.er.delegate.ProvisionApiDelegateImpl";
-	        DRV_OPCODATA = "com.vodafone.er.opcodata.OpcoDataApiImpl";
         }
         
         DRV_TRANSACTION_FILTER =  "com.vodafone.global.er.subscriptionmanagement.TransactionFilterImpl" ;
@@ -183,15 +181,15 @@ public class EcomApiFactory
         return (PurchaseApi) newInstanceLocaleArgs( DRV_PURCHASE, locale );
     }
     
-//    /**
-//     * returns a decoupling implementation of the PartnerApi (requires DECOUPLING_client and DECOUPLING_common on the classpath)
-//     * @param locale
-//     * @return
-//     * @throws EcommerceException
-//     */
-//    public static PartnerApi getPartnerApi(Locale locale) throws EcommerceException	{
-//		return (PartnerApi) newInstanceLocaleArgs("com.vodafone.global.er.decoupling.client.PartnerApiDecouplingImpl", locale);
-//    }
+    /**
+     * returns a decoupling implementation of the PartnerApi (requires DECOUPLING_client and DECOUPLING_common on the classpath)
+     * @param locale
+     * @return
+     * @throws EcommerceException
+     */
+    public static PartnerApi getPartnerApi(Locale locale) throws EcommerceException	{
+		return (PartnerApi) newInstanceLocaleArgs("com.vodafone.global.er.decoupling.client.PartnerApiDecouplingImpl", locale);
+    }
     
     /**
     * Obtain a SelfcareApi implementation.
@@ -361,17 +359,6 @@ public class EcomApiFactory
         DRV_SELFCARE = "com.vodafone.global.er.generated.SelfcareApiStub";
         DRV_CUSTCARE = "com.vodafone.global.er.generated.CustcareApiStub";
         DRV_PROVISION = "com.vodafone.global.er.generated.ProvisionApiStub";
-        DRV_OPCODATA = "com.vodafone.global.er.decoupling.client.OpcoDataApiDecouplingImpl";
 	}
-	
-//	/**
-//     * returns a decoupling implementation of the OpCoDataApi (requires DECOUPLING_client and DECOUPLING_common on the classpath)
-//     * @param locale
-//     * @return
-//     * @throws EcommerceException
-//     */
-//    public static OpcoDataApi getOpcoDataApi(Locale locale) throws EcommerceException	{
-//		return (OpcoDataApi) newInstanceLocaleArgs(DRV_OPCODATA, locale);
-//    }
 
 }

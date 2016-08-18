@@ -41,11 +41,5 @@ public class ModifyAuthorisation implements Serializable{
 		return accountNotfound;
 	}
 
-	@Override
-	public String toString() {
-		return "ModifyAuthorisation [success=" + success + ", reasonCode="
-				+ reasonCode + ", accountNotfound=" + accountNotfound + "]";
-	}
-
 
 }

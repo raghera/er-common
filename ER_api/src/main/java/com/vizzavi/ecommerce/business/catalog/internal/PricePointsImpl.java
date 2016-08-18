@@ -12,13 +12,16 @@ import org.apache.log4j.Logger;
 
 import com.vizzavi.ecommerce.business.catalog.PricePoint;
 import com.vizzavi.ecommerce.business.catalog.PricePoints;
-
+import com.vizzavi.ecommerce.business.common.Constants;
+import com.vizzavi.ecommerce.business.common.RatingAttributes;
 
 public class PricePointsImpl extends PricePoints{
 
 	private    static final long serialVersionUID = 6878422193564842740L;
 	private static Logger log = Logger.getLogger(PricePointsImpl.class);
 
+	/* ER 7 Compliant */
+    //protected Map<String, PricePoint> mPricePoints = new HashMap<String, PricePoint>();
 
 	public PricePointsImpl(){
 		super();
@@ -32,13 +35,19 @@ public class PricePointsImpl extends PricePoints{
 	public PricePointsImpl(List<PricePoint>  pts)
 	{
 		for (PricePoint ppt: pts) {
-			PricePoint pt = new PricePointImpl(ppt);
+			PricePointImpl pt = new PricePointImpl(ppt);
 			addPricePoint(pt);
 		}
 	}
 
+//	public PricePointsImpl(PricePoints  copy)
+//	{
+//		this(copy);
+//	}
 
-	public void addPricePoints(PricePoint[] pts)	{
+	public void addPricePoints(PricePoint[] pts)
+	{
+//		for (int index=0; pts!=null && index<pts.length; index++) {
 		for(PricePoint pt: pts){
 			mPricePointMapById.put(pt.getId(), pt);
 		}
@@ -47,8 +56,10 @@ public class PricePointsImpl extends PricePoints{
 
 
 	
-	public void addPricePoint(PricePoint pt)	{
+	public void addPricePoint(PricePoint pt)
+	{
 		super.putPricePoint(pt);
+//		mPricePointMapById.put(pt.getId(), pt);
 		// Also need to add to the packageid map
 		if (mPricePointMapByPackageId == null){
 			mPricePointMapByPackageId = new HashMap<String, ArrayList<PricePoint>>();
@@ -64,8 +75,10 @@ public class PricePointsImpl extends PricePoints{
 	}
 
 
-	public void deletePricePoint(PricePoint pt)	{
-
+	public void deletePricePoint(PricePoint pt)
+	{
+                /* ER 7 Compiant */
+               // mPricePoints.remove(pt.getId());
 		remove(pt);
 		mPricePointMapById.remove(pt.getId());
 		
@@ -73,8 +86,8 @@ public class PricePointsImpl extends PricePoints{
 			ArrayList<PricePoint> pps = mPricePointMapByPackageId.get(pt.getPackageId());
 			if (pps != null && pps.size() > 0){
 				for (int i = 0; i < pps.size(); i++){
-					PricePoint pricePoint = pps.get(i);
-					if (pricePoint.getServiceIdentifier().equals(pt.getServiceIdentifier())){
+					PricePointImpl pricePoint = (PricePointImpl)pps.get(i);
+					if (pricePoint.getServiceIdentifier().equals(((PricePointImpl)pt).getServiceIdentifier())){
 						pps.remove(pricePoint);
 					}
 				}
@@ -229,12 +242,12 @@ public class PricePointsImpl extends PricePoints{
 	public PricePoint findMatchingPackagePricePoint(PricePoint ptToFind)
 	{
 
-		PricePoint ptToFindImpl = ptToFind;
+		PricePointImpl ptToFindImpl = (PricePointImpl)ptToFind;
 		PricePoint match = null;
 		if (mPricePointMapById.size()>0) {
 			Iterator<PricePoint> iter = mPricePointMapById.values().iterator();
 			while (iter.hasNext()) {
-				PricePoint pt = iter.next();
+				PricePointImpl pt = (PricePointImpl)iter.next();
 				ptToFindImpl.setTaxCode(pt.getTaxCode());
 				String findId = ptToFindImpl.getPackageIdentifier();
 
@@ -265,7 +278,7 @@ public class PricePointsImpl extends PricePoints{
 			Iterator<PricePoint> it = mPricePointMapById.values().iterator();
 			
 			while (it.hasNext()) {
-				PricePoint pt = it.next();
+				PricePointImpl pt = (PricePointImpl)it.next();
 								
 				if (pricepointId.equals(pt.getId())) {
 					continue; //if same id skip
@@ -306,13 +319,13 @@ public class PricePointsImpl extends PricePoints{
 	public PricePoint findMatchingServicePricePoint(PricePoint ptToFind)
 	{
 
-		PricePoint ptToFindImpl = ptToFind;
+		PricePointImpl ptToFindImpl = (PricePointImpl)ptToFind;
 		PricePoint match = null;
 		//List rv = new ArrayList();
 		if (mPricePointMapById.size()>0) {
 			Iterator<PricePoint> iter = mPricePointMapById.values().iterator();
 			while (iter.hasNext()) {
-				PricePoint pt = iter.next();
+				PricePointImpl pt = (PricePointImpl)iter.next();
 				String findId = ptToFindImpl.getServiceIdentifier();
 
 				String serviceIdentifier = pt.getServiceIdentifier();
@@ -336,9 +349,9 @@ public class PricePointsImpl extends PricePoints{
 	public PricePoint getPricePoint(String id)
 	{
 		String ptId = CatalogPackageIdentifier.getSimplePricePointId(id);
-		PricePoint match = null;
+		PricePointImpl match = null;
 		if (ptId!=null) {
-			match = mPricePointMapById.get(ptId);
+			match = (PricePointImpl)mPricePointMapById.get(ptId);
 		}
 
 		return match;
@@ -350,19 +363,19 @@ public class PricePointsImpl extends PricePoints{
      */
     @Deprecated
 	public BalanceImpact[] getCustomResourceBalanceImpact(String packageId) {
-      /*  return getCustomResourceBalanceImpact(packageId, new Date());//ET-153
+        return getCustomResourceBalanceImpact(packageId, new Date());
     }
 
     //CR1564 -Utctimezone for diff region in country
 	public BalanceImpact[] getCustomResourceBalanceImpact(String packageId, Date date)
-	{*/
+	{
 		PricePoint[] arr = getPackagePricePoints(packageId);
 
 		BalanceImpact[] rv = null;
 		for (int index=0; arr!=null && index<arr.length;) {
-			PricePoint pt = arr[index];
+			PricePointImpl pt = (PricePointImpl)arr[index];
 			//CR1430 - changed to only retrieve the currently active impacts
-			rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(/*date ET-153*/);
+			rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(date);
 			break;
 		}
 		return rv;
@@ -372,19 +385,19 @@ public class PricePointsImpl extends PricePoints{
         @deprecated
 	 */
 	 @Deprecated
-	public PricePoint getServicePricePoint(String packageId)
+	public PricePointImpl getServicePricePoint(String packageId)
 	 {
 		 return getServicePricePoint(packageId, new Date());
 	 }
 
-	 public PricePoint getServicePricePoint(String packageId, Date dat)
+	 public PricePointImpl getServicePricePoint(String packageId, Date dat)
 	 {
 		 PricePoint[] arr = getPricePointsByPackageId(packageId);
 
-		 PricePoint rv = null;
+		 PricePointImpl rv = null;
 		 if (arr != null) {
 			 for (PricePoint element : arr) {
-				 PricePoint pt = element;
+				 PricePointImpl pt = (PricePointImpl)element;
 				 if (pt.isActive(dat)) {
 					 rv = pt;
 					 break;
@@ -400,20 +413,20 @@ public class PricePointsImpl extends PricePoints{
      */
     @Deprecated
 	public BalanceImpact[] getCustomResourceBalanceImpact(int duration, int method) {
-        /*return getCustomResourceBalanceImpact(duration, method, new Date());//ET-153
+        return getCustomResourceBalanceImpact(duration, method, new Date());
     }
 
      //CR1564 -Utctimezone for diff region in country
 	 public BalanceImpact[] getCustomResourceBalanceImpact(int duration, int method, Date date)
-	 {*/
+	 {
 //		 PricePoint [] arr = getAll();
 		 BalanceImpact[] rv = null;
 //		 for (int index=0; arr!=null && index<arr.length; index++) {
 		for(PricePoint ppt: this)	{
 			if (ppt.getDuration() == duration && ppt.getChargingMethod()==method) {
-				 PricePoint pt = ppt;
+				 PricePointImpl pt = (PricePointImpl)ppt;
 				//CR1430 - changed to only retrieve the currently active impacts
-				 rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(/*date ET-153*/);
+				 rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(date);
 				 break;
 			 }
 		 }
@@ -426,27 +439,80 @@ public class PricePointsImpl extends PricePoints{
      */
     @Deprecated
 	public BalanceImpact[] getCustomResourceBalanceImpact(int duration) {
-       /* return getCustomResourceBalanceImpact(duration, new Date());//ET-153
+        return getCustomResourceBalanceImpact(duration, new Date());
     }
 
      //CR1564 -Utctimezone for diff region in country
 	 public BalanceImpact[] getCustomResourceBalanceImpact(int duration, Date date)
-	 {*/
+	 {
 //		 PricePoint [] arr = getAll();
 		 BalanceImpact[] rv = null;
 //		 for (int index=0; arr!=null && index<arr.length; index++) {
 		 for(PricePoint p: this)	{
 			 if (p.getDuration() == duration) {
-				 PricePoint pt = p;
+				 PricePointImpl pt = (PricePointImpl)p;
  				 //CR1430 - changed to only retrieve the currently active impacts
-				 rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(/*ET-153 date*/);
+				 rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(date);
 				 break;
 			 }
 		 }
 		 return rv;
 	 }
 
+    //CR1564 -Utctimezone for diff region in country
+    /**
+     * @deprecated 
+     */
+    @Deprecated
+	public BalanceImpact[] getCustomResourceBalanceImpact(RatingAttributes rAttrs) {
+        return getCustomResourceBalanceImpact(rAttrs, new Date());
+    }
 
+     //CR1564 -Utctimezone for diff region in country
+	 //find the balance impact taking in account all relevant rating attributes,
+	 //should only ever return one balance impact
+	 public BalanceImpact[] getCustomResourceBalanceImpact(RatingAttributes rAttrs, Date date)
+	 {
+//		 PricePoint [] arr = getAll();
+		 BalanceImpact[] rv = null;
+//		 for (int index=0; arr!=null && index<arr.length; index++) {
+		 for(PricePoint ppt: this)	{
+			if ( (ppt.getDuration() == rAttrs.getDuration()) &&
+					 (ppt.getChargingMethod() == rAttrs.getChargingMethod()) &&
+					 (isEqualRatingStringValues(ppt.getPromoCode(),rAttrs.getPromoCode())) &&
+					 (isEqualRatingStringValues(ppt.getUserGroup(),rAttrs.getUserGroup())) &&
+					 (isEqualRatingIntValues(ppt.getPaymentType(),rAttrs.getPaymentType())) &&
+					 (isEqualRatingIntValues(ppt.getChannel(),rAttrs.getChannel())) &&
+					 //MQC 5964 - also check the tariff attribute
+					 (isEqualRatingStringValues(ppt.getTariff(),rAttrs.getTariff())) ) {
 
+				 PricePointImpl pt = (PricePointImpl)ppt;
+				 //CR1430 - changed to only retrieve the currently active impacts
+				 rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(date);
+				 
+				 break;
+			 }
+		 }
+		 return rv;
+	 }
 
+	 private boolean isEqualRatingStringValues(String catalogValue, String rAttrsValue) {
+		 if ( (catalogValue == null) || catalogValue.equals("") ) {
+			 catalogValue = Constants.STRING_MATCH_ALL;
+		 }
+		 if ( (rAttrsValue == null) || rAttrsValue.equals("") ) {
+			 rAttrsValue = Constants.STRING_MATCH_ALL;
+		 }
+		 return catalogValue.equals(rAttrsValue);
+	 }
+
+	 private boolean isEqualRatingIntValues(int catalogValue, int rAttrsValue) {
+		 if (catalogValue==Constants.INT_NOT_SET || catalogValue==Constants.INT_MATCH_ALL)
+		 {
+			 return true;
+		 }
+		 else {
+			 return catalogValue==rAttrsValue;
+		 }
+	 }
 }

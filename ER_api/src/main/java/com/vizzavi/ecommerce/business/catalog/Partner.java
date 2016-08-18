@@ -23,10 +23,10 @@ public class Partner implements java.io.Serializable
     public final static String PARTNER_CATEGORY_PARTNER = "Partner"; // CR2040 MPAY replacement.  Partner category.
     
     protected Long mKey;
-//    protected String mCreatedBy;
-//    protected String mModifiedBy;
-//    protected Date mModifiedDate;
-//    protected char mActiveStatus;
+    protected String mCreatedBy;
+    protected String mModifiedBy;
+    protected Date mModifiedDate;
+    protected char mActiveStatus;
     protected String mId;
     protected String mName;
     protected String mType;
@@ -81,10 +81,10 @@ public class Partner implements java.io.Serializable
             String groupRevShare,String createdBy, String modifiedBy, Date modifiedDate, char activeStatus) {
             
 		mKey = key;
-//        mCreatedBy = createdBy;
-//		mModifiedBy = modifiedBy;
-//        mModifiedDate = modifiedDate;
-//    	mActiveStatus = activeStatus;
+        mCreatedBy = createdBy;
+		mModifiedBy = modifiedBy;
+        mModifiedDate = modifiedDate;
+    	mActiveStatus = activeStatus;
 
         mId = id;
         mName = name;
@@ -164,37 +164,37 @@ public class Partner implements java.io.Serializable
 		this.mKey = key;
 	}
 
-//	public String getCreatedBy() {
-//		return this.mCreatedBy;
-//	}
-//
-//	public void setCreatedBy(String createdBy) {
-//		this.mCreatedBy = createdBy;
-//	}
-//
-//	public String getModifiedBy() {
-//		return this.mModifiedBy;
-//	}
-//
-//	public void setModifiedBy(String modifiedBy) {
-//		this.mModifiedBy = modifiedBy;
-//	}
-//
-//	public Date getModifiedDate() {
-//		return this.mModifiedDate;
-//	}
-//
-//	public void setModifiedDate(Date modifiedDate) {
-//		this.mModifiedDate = modifiedDate;
-//	}
-//
-//	public char getActiveStatus() {
-//		return this.mActiveStatus;
-//	}
-//
-//	public void setActiveStatus(char activeStatus) {
-//		this.mActiveStatus = activeStatus;
-//	}
+	public String getCreatedBy() {
+		return this.mCreatedBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.mCreatedBy = createdBy;
+	}
+
+	public String getModifiedBy() {
+		return this.mModifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.mModifiedBy = modifiedBy;
+	}
+
+	public Date getModifiedDate() {
+		return this.mModifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.mModifiedDate = modifiedDate;
+	}
+
+	public char getActiveStatus() {
+		return this.mActiveStatus;
+	}
+
+	public void setActiveStatus(char activeStatus) {
+		this.mActiveStatus = activeStatus;
+	}
 
 	// CR1503 - Multi Price plans - phase 2
 	/**
@@ -310,10 +310,10 @@ public class Partner implements java.io.Serializable
 		strBldr.append(" invVat: " + mInvVat);
 		strBldr.append(" salesVat: " + mSalesVat);
 		strBldr.append(" GlobalRevShare :"+ mGroupRevShare);
-//		strBldr.append(" mCreatedBy: " + mCreatedBy);
-//		strBldr.append(" mModifiedBy: " + mModifiedBy);
-//		strBldr.append(" mModifiedDate: " + mModifiedDate);
-//		strBldr.append(" mActiveStatus: " + mActiveStatus);
+		strBldr.append(" mCreatedBy: " + mCreatedBy);
+		strBldr.append(" mModifiedBy: " + mModifiedBy);
+		strBldr.append(" mModifiedDate: " + mModifiedDate);
+		strBldr.append(" mActiveStatus: " + mActiveStatus);
 		strBldr.append(" mExternalPrtnPricePlan: " + mExternalPrtnPricePlan);	// CR1503 - Multi Price plans - phase 2
 		strBldr.append(" partnerCategory: " + partnerCategory); // CR2040 MPAY replacement.  Partner category.
 		return strBldr.toString();

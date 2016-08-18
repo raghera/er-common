@@ -11,12 +11,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.exolab.castor.xml.Unmarshaller;
+import org.xml.sax.InputSource;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
-import com.vizzavi.ecommerce.business.common.generated.country.Countries;
-import com.vizzavi.ecommerce.business.common.generated.country.Country;
+import com.vizzavi.ecommerce.business.common.generated.Countries;
+import com.vizzavi.ecommerce.business.common.generated.Country;
 
 /**
  * TODO - make this an enum, and merge with ErCountry in com.vizzavi.ecommerce.common
@@ -46,11 +45,7 @@ public class CountryCode implements Serializable
     static {    	
     	try {
     		InputStream countryCodesFile = CountryCode.class.getClassLoader().getResourceAsStream("ecom/countrycodes.xml");
-    		
-    		//ET-38 refactor countrycodes and currencies to use jaxb
-    		// changes from castor to JAXB implementation
-    		
-    		/*Unmarshaller unmarshaller = new Unmarshaller(Countries.class);
+    		Unmarshaller unmarshaller = new Unmarshaller(Countries.class);
     		Countries countries = (Countries) unmarshaller.unmarshal(new InputSource(countryCodesFile));
     		ALL_COUNTRIES = new CountryCode[countries.getCountryCount()];    		
     		for (int i=0;i<countries.getCountryCount();i++) {
@@ -66,23 +61,7 @@ public class CountryCode implements Serializable
     			if (country.hasSync_psps()) {
     				SYNC_PSPS.put(country.getLocale(), new Integer(country.getSync_psps()));
     			}
-    		}*/
-    		JAXBContext jaxbContext = JAXBContext.newInstance(Countries.class);
-    		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-    		Countries countries = (Countries) unmarshaller.unmarshal(countryCodesFile);
-    		ALL_COUNTRIES = new CountryCode[countries.getCountry().size()];    		
-    		for (int i=0;i<countries.getCountry().size();i++) {
-    			Country country = countries.getCountry().get(i);
-    			CountryCode countryCode = new CountryCode(country);
-    			ALL_COUNTRIES[i] = countryCode; 
-    			ALL_COUNTRIES_MAP_BY_COUNTRY_CODE.put(country.getLocale(),countryCode);
-    			ALL_COUNTRIES_MAP_BY_ID.put(new Integer(country.getId()), countryCode);
-    			ALL_COUNTRIES_MAP_BY_IDD_PREFIX.put(new Integer(country.getIDDPrefix()), countryCode);
-    			if(country.getAsyncPsps() != null)
-    				ASYNC_PSPS.put(country.getLocale(), new Integer(country.getAsyncPsps()));
-    			if(country.getSyncPsps() != null)
-    				SYNC_PSPS.put(country.getLocale(), new Integer(country.getSyncPsps()));
-    		}
+    		}    		   		
 	    	
     	} catch (Exception e) {
     		e.printStackTrace();    		
@@ -106,7 +85,7 @@ public class CountryCode implements Serializable
     private CountryCode( Country country) {
         this.id = country.getId();
         this.locale = new Locale(country.getLanguage(), country.getLocale());
-        this.currencyCode = country.getCurrencyCode();
+        this.currencyCode = country.getCurrency_code();
     }
     public CountryCode() {
     }
@@ -147,6 +126,26 @@ public class CountryCode implements Serializable
         }
         return rv;
     }
+
+//    /**
+//     * @hud RFRFRF
+//     * @deprecated see getIds()
+//     * @return
+//     */
+//    @Deprecated
+//	public static int[] getCodes() {    	
+//    	return getIds();
+//        
+//    }
+//    public static int[] getIds() {
+//    	if (ALL_IDS == null) {
+//    		ALL_IDS = new int[ALL_COUNTRIES.length];
+//    		for (int i=0;i<ALL_COUNTRIES.length;i++) {
+//    			ALL_IDS[i] = ALL_COUNTRIES[i].getId();
+//    		}
+//    	}
+//    	return ALL_IDS;
+//    }
 
     
     public static Collection<String> getNames() throws Exception {

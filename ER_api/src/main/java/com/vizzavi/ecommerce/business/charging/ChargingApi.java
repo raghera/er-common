@@ -1,7 +1,5 @@
 package com.vizzavi.ecommerce.business.charging;
 
-import java.rmi.RemoteException;
-
 import com.vizzavi.ecommerce.business.catalog.CatalogService;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vodafone.global.er.business.charging.UsageCompleteAttributes;

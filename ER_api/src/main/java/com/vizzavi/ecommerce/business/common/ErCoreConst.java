@@ -1,6 +1,5 @@
 package com.vizzavi.ecommerce.business.common;
 
-
 import com.vizzavi.ecommerce.resources.PropertyDataBool;
 import com.vizzavi.ecommerce.resources.PropertyDataInt;
 import com.vodafone.config.ConfigProvider;
@@ -19,7 +18,16 @@ public class ErCoreConst	{
 	public static final String ZERO_COST_IGNORE_NO_PERSISTANCE_MODE ="NO_PERSISTANCE";
 	public static final String ZERO_COST_IGNORE_COUNTER_MODE ="COUNTER";
 	
-
+	
+	// ROAMING - deprecated
+	//TODO remove these
+	public final static int ROAMING_DOMESTIC				= 0;
+	public final static int ROAMING_OFF_FOOTPRINT			= 1;
+	public final static int ROAMING_ON_FOOTPRINT			= 2;
+	public final static String[] ROAMING_TYPE_STR = new String[]{"Domestic", "Off-Footprint", "On-Footprint"};
+	
+	public final static int ROAMING_DUMMY_NETWORK_CODE_ID	= 0;
+		
 	
 	public final static int MICROSERVICE_ACTIVE				= 0;
 	public final static int MICROSERVICE_INACTIVE			= 1;
@@ -142,32 +150,19 @@ public class ErCoreConst	{
     }
     // CR 1643 - Ends
 
-    /**
-     * how should we handle transactions in ER core?  create a transaction per request? if not, to avoid 
-     * the dreaded {@link LazyInitializationException}, we can manually initialize lazily-joined objects
-     * @author matt
-     *
-     */
-    public static enum TransactionMode{
-    	/**create a (JTA) transaction per request, in decoupling (and perhaps ecom), and close it at the end of each request*/
-    	SESSION_PER_REQUEST, 
-    	/**use {@link Hibernate#initialize(Object)} to manually initialize every lazy collection before leaving the DAO / EJB layer*/
-    	HIBERNATE_INITIALIZE}
 
     /**
-     * how should we handle transactions in ER core?  create a transaction per request? if not, to avoid 
-     * the dreaded {@link LazyInitializationException}, we can manually initialize lazily-joined objects
-     * @author matt
-     *
+     * To enable/disable multiple timezone support for performance reasons. 
      */
-    public static TransactionMode getTransactionMode()	{
-    	if (ConfigProvider.getPropertyAsBoolean("er.core.jpa.dirty.hack", true))
-    		return TransactionMode.HIBERNATE_INITIALIZE;
-    	else
-    		return TransactionMode.SESSION_PER_REQUEST;
-    			
+   	//private static String MULTIPLE_TIMEZONE_ENABLED = ConfigProvider.getProperty("MULTIPLE_TIMEZONE_ENABLED", "false");
+    //public static String MULTIPLE_TIMEZONE_ENABLED() {
+    //    return MULTIPLE_TIMEZONE_ENABLED;
+    //}
+	// CR1564 Change to boolean for easy comparison.
+    public static boolean MULTIPLE_TIMEZONE_ENABLED() {
+        return ConfigProvider.getPropertyAsBoolean("MULTIPLE_TIMEZONE_ENABLED", false);
     }
-    
+
     // CR 2198 - add child spid and service provider type
     public static String MODIFY_ACCOUNT_CHILD_SP_ID() {
         return ConfigProvider.getProperty("MODIFY_ACCOUNT_CHILD_SP_ID", MODIFY_SRC_BOTH);
@@ -177,15 +172,6 @@ public class ErCoreConst	{
         return ConfigProvider.getProperty("MODIFY_ACCOUNT_SP_TYPE", MODIFY_SRC_BOTH);
     }
     
-    /**mqc9089: in decoupling responses, should we include extra fields such as roaming, supercredits, fields usually set to 0 or false, etc*/
-	public static boolean includeExtraFields() {
-		return ConfigProvider.getPropertyAsBoolean("er.core.decoupling.include.extra.fields", true);
-	}
 
-	/**mqc9089: in decoupling responses, should we include empty fields (where the xml element is optional, of course)*/
-	public static boolean includeEmptyFields()	{
-		return ConfigProvider.getPropertyAsBoolean("er.core.decoupling.include.empty.fields", false);
-	}
-	
 
 }

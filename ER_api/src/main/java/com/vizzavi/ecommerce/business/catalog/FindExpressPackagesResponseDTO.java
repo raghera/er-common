@@ -3,7 +3,7 @@
  */
 package com.vizzavi.ecommerce.business.catalog;
 
-import java.util.Map;
+import java.util.Hashtable;
 
 /**
  * DataTransferObject to be passed from the JavaApi to the decoupling layer
@@ -21,8 +21,8 @@ public interface FindExpressPackagesResponseDTO {
 	 * List of packages in a successful response
 	 * @return
 	 */
-	public 	Map<String, ExpressData> getServiceResultsTable();
-	public void setServiceResultsTable(	Map<String, ExpressData> serviceResultsTable);
+	public 	Hashtable<String, ExpressData> getServiceResultsTable();
+	public void setServiceResultsTable(	Hashtable<String, ExpressData> serviceResultsTable);
 	
 	/**
 	 * Denotes whether a successful request

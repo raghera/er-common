@@ -1,3 +1,11 @@
+/**
+ * --------------------------------Modification History--------------------------------
+ *
+ *      Sr. No.		Date			    Author				Description
+ * ------------------------------------------------------------------------------------
+ *      [1]			Sep 7, 2009		Yeoh CW  		Added for CR "Off Portal"
+ *
+ */
 package com.vizzavi.ecommerce.business.catalog;
 
 public class BandPartner implements java.io.Serializable {

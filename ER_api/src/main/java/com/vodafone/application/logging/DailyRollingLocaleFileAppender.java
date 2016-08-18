@@ -1,7 +1,6 @@
 package com.vodafone.application.logging;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.DailyRollingFileAppender;
+import org.apache.log4j.*;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 

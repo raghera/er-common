@@ -1,26 +1,26 @@
 package com.vizzavi.ecommerce.business.catalog.internal;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.vizzavi.ecommerce.business.common.Constants;
 
-/**
- * this class was used for the pricing models like date time models.  Now deprecated since pricing models were removed for priceplan refactor.
- * @author matt
- *
- */
-@Deprecated
+
 public class PricePointTier implements Serializable {
 	
    private    static final long serialVersionUID = -7695521634730385286L;
 	private Long mKey;
-
+    private String mCreatedBy;
+    private String mModifiedBy;
+    private Date mModifiedDate;
+    private char mActiveStatus;
+	//private String promotionalPricingText;
 	private Double promotionalPrice;
 	private BalanceImpacts balanceImpacts = new BalanceImpacts();
 	private String tier;
 	private String pricingModel;
+	private boolean defaultPPT = false ;
 	
 	/** ID of a default tier. */
 	public static final String PPT_DEFAULT_ID = "default";
@@ -28,16 +28,8 @@ public class PricePointTier implements Serializable {
     /** The list of Promotional Pricing Text in multiple languages including the default language. 
      * Key is the language code.  
      * Since ER9 **/
-    private Map<String, String> promotionalPricingTextList = null;	
+    private HashMap<String, String> promotionalPricingTextList = null;	
 	
-    public PricePointTier()	{
-    }
-    
-    public PricePointTier(BalanceImpacts impacts)	{
-    	this.balanceImpacts = impacts;
-    	tier = PPT_DEFAULT_ID;
-    	//TODO what about pricingModel?
-    }
 	/**
 	 * @return
 	 */
@@ -49,6 +41,37 @@ public class PricePointTier implements Serializable {
 		mKey = key;
 	}
 
+    public String getCreatedBy() {
+        return mCreatedBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        mCreatedBy = createdBy;
+    }
+
+    public String getModifiedBy() {
+        return mModifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        mModifiedBy = modifiedBy;
+    }
+
+    public Date getModifiedDate() {
+        return mModifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        mModifiedDate = modifiedDate;
+    }
+
+    public char getActiveStatus() {
+        return mActiveStatus;
+    }
+    
+	public void setActiveStatus(char activeStatus) {
+    	mActiveStatus = activeStatus;
+    }
 	/**
 	 * @return
 	 */
@@ -60,12 +83,10 @@ public class PricePointTier implements Serializable {
 	 * @return
 	 */
 	public boolean isDefaultPPT() {
-		//return defaultPPT;
-		return PPT_DEFAULT_ID.equals(tier);
+		return defaultPPT;
 	}
 
 	/**
-	 * normally null, unless this is an active model e.g. catalog_pricing_model id="barttest2"
 	 * @return
 	 */
 	public String getPricingModel() {
@@ -93,6 +114,12 @@ public class PricePointTier implements Serializable {
 		balanceImpacts = impacts;
 	}
 
+	/**
+	 * @param b
+	 */
+	public void setDefaultPPT(boolean b) {
+		defaultPPT = b;
+	}
 
 	/**
 	 * @param string
@@ -115,15 +142,11 @@ public class PricePointTier implements Serializable {
 		tier = string;
 	}
 	
-	/**
-	 * the text to display e.g. "now on special offer for happy hour!"
-	 * @return
-	 */
 	public String getPromotionalPricingText() {
 		return getPromotionalPricingText(Constants.DEFAULT_LANGUAGE_CODE);
 	}
 	
-	public Map<String, String> getPromotionalPricingTextList() {
+	public HashMap<String, String> getPromotionalPricingTextList() {
 		return promotionalPricingTextList;
 	}
 

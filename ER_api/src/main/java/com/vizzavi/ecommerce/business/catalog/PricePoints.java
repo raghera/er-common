@@ -2,17 +2,14 @@ package com.vizzavi.ecommerce.business.catalog;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.vizzavi.ecommerce.business.catalog.internal.BalanceImpact;
 import com.vizzavi.ecommerce.business.common.ChargingMethod;
 import com.vizzavi.ecommerce.business.common.Constants;
-import com.vizzavi.ecommerce.business.common.RatingAttributes;
 
 
 /**
@@ -38,10 +35,12 @@ public class PricePoints extends ArrayList<PricePoint>
 	protected Map<String, ArrayList<PricePoint>> mPricePointMapByPackageId = null;	// only for service price point, and create upon first hit
 
     
-	public PricePoints(List<PricePoint> ppts)	{
-		super(ppts);
-	}
+
 	
+//	// sorted with price point comparator
+//	protected PricePoint[] mPricePointArray = null;
+
+
 	public PricePoints(){
 		super();
 	}
@@ -56,11 +55,6 @@ public class PricePoints extends ArrayList<PricePoint>
 		return getPricePointsByPackageId(packageId);
 	}
 	
-	/**
-	 * non-null response guaranteed
-	 * @param packageId
-	 * @return
-	 */
 	public PricePoint[] getPricePointsByPackageId(String packageId)
 	{
 		ArrayList<PricePoint> retpps = null;
@@ -73,11 +67,14 @@ public class PricePoints extends ArrayList<PricePoint>
 			// we need to create one now
 			retpps = new ArrayList<PricePoint>();
 			
+//			PricePoint[] ppAll = getAll();
+//			if (ppAll != null) {
 			for (PricePoint element : this) {
 				if (element.getPackageId().equals(packageId)) {
 					retpps.add(element);
 				}
 			}			
+//			}
 			
 			if (retpps.size() > 0) {
 				mPricePointMapByPackageId.put(packageId, retpps);
@@ -89,6 +86,8 @@ public class PricePoints extends ArrayList<PricePoint>
 		
 		return retpps.toArray(new PricePoint[retpps.size()]);
 		
+		
+	
 	}
 
 	public PricePoints(Map<String, PricePoint> points)
@@ -222,12 +221,12 @@ public class PricePoints extends ArrayList<PricePoint>
 	 * @return   True if a matching UserGroup is found between the 2 Pricepoints being compared else false.
 	 **/
 	boolean isMatchingUserGroup(PricePoint undiscountPt, PricePoint pt){
-		String[] groups1 = undiscountPt.getNonMatchAllUserGroups();
-		String[] groups2 = pt.getNonMatchAllUserGroups();
+		Object[] groups1 = undiscountPt.getNonMatchAllUserGroups();
+		Object[] groups2 = pt.getNonMatchAllUserGroups();
 
 		for (int i = 0 ; i < groups1.length; i++){
-			for (String element : groups2) {	//TODO is this a bug?  shouldn't it be element instead of groups2[i] below?
-				if ( groups1[i].equals(groups2[i]) )
+			for (Object element : groups2) {	//TODO is this a bug?  shouldn't it be element instead of groups2[i] below?
+				if ( ((String)groups1[i]).equals(groups2[i]) )
 					return true;
 			}    		
 		}    	
@@ -386,58 +385,4 @@ public class PricePoints extends ArrayList<PricePoint>
 		}
 		return sb.toString();
 	}
-	
-    //CR1564 -Utctimezone for diff region in country
-
-	public BalanceImpact[] getCustomResourceBalanceImpact(RatingAttributes rAttrs) {
-        /*return getCustomResourceBalanceImpact(rAttrs, new Date());//ET-153
-    }
-
-     //CR1564 -Utctimezone for diff region in country
-	 //find the balance impact taking in account all relevant rating attributes,
-	 //should only ever return one balance impact
-	 public BalanceImpact[] getCustomResourceBalanceImpact(RatingAttributes rAttrs, Date date)
-	 {*/
-//		 PricePoint [] arr = getAll();
-		 BalanceImpact[] rv = null;
-//		 for (int index=0; arr!=null && index<arr.length; index++) {
-		 for(PricePoint ppt: this)	{
-			if ( (ppt.getDuration() == rAttrs.getDuration()) &&
-					 (ppt.getChargingMethod() == rAttrs.getChargingMethod()) &&
-					 (isEqualRatingStringValues(ppt.getPromoCode(),rAttrs.getPromoCode())) &&
-					 (isEqualRatingStringValues(ppt.getUserGroup(),rAttrs.getUserGroup())) &&
-					 (isEqualRatingIntValues(ppt.getPaymentType(),rAttrs.getPaymentType())) &&
-					 (isEqualRatingIntValues(ppt.getChannel(),rAttrs.getChannel())) &&
-					 //MQC 5964 - also check the tariff attribute
-					 (isEqualRatingStringValues(ppt.getTariff(),rAttrs.getTariff())) ) {
-
-				 PricePoint pt = ppt;
-				 //CR1430 - changed to only retrieve the currently active impacts
-				 rv = pt.getAllBalanceImpacts().getCurrentNonCurrencyImpacts(/*date ET-153*/);
-				 
-				 break;
-			 }
-		 }
-		 return rv;
-	 }
-	 
-	 protected boolean isEqualRatingStringValues(String catalogValue, String rAttrsValue) {
-		 if ( (catalogValue == null) || catalogValue.equals("") ) {
-			 catalogValue = Constants.STRING_MATCH_ALL;
-		 }
-		 if ( (rAttrsValue == null) || rAttrsValue.equals("") ) {
-			 rAttrsValue = Constants.STRING_MATCH_ALL;
-		 }
-		 return catalogValue.equals(rAttrsValue);
-	 }
-
-	 protected boolean isEqualRatingIntValues(int catalogValue, int rAttrsValue) {
-		 if (catalogValue==Constants.INT_NOT_SET || catalogValue==Constants.INT_MATCH_ALL)
-		 {
-			 return true;
-		 }
-		 else {
-			 return catalogValue==rAttrsValue;
-		 }
-	 }
 }

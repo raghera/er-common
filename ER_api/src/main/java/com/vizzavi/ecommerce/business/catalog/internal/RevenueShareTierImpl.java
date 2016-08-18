@@ -1,5 +1,7 @@
 package com.vizzavi.ecommerce.business.catalog.internal;
 
+import java.util.Date;
+
 import com.vizzavi.ecommerce.business.catalog.RevenueShareTier;
 
 public class RevenueShareTierImpl extends RevenueShareTier {
@@ -11,21 +13,21 @@ public class RevenueShareTierImpl extends RevenueShareTier {
   public void setKey(Long key) {
     mKey = key;
   }
-//  public void setCreatedBy(String createdBy) {
-//	mCreatedBy = createdBy;
-//  }
-//
-//  public void setModifiedBy(String modifiedBy) {
-//	mModifiedBy = modifiedBy;
-//  }
-//
-//  public void setModifiedDate(Date modifiedDate) {
-//	mModifiedDate = modifiedDate;
-//  }
-//
-//  public void setActiveStatus(char activeStatus) {
-//	mActiveStatus = activeStatus;
-//  }
+  public void setCreatedBy(String createdBy) {
+	mCreatedBy = createdBy;
+  }
+
+  public void setModifiedBy(String modifiedBy) {
+	mModifiedBy = modifiedBy;
+  }
+
+  public void setModifiedDate(Date modifiedDate) {
+	mModifiedDate = modifiedDate;
+  }
+
+  public void setActiveStatus(char activeStatus) {
+	mActiveStatus = activeStatus;
+  }
   public void setSharePercentage(String sharePercentage) {
     mSharePercentage = sharePercentage;
   }

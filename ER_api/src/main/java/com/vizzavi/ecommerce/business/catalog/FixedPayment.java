@@ -1,6 +1,7 @@
 package com.vizzavi.ecommerce.business.catalog;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -14,6 +15,10 @@ public class FixedPayment implements Serializable {
    private    static final long serialVersionUID = -183739091948476282L;
     protected Long mKey;
     
+	protected String mCreatedBy;
+    protected String mModifiedBy;
+    protected Date mModifiedDate;
+    protected char mActiveStatus;
     /**
      * Fixed Payment Amount
      */
@@ -53,6 +58,21 @@ public class FixedPayment implements Serializable {
 		return mKey;
 	}
 
+    public String getCreatedBy() {
+        return mCreatedBy;
+    }
+
+    public String getModifiedBy() {
+        return mModifiedBy;
+    }
+
+    public Date getModifiedDate() {
+        return mModifiedDate;
+    }
+
+    public char getActiveStatus() {
+        return mActiveStatus;
+    }
 
     /**
      * getter method for Amount

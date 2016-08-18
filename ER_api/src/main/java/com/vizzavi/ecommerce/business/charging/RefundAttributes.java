@@ -2,6 +2,7 @@ package com.vizzavi.ecommerce.business.charging;
 
 import com.vizzavi.ecommerce.business.common.BaseAttributes;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
+import com.vizzavi.ecommerce.business.common.ErCoreConst;
 import com.vizzavi.ecommerce.resources.PropertyDataBool;
 
 /**
@@ -25,7 +26,7 @@ public class RefundAttributes extends BaseAttributes
 	//public static final int CFG_CREDIT_REFUND_REQUEST_PAYMENT_HANDLER = 
 	//			PropertyServer.getPropertyBool("CREDIT_REFUND_REQUEST_PAYMENT_HANDLER");
 	//protected int mCreditRefundRequestPaymentHandler = CFG_CREDIT_REFUND_REQUEST_PAYMENT_HANDLER;
-	private final PropertyDataBool mCreditRefundRequestPaymentHandler = new PropertyDataBool();
+	private PropertyDataBool mCreditRefundRequestPaymentHandler = new PropertyDataBool();
 	public boolean needNotifyCreditRefundRequestPaymentHandler()  {
 		return mCreditRefundRequestPaymentHandler.isTrue();
 	}
@@ -39,7 +40,7 @@ public class RefundAttributes extends BaseAttributes
 	
 	///////////////////////////////////////////////////////////////////////////////////
 	// roaming flag
-	//private boolean mRefundRoamingCharge		= false;
+	private boolean mRefundRoamingCharge		= false;
 	
 	
 	
@@ -54,7 +55,7 @@ public class RefundAttributes extends BaseAttributes
    
    
 	///////////////////////////////////////////////////////
-	//change this field but test using TestNextPaymentAmount or TestRealTimeRefund
+
 	private String mCsrId = "";
     private String mReason = "";
     private String mDescription = "";
@@ -287,12 +288,12 @@ public class RefundAttributes extends BaseAttributes
 
 	
 	//@hud STKHREQ13076
-//	public void setRefundRoamnigCharge(boolean refundRoamingCharge) {
-//		mRefundRoamingCharge = refundRoamingCharge;
-//	}
-//	public boolean needRefundRoamingCharge() {
-//		return mRefundRoamingCharge;
-//	}
+	public void setRefundRoamnigCharge(boolean refundRoamingCharge) {
+		mRefundRoamingCharge = refundRoamingCharge;
+	}
+	public boolean needRefundRoamingCharge() {
+		return mRefundRoamingCharge;
+	}
 	
 	//CR-1448 - add merchant name and invoice text
 	public String getMerchantName()  

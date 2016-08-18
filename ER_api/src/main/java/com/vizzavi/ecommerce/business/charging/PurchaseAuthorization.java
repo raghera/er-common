@@ -10,21 +10,38 @@ import com.vizzavi.ecommerce.business.selfcare.Subscription;
 import com.vizzavi.ecommerce.business.selfcare.ValidateMsisdnAttributes;
 import com.vizzavi.ecommerce.util.MiscUtils;
 import com.vodafone.config.ConfigProvider;
+import com.vodafone.global.er.payment.PaymentAuthStatus;
 import com.vodafone.global.er.rating.RatedEvent;
 
 
 
 /**
 * Encapsulates the result of a purchase authorization call to the charging subsystem.
-* i<br/><pre>$Id: PurchaseAuthorization.java,v 1.1 2015/01/05 16:51:44 matt.darwin Exp $</pre>
+* i<br/><pre>$Id: PurchaseAuthorization.java,v 1.25 2013/09/26 14:23:36 matt.darwin Exp $</pre>
 */
 public class PurchaseAuthorization extends BaseAuthorization implements java.io.Serializable{
+   // private final Hashtable flistInfo = null;
    private    static final long serialVersionUID = 2704297195295293234L;
 
    //MQC 7434 - Add validation attributes
    ValidateMsisdnAttributes validateAttributes = null;
    
    
+   //@hud RFRFRF this only called in test codes
+    public PurchaseAuthorization(String subscriptionId, String code, 
+    		PaymentAuthStatus status,	//@hud int status, 
+    		double rate, double taxRate, int currency, String errorId, String errorDescription, List<Subscription> subscriptions)
+    {
+        super.packageSubscriptionId = subscriptionId;
+        mAuthCode = code;
+       setPaymentStatus(status);
+        //setRate(rate);
+        //setResource(ChargingResource.getResource(currency));
+        //this.taxRate = taxRate;
+        this.errorId = errorId;
+        this.errorDescription = errorDescription;
+        this.mSubscriptions = subscriptions;
+    }
 
     /**
         This represents the balances purchased by the package
@@ -42,8 +59,22 @@ public class PurchaseAuthorization extends BaseAuthorization implements java.io.
     public PurchaseAuthorization(CatalogPackage pack) {
         super.mPackage = pack;
     }
+//    /**
+//        Used for complex rating of a purchase.
+//        This date can be placed in the PurchaseAttributes class when doing a purchase to speed up the call.
+//        Sets the
+//        @deprecated
+//    */
+//    @Deprecated
+//	public Hashtable getFlistInfo() {
+//        return null;
+//    }
 
-  
+    //CR1564 -Utctimezone for diff region in country
+    /**
+     * @deprecated 
+     */
+    @Deprecated
 	public PurchaseAuthorization(RatedEvent event) {
         this(event, new Date());
     }

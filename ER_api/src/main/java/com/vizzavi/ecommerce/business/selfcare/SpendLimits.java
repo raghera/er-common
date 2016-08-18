@@ -5,59 +5,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-
 /**
  * Account spend limits
  * @see com.vizzavi.ecommerce.business.catalog.SpendLimits 
  */
-@Entity
-@Table(name="ER_ACCOUNT_SPEND_LIMITS")
 public class SpendLimits implements Serializable {
 	
 	private static final long serialVersionUID = 5788917496921448134L;
-	
-	@Id
-	@Column(name="ACCOUNT_OBJ_ID")
-	private Long id;	
-	@Column(name="PER_DAY_LIMIT")
-	private Double perDayLimit = -1.0;
-	@Column(name="PER_MONTH_LIMIT")
-	private Double perMonthLimit = -1.0;
-	@Column(name="PER_TX_LIMIT")
-	private Double perTxLimit = -1.0;
-	@Column(name="SPEND_TOTAL_DAY")
-	private Double cumulativeSpendDay = 0.0;
-	@Column(name="SPEND_TOTAL_MONTH")
-	private Double cumulativeSpendMonth = 0.0;
-	@Column(name="LAST_UPDATED")
+	private double perDayLimit = -1.0;
+	private double perMonthLimit = -1.0;
+	private double perTxLimit = -1.0;
+	private double cumulativeSpendDay = 0.0;
+	private double cumulativeSpendMonth = 0.0;
 	private Date lastUpdated = Calendar.getInstance().getTime();
-	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="ACCOUNT_OBJ_ID",insertable=false,updatable=false)
-	private BasicAccount basicAccount;
-	
-	@Column(name="COUNTRY_OBJ_ID")
-    protected Integer countryId;
-    
-    
-	public Integer getCountryId() {
-		return countryId;
-	}
-
-	public void setCountryId(Integer countryId) {
-		this.countryId = countryId;
-	}
 	
 	public SpendLimits() {}
 	
@@ -88,59 +48,34 @@ public class SpendLimits implements Serializable {
 		this.perMonthLimit = spendLimits.getPerMonthLimit();
 	}
 	
-	public Long getId()	{
-		return id;
+	public double getPerDayLimit() {
+		return perDayLimit;
 	}
-
-	public void setId(Long id){
-		this.id = id;
-	}
-	
-	public Double getPerDayLimit() {
-		if (perDayLimit != null) 
-			return perDayLimit;
-		else return -1.0;
-	}
-	public void setPerDayLimit(Double perDayLimit) {
+	public void setPerDayLimit(double perDayLimit) {
 		this.perDayLimit = perDayLimit;
 	}
-	
-	public Double getPerMonthLimit() {
-		if (perMonthLimit != null)
-			return perMonthLimit;
-		else return -1.0;
+	public double getPerMonthLimit() {
+		return perMonthLimit;
 	}
-	
-	public void setPerMonthLimit(Double perMonthLimit) {
+	public void setPerMonthLimit(double perMonthLimit) {
 		this.perMonthLimit = perMonthLimit;
 	}
-	
-	public Double getPerTxLimit() {
-		if (perTxLimit != null)
-			return perTxLimit;
-		else return -1.0;
+	public double getPerTxLimit() {
+		return perTxLimit;
 	}
-	public void setPerTxLimit(Double perTxLimit) {
+	public void setPerTxLimit(double perTxLimit) {
 		this.perTxLimit = perTxLimit;
 	}
-	
-	public Double getCumulativeSpendDay() {
-		if (cumulativeSpendDay != null)
-			return cumulativeSpendDay;
-		else return 0.0;
+	public double getCumulativeSpendDay() {
+		return cumulativeSpendDay;
 	}
-	
-	public void setCumulativeSpendDay(Double cumulativeSpendDay) {
+	public void setCumulativeSpendDay(double cumulativeSpendDay) {
 		this.cumulativeSpendDay = cumulativeSpendDay;
 	}
-	
-	public Double getCumulativeSpendMonth() {
-		if (cumulativeSpendMonth != null)
-			return cumulativeSpendMonth;
-		else return 0.0;
+	public double getCumulativeSpendMonth() {
+		return cumulativeSpendMonth;
 	}
-	
-	public void setCumulativeSpendMonth(Double cumulativeSpendMonth) {
+	public void setCumulativeSpendMonth(double cumulativeSpendMonth) {
 		this.cumulativeSpendMonth = cumulativeSpendMonth;
 	}
 	
@@ -194,16 +129,6 @@ public class SpendLimits implements Serializable {
 		}
 	}
 	
-
-
-	public  BasicAccount getBasicAccount()	{
-		return basicAccount;
-	}
-
-	public void setBasicAccount(BasicAccount acc)	{
-		this.basicAccount = acc;
-	}
-		
 	@Override
 	public String toString() {
 		StringBuffer strBuf = new StringBuffer("SpendLimits: ");

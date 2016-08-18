@@ -1,5 +1,6 @@
 package com.vizzavi.ecommerce.business.catalog;
 
+import java.util.Date;
 /**
  *
  * This is part of the Partner revenue share phase 2
@@ -12,6 +13,10 @@ public class RevenueShareTier implements java.io.Serializable {
    private    static final long serialVersionUID = 5337890564955438882L;
     protected Long mKey;
 
+    protected String mCreatedBy;
+    protected String mModifiedBy;
+    protected Date mModifiedDate;
+    protected char mActiveStatus;
     /**
      * Share percentage
      */
@@ -58,6 +63,22 @@ public class RevenueShareTier implements java.io.Serializable {
     public Long getKey() {
 		return mKey;
 	}
+
+    public String getCreatedBy() {
+        return mCreatedBy;
+    }
+
+    public String getModifiedBy() {
+        return mModifiedBy;
+    }
+
+    public Date getModifiedDate() {
+        return mModifiedDate;
+    }
+
+    public char getActiveStatus() {
+        return mActiveStatus;
+    }
 
 	/**
      * Getter method for Share Percentage
