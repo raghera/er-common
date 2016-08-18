@@ -1,0 +1,66 @@
+<project name="ERRequest" default="compileall" basedir=".">
+
+<!-- see also http://jaxb.java.net/nonav/2.0.2/docs/xjcTask.html -->
+
+  <!-- Configure properties to access the Manager application -->
+  <property file="build.properties"/>
+
+  <path id="classpath">
+    <fileset dir="${JAXB_LIB}" includes="*.jar" />
+  </path>
+
+  <!-- Configure the custom Ant tasks for the Manager application -->
+  <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+    <classpath refid="classpath" />
+  </taskdef>
+
+  <!-- Executable Targets -->
+
+  <!--compile Java source files-->
+  <target name="compilerequest" description="Generate Java source files from request XSD">
+    <echo message="Compiling the request schema..." />
+    <xjc destdir="src/main/java" package="com.vodafone.global.er.decoupling.binding.request" header="false" extension="true">
+        <schema dir="${DECOUPLING_SCHEMA_PATH}">
+            <include name="request/request.xsd"/>
+<!--   JIRA ET-43 QC 9847 - moved to request.xsd         <include name="request/partner_request.xsd"/> -->
+        </schema>
+        <produces dir="src/main/java" includes="com/vodafone/global/er/decoupling/binding/request/*.java"/>
+        <depends dir="${DECOUPLING_SCHEMA_PATH}" includes="*.xsd" />
+        <depends dir="${DECOUPLING_SCHEMA_PATH}/common" includes="*.xsd" />
+	<binding dir="." includes="bindings.xml"/>
+    </xjc>
+  </target>
+
+  <target name="compileresponse" description="Generate Java source files from response XSD">
+    <echo message="Compiling the response schema..." />
+    <xjc destdir="src/main/java" package="com.vodafone.global.er.decoupling.binding.response" header="false" extension="true">
+        <schema dir="${DECOUPLING_SCHEMA_PATH}">
+            <include name="response/response.xsd"/>
+<!-- JIRA ET-43 QC 9847 - moved to response.xsd            <include name="response/partner_response.xsd"/> -->
+        </schema>
+        <produces dir="src/main/java" includes="com/vodafone/global/er/decoupling/binding/response/*.java"/>
+		<depends dir="${DECOUPLING_SCHEMA_PATH}" includes="*.xsd" />
+        <depends dir="${DECOUPLING_SCHEMA_PATH}/common" includes="*.xsd" />
+        <binding dir="." includes="bindings.xml"/>
+    </xjc>
+  </target>
+
+  
+  <target name="compilev2response" description="Generate Java source files from response v2 XSD">
+    <echo message="Compiling the v2 response schema..." />
+    <xjc destdir="src/main/java" package="com.vodafone.global.er.decoupling.binding.response.v2" header="false" extension="true">
+        <schema dir="${DECOUPLING_SCHEMA_PATH}">
+            <include name="response/v2-response.xsd"/>
+        </schema>
+        <produces dir="src/main/java" includes="com/vodafone/global/er/decoupling/binding/response/v2/*.java"/>
+		<depends dir="${DECOUPLING_SCHEMA_PATH}" includes="*.xsd" />
+        <depends dir="${DECOUPLING_SCHEMA_PATH}/common" includes="*.xsd" />
+        <binding dir="." includes="bindings.xml"/>
+    </xjc>
+  </target>
+  
+  
+  <target name="compileall" depends="compilerequest, compileresponse, compilev2response"/>
+
+</project>
+

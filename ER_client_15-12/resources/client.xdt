@@ -1,0 +1,239 @@
+package com.vodafone.global.er.generated;
+
+import java.io.*;
+import java.net.*;
+import java.util.HashMap;
+
+import java.util.Locale;
+
+import java.util.Properties;
+import java.util.Vector;
+
+import com.vizzavi.ecommerce.lw.*;
+import com.vizzavi.ecommerce.resources.PropertyServer;
+import com.vizzavi.ecommerce.business.common.EcommerceException;
+
+import com.vodafone.global.er.util.*;
+
+import com.vizzavi.ecommerce.business.catalog.*;
+
+
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.methods.*;
+
+
+import <XDtPackage:packageOf><XDtClass:fullClassName/></XDtPackage:packageOf>.*;
+
+
+public class <XDtClass:classOf><XDtClass:className/>Stub</XDtClass:classOf>  extends HttpClientConnector implements <XDtClass:classOf><XDtClass:className/></XDtClass:classOf> {
+
+   
+    private Locale locale;
+    private static LWLogger log = LWSupportFactoryImpl.getInstance().getLogger(<XDtClass:classOf><XDtClass:className/>Stub</XDtClass:classOf>.class);
+    
+    
+    public <XDtClass:classOf><XDtClass:className/>Stub</XDtClass:classOf>(Locale locale) {
+        this.locale = locale;
+    }
+    
+
+<XDtMethod:forAllMethods>
+    public <XDtMethod:methodType/> <XDtMethod:methodName/> (<XDtParameter:parameterList/>) <XDtMethod:exceptionList/> {
+        
+       
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+	boolean state = true;
+        PostMethod method = null ;
+
+        try {
+           
+            HashMap requestPayload = new HashMap();
+            
+            requestPayload.put("locale", locale);
+            String methodName = "<XDtMethod:methodName/><XDtSequence:nextValue/>";
+            requestPayload.put("methodName",methodName);
+            
+            
+            <XDtParameter:forAllMethodParams> 
+                                                         
+            <XDtType:ifIsNotPrimitive value="<XDtParameter:methodParamType/>" >
+            requestPayload.put("<XDtParameter:methodParamName/>",<XDtParameter:methodParamName/>);
+            </XDtType:ifIsNotPrimitive> 
+            
+            <XDtType:ifIsPrimitive value="<XDtParameter:methodParamType/>" >
+            requestPayload.put("<XDtParameter:methodParamName/>", <XDtTypeConv:PrimitiveToObject type="<XDtParameter:methodParamType/>" value="<XDtParameter:methodParamName/>"/> );  
+            </XDtType:ifIsPrimitive> 
+                
+            </XDtParameter:forAllMethodParams>
+            
+	    String httpConnectorMethod = PropertyServer.getProperty("er.http.connector.method", "urlconnection");
+
+	   if (httpConnectorMethod != null && httpConnectorMethod.equals("httpclient")){
+	
+		
+		try{
+			
+			if(httpConnectionManager == null ){
+				createConnectionManager();
+			}
+			
+			log.debug(" In HTTP ConnectionManager- Connection in use : " + httpConnectionManager.getConnectionsInUse());
+				
+			HttpClient httpclient = new HttpClient(httpConnectionManager);
+
+				        
+	        httpclient.setConnectionTimeout(Integer.parseInt(PropertyServer.getProperty("er.http.connection.timeout","30000")));
+	        
+			method = new PostMethod( getDelegateUrl() );
+			method.addRequestHeader("Content-Type", "application/octet-stream");
+		        // Serialize to a byte array
+			 byte[] buf = super.serializedPayload(requestPayload);
+				 
+			 method.setRequestBody(new ByteArrayInputStream(buf));
+			 
+			 httpclient.executeMethod(method);
+
+			
+			ois = new ObjectInputStream(new BufferedInputStream(method.getResponseBodyAsStream(), BUF_SIZE));
+			
+			
+			}
+			catch(IOException ie ){
+			     ie.printStackTrace();
+			}
+	        }
+		else {
+		     URLConnection conn = null;
+		     conn = getConnection();
+		    oos = getObjectOutputStream(conn);
+		    
+		    oos.writeObject(requestPayload);
+		    oos.flush();
+		    oos.close();
+					   
+		    ois = new ObjectInputStream(new BufferedInputStream(conn.getInputStream()));
+	     }
+            try {
+            	long beforeReadObject = System.currentTimeMillis() ;
+            	
+                Object result = ois.readObject();
+                
+              	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
+                        
+                <XDtMethod:ifDoesntReturnVoid>
+                    <XDtType:ifIsNotPrimitive value="<XDtMethod:methodType/>">
+                   if (result == null)
+                    {
+                      log.debug("Encountered NULL from the Input Stream. Returning...");
+                      return null;
+                    }
+                    </XDtType:ifIsNotPrimitive>
+                </XDtMethod:ifDoesntReturnVoid>
+                
+                
+                log.debug("Result object type: " + result.getClass().getName());
+                
+                if (result instanceof ExceptionAdapter) {
+   
+					<XDtException:parse value="<XDtMethod:exceptionList/>" exceptionType="ExceptionAdapter" exceptionVariable="result"/>
+                }
+                
+                else                 
+                {
+                <XDtMethod:ifDoesntReturnVoid>
+                    <XDtType:ifIsNotPrimitive value="<XDtMethod:methodType/>">
+                    return (<XDtMethod:methodType/>)result;
+                    </XDtType:ifIsNotPrimitive>
+                </XDtMethod:ifDoesntReturnVoid>
+                }
+            }
+            catch (OptionalDataException e1) {
+            
+                log.error("Primitive data in stream");              
+                <XDtMethod:ifDoesntReturnVoid>
+                <XDtType:ifIsPrimitive value="<XDtMethod:methodType/>">
+                return ois.<XDtPrimitives:readObjectOutputStreamPrimitive type="<XDtMethod:methodType/>"/>();
+                </XDtType:ifIsPrimitive>
+                </XDtMethod:ifDoesntReturnVoid>
+                
+            }
+            catch (ClassNotFoundException e4) {
+                log.error("Exception during deserialization", e4);
+            }
+        }
+        catch (IOException e2) {
+            
+            log.error("Caught IOException during serialization. Probably it is EcommerceException", e2);
+            
+            if (e2 instanceof com.vizzavi.ecommerce.business.common.EcommerceException) {
+   
+					<XDtException:parse value="<XDtMethod:exceptionList/>" exceptionType="EcommerceException" exceptionVariable="e2"/>
+                }
+	     else{
+	     	
+	        <XDtException:isThrowsException exceptionType="EcommerceException" value="<XDtMethod:exceptionList/>" exceptionType="com.vizzavi.ecommerce.business.common.EcommerceException" exceptionVariable="e2"/>
+	     }
+             
+        } 
+        finally {
+	   try {
+                if (oos != null) {
+                    oos.close();
+                }
+	        if (ois != null) {
+	            ois.close();
+	       }
+       		if (method != null ){
+       		log.debug("Releasing http connection" );  
+	     	  method.releaseConnection();
+	     	   
+	     	        
+		}
+	   }
+	   catch (Exception e3) {
+	       log.error("Error closing connection", e3);
+	   }
+	}
+        <XDtMethod:ifDoesntReturnVoid>
+        <XDtType:ifIsNotPrimitive value="<XDtMethod:methodType/>">
+        return null;
+        </XDtType:ifIsNotPrimitive>
+        <XDtType:ifIsPrimitive value="<XDtMethod:methodType/>">
+        return <XDtPrimitives:initPrimitive type="<XDtMethod:methodType/>"/>;
+        </XDtType:ifIsPrimitive>
+        </XDtMethod:ifDoesntReturnVoid>
+    }
+</XDtMethod:forAllMethods>
+<XDtSequence:reset/>
+
+
+    public URLConnection getConnection() throws IOException {
+        String url = getDelegateUrl();
+
+        URL server = null;     
+        server = new URL(url);
+        URLConnection conn = server.openConnection();
+        conn.setDoOutput(true);
+        conn.setUseCaches(false);
+        conn.setRequestProperty("Content-Type", "application/octet-stream");
+        return conn;
+    }
+
+	protected String getDelegateUrl() {
+		String serverHost = PropertyServer.getProperty("er.server.host");
+        String serverPort = PropertyServer.getProperty("er.server.port");
+        String url = "http://" + serverHost + ":" + serverPort + "/delegates/<XDtClass:className/>";
+        log.info("ER delegate connection URL: " + url);
+		return url;
+	}
+	
+    public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
+        return oos;
+    }
+    
+    
+
+
+}

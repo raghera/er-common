@@ -1,0 +1,59 @@
+<project name="MyProject" default="templatedoclet" basedir=".">
+
+    <!-- set global properties for this build -->
+    <!--<property name="src" value="src"/> -->
+  
+
+    <path id="project.class.path">
+       <fileset dir="../../../working/LIBS_er">
+            <include name="*.jar"/>
+        </fileset>
+       <fileset dir="../../../static/BUILD/lib/">
+            <include name="*.jar"/>
+        </fileset>
+
+    </path>
+
+
+    
+<!--    
+	<taskdef
+        name="templatedoclet"
+        classname="xdoclet.DocletTask"
+        classpathref="project.class.path"
+    />-->
+	<taskdef
+        name="templatedoclet"
+        classname="org.xdoclet.plugin.plugin.PluginPlugin"
+        classpathref="project.class.path"/>
+  
+  
+    <target name="templatedoclet">
+   
+
+         <templatedoclet
+                destdir="../src/com/vodafone/global/er/generated"
+                excludedtags="@version,@author"
+         >
+
+                <fileset dir="../../../working/ER_api/src">
+                    <include name="**/*Api.java"/>
+                </fileset>
+            
+                <template
+                    templateFile="client.xdt"
+                    destinationfile="{0}Stub.java"
+                    prefixWithPackageStructure="false"
+                />
+                
+                <!-- template
+                    templateFile="mock.xdt"
+                    destinationfile="{0}Mock.java"
+                    prefixWithPackageStructure="false"
+                /  -->
+           
+            </templatedoclet>
+    </target>
+  
+</project>
+

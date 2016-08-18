@@ -1,0 +1,33 @@
+
+Files ./business/selfcare/ParentTransaction.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/business/selfcare/ParentTransaction.java differ
+Files ./common/BizLogger.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/common/BizLogger.java differ
+Files ./common/ErCoreErrorId.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/common/ErCoreErrorId.java differ
+Files ./http/ErHandshakeCompletedListener.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/http/ErHandshakeCompletedListener.java differ
+Files ./http/ErHttpConnection.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/http/ErHttpConnection.java differ
+Files ./http/ErHttpException.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/http/ErHttpException.java differ
+Files ./http/HttpHeader.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/http/HttpHeader.java differ
+Files ./http/HttpHeaderAware.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/http/HttpHeaderAware.java differ
+Files ./partner/B2BPartner.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/partner/B2BPartner.java differ
+Files ./partner/PartnerApi.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/partner/PartnerApi.java differ
+Files ./provision/ProvisionType.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/provision/ProvisionType.java differ
+Files ./rating/RatedEvent.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/rating/RatedEvent.java differ
+Files ./rating/TaxRatedEvent.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/rating/TaxRatedEvent.java differ
+Files ./subscriptionmanagement/SubscriptionFilterImpl.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/subscriptionmanagement/SubscriptionFilterImpl.java differ
+Files ./subscriptionmanagement/TransactionFilterImpl.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/subscriptionmanagement/TransactionFilterImpl.java differ
+Files ./subsmngmnt/SubsManagementException.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/subsmngmnt/SubsManagementException.java differ
+
+Files ./util/CurrencyUtils.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/util/CurrencyUtils.java differ
+Files ./util/DateTimeUtil.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/util/DateTimeUtil.java differ
+Files ./util/ResourceTranslatorImpl.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/util/ResourceTranslatorImpl.java differ
+Files ./util/ThreadUtil.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/util/ThreadUtil.java differ
+Files ./subscriptionmanagement/FilterAttributesImpl.java and /USERS/raghera/working/development/erdev/us/frozen/er_core_batch_13-12-4/static/ER_api/src/com/vodafone/global/er/subscriptionmanagement/FilterAttributesImpl.java differ
+
+Only in ./subscriptionmanagement: DirtyMarker.java
+Only in ./subscriptionmanagement: ERAccount.java
+Only in ./subscriptionmanagement: ERPurchasedService.java
+Only in ./subscriptionmanagement: ERRatingAttributes.java
+Only in ./subscriptionmanagement: ERSubscription.java
+Only in ./subscriptionmanagement: ERTransaction.java
+Only in ./subscriptionmanagement: ERUserGroup.java
+Only in ./subscriptionmanagement: ModificationInfoImpl.java
+Only in ./subscriptionmanagement: ResourceBalTo.java

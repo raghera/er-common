@@ -1,0 +1,3 @@
+this is the module containing all decoupling client code
+TODO - should remove the dependency on ER_CORE_api since that is an internal API
+
