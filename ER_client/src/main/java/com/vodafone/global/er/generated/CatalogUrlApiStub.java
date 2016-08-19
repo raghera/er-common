@@ -88,7 +88,7 @@
 //                      log.debug("Encountered NULL from the Input Stream. Returning...");
 //                      return null;
 //                    }
-//                log.debug("Result object type: " + result.getClass().getName());
+//                log.debug("Result object type: " + result.getClass().getValue());
 //                if (result instanceof ExceptionAdapter) {
 //					log.error(" Exception during serialization ", ((ExceptionAdapter) result).originalException);
 //                }

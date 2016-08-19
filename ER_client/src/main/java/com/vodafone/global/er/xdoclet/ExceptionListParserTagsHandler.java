@@ -123,11 +123,11 @@ public class ExceptionListParserTagsHandler extends XDocletTagSupport
 
 	  	    if (exceptionType.equals("ExceptionAdapter"))
 
-	  	        resultString.append("String exceptionName = (((" + exceptionType + ") " + exceptionVar + ").originalException).getClass().getName();\n");
+	  	        resultString.append("String exceptionName = (((" + exceptionType + ") " + exceptionVar + ").originalException).getClass().getValue();\n");
 
 			else
 
-				resultString.append("String exceptionName = ((" + exceptionType + ") " + exceptionVar + ").getClass().getName();\n");
+				resultString.append("String exceptionName = ((" + exceptionType + ") " + exceptionVar + ").getClass().getValue();\n");
 
 	  	    
 
