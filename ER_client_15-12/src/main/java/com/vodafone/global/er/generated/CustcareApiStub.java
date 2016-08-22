@@ -4,6 +4,7 @@ import com.vizzavi.ecommerce.business.charging.*;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.selfcare.*;
 import com.vodafone.config.ConfigProvider;
+import com.vodafone.global.er.subsmngmnt.SubsManagementException;
 import com.vodafone.global.er.util.ExceptionAdapter;
 import com.vodafone.global.er.util.HttpClientConnector;
 import org.apache.commons.httpclient.HttpClient;
@@ -14,10 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
+import java.util.*;
 
 public class CustcareApiStub  extends HttpClientConnector implements CustcareApi {
 

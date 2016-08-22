@@ -1,23 +1,15 @@
 package com.vodafone.global.er.decoupling.util.xml;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-
-import javax.xml.bind.Element;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-
+import com.vodafone.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
-import com.vodafone.config.ConfigProvider;
+import javax.xml.bind.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 
 /**
  * only marshals and unmarshalls request objects; i.e. objects from the  <pre>com.vodafone.global.er.decoupling.binding.request</pre> package
@@ -32,7 +24,7 @@ public class JAXBRequestHelper {
 	static {
 		try
 		{
-			jc = JAXBContext.newInstance("com.vodafone.global.er.decoupling.binding.request" );
+			jc = JAXBContext.newInstance("com.vodafone.global.er.decoupling.binding.request", JAXBRequestHelper.class.getClassLoader() );
 		}
 		catch (JAXBException e) {
 			throw new RuntimeException(e);

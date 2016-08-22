@@ -28,6 +28,18 @@
         </dependency>
     </dependencies>
 
+    <modules>
+        <!--<module>ER_api</module>-->
+        <module>ER_api_15-12</module>
+        <module>ER_transactions_log</module>
+        <!--<module>DECOUPLING_common</module>-->
+        <module>DECOUPLING_common_15-12</module>
+        <!--<module>ER_client</module>-->
+        <module>ER_client_15-12</module>
+        <!--<module>DECOUPLING_client</module>-->
+        <module>DECOUPLING_client_15-12</module>
+    </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -38,14 +50,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <modules>
-        <module>ER_api</module>
-        <module>ER_transactions_log</module>
-        <module>DECOUPLING_common</module>
-        <module>ER_client</module>
-        <module>DECOUPLING_client</module>
-    </modules>
 
     <build>
         <finalName>er-common</finalName>

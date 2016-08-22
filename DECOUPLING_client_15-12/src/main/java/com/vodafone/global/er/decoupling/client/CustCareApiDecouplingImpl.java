@@ -813,9 +813,8 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		return rv;
 	}
 
-
 	@Override
-	public Bar moifyBar(String barName, String msisdn, String clientId, boolean newValue)
+	public Bar modifyBar(String barName, String msisdn, String clientId, boolean newValue)
 			throws EcommerceException {
 		Bar barItem = null;
 		final ModifyBarringStatusRequest request = createRequest(PayloadConstants.MODIFY_BARRING_STATUS_REQUEST);
