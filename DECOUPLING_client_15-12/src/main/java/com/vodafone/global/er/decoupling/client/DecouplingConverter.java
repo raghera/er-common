@@ -2813,6 +2813,7 @@ class DecouplingConverter   {
 			t.setTaxRate(txn.getTaxRate().doubleValue());
 		t.setTransactionIdLong(txn.getId());
 		t.setType(new TransactionType(txn.getType()));
+        t.setRefundTransactions(new ArrayList<RefundTxn>());
 		return t;
 	}
 	

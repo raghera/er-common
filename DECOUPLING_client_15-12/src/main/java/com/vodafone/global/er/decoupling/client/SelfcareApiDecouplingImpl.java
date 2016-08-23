@@ -47,10 +47,31 @@ public class SelfcareApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 		return this.getSubscriptions(clientId, msisdn, device, null);
 	}
 
+	private void updateTransactionAttrs(SubscriptionFilter filter, SubscriptionFilterType filterType) {
+        final String delimiter = ",";
+        StringBuffer sb = new StringBuffer();
+	    if(filter.includePaymentTxns()) {
+            sb.append("payment");
+            sb.append(delimiter);
+        }
+        if (filter.includeRefundTxns()) {
+            sb.append("refund");
+            sb.append(delimiter);
+        }
+        if (filter.includeModifyTxns()) {
+            sb.append("modify");
+            sb.append(delimiter);
+        }
+
+        if(!sb.toString().isEmpty()) {
+            sb.deleteCharAt(sb.lastIndexOf(delimiter));
+            filterType.setIncludeTxns(sb.toString());
+        }
+    }
+
 	@Override
 	public Subscription[] getSubscriptions(String clientId, String msisdn, int device, SubscriptionFilter filter) throws EcommerceException
 	{
-
 		checkNullParams(msisdn);
 		final SelfcareFullSubscriptions request_ = createRequest(PayloadConstants.SELFCARE_FULL_SUBSCRIPTIONS_REQUEST_PAYLOAD);
 
@@ -60,6 +81,8 @@ public class SelfcareApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 
 		if(filter != null)
 		{
+		    updateTransactionAttrs(filter, subFilType);
+
 			subFilType.setChargingMethod(filter.getChargingMethod());
 			subFilType.setClientId(filter.getClientId());
 
