@@ -1,11 +1,11 @@
 package com.vodafone.global.er.generated;
 
-import com.vodafone.global.er.subscriptionmanagement.ERSubscription;
 import com.vizzavi.ecommerce.business.charging.BaseAuthorization;
 import com.vizzavi.ecommerce.business.common.AccountNotFoundException;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.selfcare.*;
 import com.vodafone.config.ConfigProvider;
+import com.vodafone.global.er.endpoint.DelegateEndpoint;
 import com.vodafone.global.er.subsmngmnt.SubsManagementException;
 import com.vodafone.global.er.util.ExceptionAdapter;
 import com.vodafone.global.er.util.HttpClientConnector;
@@ -16,7 +16,12 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import static com.vodafone.global.er.endpoint.ApiNamesEnum.SELFCARE_API;
 
 public class SelfcareApiStub  extends HttpClientConnector implements SelfcareApi {
 	
@@ -25,7 +30,8 @@ public class SelfcareApiStub  extends HttpClientConnector implements SelfcareApi
     //CR1231
     //private static LWLogger log = LWSupportFactoryImpl.getInstance().getLogger(SelfcareApiStub.class);
     private static Logger log = Logger.getLogger(SelfcareApiStub.class);
-    
+    private DelegateEndpoint endpoint = new DelegateEndpoint();
+
     public SelfcareApiStub(Locale locale) {
         this.locale = locale;
     }
@@ -168,7 +174,6 @@ if (generatedException instanceof EcommerceException)
             requestPayload.put("locale", locale);
             String methodName = "getSubscriptions2";
             requestPayload.put("methodName",methodName);
-			ERSubscription subs;
             requestPayload.put("clientId",clientId);
             requestPayload.put("msisdn",msisdn);
             requestPayload.put("device", new Integer(device) );  
@@ -1206,7 +1211,6 @@ if (generatedException instanceof EcommerceException)
 	     }
             try {
             	long beforeReadObject = System.currentTimeMillis() ;
-                ERSubscription erSubscription;
                 Object result = ois.readObject();
               	log.debug("Reading the Object from stream took " + (System.currentTimeMillis()  - beforeReadObject) +" ms.");
                    if (result == null)
@@ -2158,38 +2162,7 @@ if (generatedException instanceof EcommerceException)
     }
 
 	protected String getDelegateUrl() {
-//		String serverHost = ConfigProvider.getProperty("er.server.host", "localhost");
-////        String serverPort = ConfigProvider.getProperty("er.server.port", "8094");
-//        int serverPort = ConfigProvider.getPropertyAsInteger("er.server.port", 8888);
-//        String url = "http://" + serverHost + ":" + serverPort + "/delegates/SelfcareApi";
-//        log.info("ER delegate connection URL: " + url);
-//		return url;
-
-		final String filename = "env.properties";
-		final String apiName = "SelfcareApi";
-		Properties props = new Properties();
-		String url = "";
-		try {
-			InputStream in = this.getClass().getClassLoader().getResourceAsStream(filename);
-
-			System.out.println("Input stream " + in);
-			props.load(in);
-
-		} catch (IOException ioEx) {
-			log.warn("Unable to load properties from file system - could not find filename: " + filename
-					+ " Will use system defaults."
-			);
-		}
-
-		final String serverHost = props.getProperty("ecom.proxy.host", "127.0.0.1");
-		int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
-		url = "http://" + serverHost + ":" + serverPort + "/delegates/" + apiName;
-
-		log.info("ER delegate connection URL: " + url);
-
-		return url;
-
-
+	    return endpoint.getEndpointUrl(SELFCARE_API);
 	}
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));

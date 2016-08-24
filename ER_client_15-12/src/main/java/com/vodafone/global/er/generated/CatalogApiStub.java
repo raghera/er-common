@@ -5,6 +5,7 @@ import com.vizzavi.ecommerce.business.charging.PurchaseAttributes;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.common.PromotionData;
 import com.vodafone.config.ConfigProvider;
+import com.vodafone.global.er.endpoint.DelegateEndpoint;
 import com.vodafone.global.er.util.ExceptionAdapter;
 import com.vodafone.global.er.util.HttpClientConnector;
 import org.apache.commons.httpclient.HttpClient;
@@ -16,6 +17,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 
+import static com.vodafone.global.er.endpoint.ApiNamesEnum.CATALOG_API;
+
 public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
 
     /**
@@ -23,6 +26,8 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
      */
     private static final long	serialVersionUID	= -283724848623294431L;
     private final Locale locale;
+    private DelegateEndpoint endpoint = new DelegateEndpoint();
+
     //CR1231
     //private static LWLogger log = LWSupportFactoryImpl.getInstance().getLogger(CatalogApiStub.class);
     private static Logger log = Logger.getLogger(CatalogApiStub.class);
@@ -2401,35 +2406,8 @@ public class CatalogApiStub  extends HttpClientConnector implements CatalogApi {
     }
 
     protected String getDelegateUrl() {
-        final String filename = "env.properties";
-        Properties props = new Properties();
-        String url = "";
-        try {
-            InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
-
-            System.out.println("Input stream " + in);
-            props.load(in);
-
-        } catch (IOException ioEx) {
-            log.warn("Unable to load properties from file system - could not find filename: " + filename
-                    + " Will use system defaults."
-            );
+        return endpoint.getEndpointUrl(CATALOG_API);
         }
-
-        final String serverHost = props.getProperty("ecom.proxy.host", "127.0.0.1");
-        int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
-        url = "http://" + serverHost + ":" + serverPort + "/delegates/CatalogApi";
-
-        log.info("ER delegate connection URL: " + url);
-
-        return url;
-    }
-
-    private Properties loadFileProperties(String filename) {
-//       InputStream in = this.getClass().getClassLoader().getResourceAsStream("env.properties");
-        throw new UnsupportedOperationException();
-    }
-
     public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
         return oos;

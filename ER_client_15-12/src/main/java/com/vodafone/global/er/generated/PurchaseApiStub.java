@@ -3,6 +3,7 @@ package com.vodafone.global.er.generated;
 import com.vizzavi.ecommerce.business.charging.*;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vodafone.config.ConfigProvider;
+import com.vodafone.global.er.endpoint.DelegateEndpoint;
 import com.vodafone.global.er.util.ExceptionAdapter;
 import com.vodafone.global.er.util.HttpClientConnector;
 import org.apache.commons.httpclient.HttpClient;
@@ -12,7 +13,12 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Vector;
+
+import static com.vodafone.global.er.endpoint.ApiNamesEnum.PURCHASE_API;
 
 public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi {
 
@@ -20,6 +26,7 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 	//CR1231
 	//private static LWLogger log = LWSupportFactoryImpl.getInstance().getLogger(PurchaseApiStub.class);
 	private static Logger log = Logger.getLogger(PurchaseApiStub.class);
+    private DelegateEndpoint endpoint = new DelegateEndpoint();
 
 	public PurchaseApiStub(Locale locale) {
 		this.locale = locale;
@@ -1102,47 +1109,13 @@ public class PurchaseApiStub  extends HttpClientConnector implements PurchaseApi
 	}
 
 	protected String getDelegateUrl() {
-//		String serverHost = ConfigProvider.getProperty("er.server.host", "0.0.0.0");
-////		int serverPort = ConfigProvider.getPropertyAsInteger("er.server.port", 8094);
-//		int serverPort = ConfigProvider.getPropertyAsInteger("er.server.port", 8888);
-//		String url = "http://" + serverHost + ":" + serverPort + "/delegates/PurchaseApi";
-//		log.info("ER delegate connection URL: " + url);
-//		return url;
-		final String filename = "env.properties";
-        final String apiName = "PurchaseApi";
-		Properties props = new Properties();
-		String url = "";
-		try {
-			InputStream in = this.getClass().getClassLoader().getResourceAsStream(filename);
-
-			System.out.println("Input stream " + in);
-			props.load(in);
-
-		} catch (IOException ioEx) {
-			log.warn("Unable to load properties from file system - could not find filename: " + filename
-					+ " Will use system defaults."
-			);
-		}
-
-		final String serverHost = props.getProperty("ecom.proxy.host", "127.0.0.1");
-		int serverPort = Integer.valueOf(props.getProperty("ecom.proxy.port", "8888"));
-		url = "http://" + serverHost + ":" + serverPort + "/delegates/" + apiName;
-
-		log.info("ER delegate connection URL: " + url);
-
-		return url;
-
+        return endpoint.getEndpointUrl(PURCHASE_API);
 	}
 	public ObjectOutputStream getObjectOutputStream(URLConnection conn) throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(conn.getOutputStream()));
 		return oos;
 	}
 
-	/**
-	 * a decoupling-only method, this will not be implemented in this ecom implementation
-	 * {@inheritDoc}
-	 * @see {@link PurchaseApi#getVersionInfo}
-	 */
 	public Map<String, String> getVersionInfo() {
 		return null;
 	}
