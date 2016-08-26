@@ -623,8 +623,13 @@ public class BaseAuthorization extends TaxRatedEvent implements java.io.Serializ
 	  * @return a {@link ResponseStatus}
 	  * @see #getPaymentStatusEnum
 	  */
+	 //Sometimes with a usageAuth or a PurchaseOptions response the auth
+	 //does not populate this.
 	 public  ResponseStatus getStatusEnum()	{
-		 return mPaymentStatusEnum.getResponseStatus();
+		if(mPaymentStatusEnum == null) {
+			setPaymentStatus(PaymentAuthStatus.ACCEPTED);
+		}
+	 	return mPaymentStatusEnum.getResponseStatus();
 	 }
 
 	 public void setPaymentStatus(ResponseStatus status)	{
