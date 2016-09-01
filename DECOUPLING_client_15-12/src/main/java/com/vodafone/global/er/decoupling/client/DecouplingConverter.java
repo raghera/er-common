@@ -1044,7 +1044,7 @@ class DecouplingConverter   {
 				//MQC7098
 				pricePointImpl_.setSubscriptionDuplicate(ppType.isAllowDuplicate());
 				//pricePointImpl_.setTariff(ppType.getTariff());//ET104
-				
+
 				ppType.isIsActive();
 				ppType.isIsDiscount();
 				ppType.isIsPreOrder();

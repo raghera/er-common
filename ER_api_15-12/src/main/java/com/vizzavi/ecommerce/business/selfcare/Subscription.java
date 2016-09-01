@@ -1187,7 +1187,9 @@ public class Subscription implements Serializable	{
 	        if (paymentTxns==null || paymentTxns.isEmpty())
 	                return txns;
 	        for (PaymentTxn txn: paymentTxns)       {
-	                txns.addAll(txn.getRefundTransactions());
+	        	if(txn.getRefundTransactions() != null) {
+					txns.addAll(txn.getRefundTransactions());
+				}
 	        }
 	        return txns;
 	}
