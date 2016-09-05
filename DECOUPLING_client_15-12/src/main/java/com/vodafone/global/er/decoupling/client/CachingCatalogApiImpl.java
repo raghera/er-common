@@ -1,22 +1,22 @@
 package com.vodafone.global.er.decoupling.client;
 
+import com.vizzavi.ecommerce.business.catalog.CatalogPackage;
+import com.vizzavi.ecommerce.business.catalog.CatalogService;
+import com.vizzavi.ecommerce.business.catalog.PricePoint;
+import com.vizzavi.ecommerce.common.EcommerceRuntimeException;
+import com.vodafone.config.ConfigProvider;
+import com.vodafone.global.er.util.ThreadUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vizzavi.ecommerce.business.catalog.CatalogPackage;
-import com.vizzavi.ecommerce.business.catalog.CatalogService;
-import com.vizzavi.ecommerce.common.EcommerceRuntimeException;
-import com.vodafone.config.ConfigProvider;
-import com.vodafone.global.er.util.ThreadUtil;
-
 /**
  * an implementation of the catalogApi which routes ER calls via decoupling, and caches some of the results.   
- * The default cache timeout is 5 minutes and can be adjusted by setting <code>decoupling.catalog.cache.time</code> (seconds).
+ * The default cache timeout is 30 minutes and can be adjusted by setting <code>decoupling.catalog.cache.time</code> (seconds).
  * To disable caching altogether, set <code>er.decoupling.cache.enabled</code> to false.  
  * The cache is also cleared when a getService or getPackage request returns no corresponding service from ER.
  * @author matt
@@ -24,22 +24,26 @@ import com.vodafone.global.er.util.ThreadUtil;
  */
 class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 
-	/**default cache thread sleep time - 5 minutes*/
-	public static int cacheRefreshTimeSeconds=ConfigProvider.getPropertyAsInteger("decoupling.catalog.cache.time", 300);
+	private static final long	serialVersionUID	= -460035351009169974L;
 	static final Logger logger = LoggerFactory.getLogger(CachingCatalogApiImpl.class);
 
-	/** a map of sparsely populated (name and id only) package arrays. key is country code eg .get("GB") returns an array of CatalogPackage objects*/
-	private static final Map<String,  CatalogPackage[]> simplePackageCache = Collections.synchronizedMap(new HashMap<String, CatalogPackage[]>());
+	/**default cache thread sleep time - 30 minutes*/
+	public static int cacheRefreshTimeSeconds=ConfigProvider.getPropertyAsInteger("decoupling.catalog.cache.time", 1800);
 
-	/** a map of sparsely populated (name and id only) service arrays. key is country code eg .get("GB") returns an array of CatalogService objects */
-	private static final Map<String,  CatalogService[]> simpleServiceCache = Collections.synchronizedMap(new HashMap<String, CatalogService[]>());
+	/** a map of sparsely populated (name and id only) package arrays. key is country code eg .get(Locale.UK) returns an array of CatalogPackage objects*/
+	private static final Map<Locale,  CatalogPackage[]> simplePackageCache = Collections.synchronizedMap(new HashMap<Locale, CatalogPackage[]>());
 
-	/**a map of maps of packages - eg .get("GB").get("myPackageId") returns a CatalogPackage object */
-	static final Map<String, Map<String, CatalogPackage>> fullPackageCache = Collections.synchronizedMap(new HashMap<String, Map<String, CatalogPackage>>());
+	/** a map of sparsely populated (name and id only) service arrays. key is country code eg .get(Locale.UK) returns an array of CatalogService objects */
+	private static final Map<Locale,  CatalogService[]> simpleServiceCache = Collections.synchronizedMap(new HashMap<Locale, CatalogService[]>());
 
-	/**a map of maps of services - eg .get("GB").get("myServiceId") returns a CatalogPackage object */
-	static final Map<String, Map<String, CatalogService>> fullServiceCache = Collections.synchronizedMap(new HashMap<String, Map<String, CatalogService>>());
+	/**a map of maps of packages - eg .get(Locale.UK).get("myPackageId") returns a CatalogPackage object */
+	private static final Map<Locale, Map<String, CatalogPackage>> fullPackageCache = Collections.synchronizedMap(new HashMap<Locale, Map<String, CatalogPackage>>());
 
+	/**a map of maps of services - eg .get(Locale.UK).get("myServiceId") returns a CatalogService object */
+	private static final Map<Locale, Map<String, CatalogService>> fullServiceCache = Collections.synchronizedMap(new HashMap<Locale, Map<String, CatalogService>>());
+
+	/**a map of maps of PricePoints - eg .get(Locale.UK).get("myPricePointId") returns a PricePoint object */
+	private static final Map<Locale, Map<String, PricePoint>> pricePointCache = Collections.synchronizedMap(new HashMap<Locale, Map<String, PricePoint>>());
 
 
 	public CachingCatalogApiImpl(Locale locale, String clientId) {
@@ -57,119 +61,118 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 		return null;
 	}
 
-//	private void initializeSimplePackageCache() {
-//		//get from cache for this locale
-//		CatalogPackage[] packs = simplePackageCache.get(locale.getCountry());
-//		if (packs==null){
-//			//if there's nothing from the cache, get from ER
-//			logger.info("no packages found in cache - fetching from ER");
-//			packs = super.getPackages();
-//			simplePackageCache.put(locale.getCountry(), packs);
-//		}
-//	}
 
 	@Override
 	public CatalogPackage[] getPackages() throws EcommerceRuntimeException	{
 		//get from cache for this locale
-		CatalogPackage[] packs = simplePackageCache.get(locale.getCountry());
+		CatalogPackage[] packs = simplePackageCache.get(locale);
 		if (packs!=null && packs.length>0)
 			return packs;
 		//if there's nothing from the cache, get from ER
 		logger.info("no packages found in cache - fetching from ER");
 		packs = super.getPackages();
-		simplePackageCache.put(locale.getCountry(), packs);
+		simplePackageCache.put(locale, packs);
 		return packs;
 	}
 
 	@Override
 	public CatalogService[] getServices() throws EcommerceRuntimeException	{
 		//get from cache for this locale
-		CatalogService[] services = simpleServiceCache.get(locale.getCountry());
+		CatalogService[] services = simpleServiceCache.get(locale);
 		if (services!=null && services.length>0)
 			return services;
 		//if there's nothing from the cache, get from ER
 		logger.info("no services found in cache - fetching from ER");
 		services = super.getServices();
-		simpleServiceCache.put(locale.getCountry(), services);
+		simpleServiceCache.put(locale, services);
 		return services;
 	}
 
 	@Override
 	public CatalogPackage getPackage(String packageId) throws EcommerceRuntimeException	{
 		//the ecom and decoupling impls return null if the package is not found
-		Map<String, CatalogPackage> packageMap = fullPackageCache.get(locale.getCountry());
-		CatalogPackage pack = null;
-		if (packageMap == null)	{
-			logger.debug("no full package cache for {} - creating a new cache", locale);
-			packageMap = new HashMap<>();
-			fullPackageCache.put(locale.getCountry(), packageMap);
+		Map<String, CatalogPackage> localPackageCache = fullPackageCache.get(locale);
+		if (localPackageCache!=null)	{
+			CatalogPackage fromCache = localPackageCache.get(packageId);
+			if (fromCache!=null)	{	//if it's in the cache, use that
+				logger.info("found package {} in locale cache", packageId);
+				return fromCache;
 		}		
-		//now we have a cache for that locale - let's see if the package we want is in there
-
-		pack = packageMap.get(packageId);
-		logger.debug("{} found in cache? {}", packageId, pack!=null);
-		if (pack==null && packageId!=null)	{
-			logger.info("fetching {} from ER", packageId);
-			//get the package requested
-			//and put it in the cache
-			pack = super.getPackage(packageId);
-			if (pack==null)		
-				//this means ER doesn't have the package - maybe the priceplan has changed
-				//so clear all the caches for this locale
-				clearCachesForLocale(locale.getCountry());
-			else
-				packageMap.put(packageId, pack);
+		}	else	{
+			//initialise cache
+			logger.debug("initialising package cache for {}", locale);
+			localPackageCache = new HashMap<>();
+			fullPackageCache.put(locale, localPackageCache);
 		}
-
-		return pack;
+		logger.info("Package {} not found in locale cache - fetching from ER", packageId);
+		CatalogPackage fromER =  super.getPackage(packageId);
+		localPackageCache.put(packageId, fromER);
+		return fromER;
 	}
 
 
 	@Override
 	public CatalogService getService(String serviceId) throws EcommerceRuntimeException	{
 		//the ecom and decoupling impls return null if the service is not found
-		Map<String, CatalogService> serviceMap = fullServiceCache.get(locale);
-		CatalogService service = null;
-		if (serviceMap == null)	{
-			logger.debug("no full service cache for {} - creating a new cache", locale);
-			serviceMap = new HashMap<>();
-			fullServiceCache.put(locale.getCountry(), serviceMap);
+		Map<String, CatalogService> localServiceCache = fullServiceCache.get(locale);
+		if (localServiceCache!=null)	{
+			CatalogService fromCache = localServiceCache.get(serviceId);
+			if (fromCache!=null)	{	//if it's in the cache, use that
+				logger.info("found service {} in locale cache", serviceId);
+				return fromCache;
 		}		
-		//now we have a cache for that locale - let's see if the service we want is in there
-
-		service = serviceMap.get(serviceId);
-		logger.debug("{} found in cache? {}", serviceId, service!=null);
-		if (service==null && serviceId!=null)	{
-			logger.info("fetching {} from ER", serviceId);
-			//get the service requested
-			//and put it in the cache
-			service = super.getService(serviceId);
-			if (service==null)		
-				//this means ER doesn't have the service - maybe the priceplan has changed
-				//so clear all the caches for this locale
-				clearCachesForLocale(locale.getCountry());
-			else
-				serviceMap.put(serviceId, service);
+		}	else	{
+			//initialise cache
+			logger.debug("initialising service cache for {}", locale);
+			localServiceCache = new HashMap<>();
+			fullServiceCache.put(locale, localServiceCache);
+		}
+		logger.info("service {} not found in locale cache - fetching from ER", serviceId);
+		CatalogService fromER =  super.getService(serviceId);
+		localServiceCache.put(serviceId, fromER);
+		return fromER;
 		}
 
-		return service;
+	@Override
+	public PricePoint getPricePoint(String id)	{
+		Map<String, PricePoint> localPricePointCache = pricePointCache.get(locale);
+		if (localPricePointCache!=null)	{
+			PricePoint fromCache = localPricePointCache.get(id);
+			if (fromCache!=null)	{
+				logger.info("found ppt {} in locale cache", id);
+				return fromCache;
+			}
+		}	else	{
+			//initialise cache
+			logger.debug("initialising ppt cache for {}", locale);
+			localPricePointCache = new HashMap<>();
+			pricePointCache.put(locale, localPricePointCache);
+		}
+		logger.info("ppt {} not found in locale cache - fetching from ER", id);
+		PricePoint fromER =  super.getPricePoint(id);
+		localPricePointCache.put(id, fromER);
+		return fromER;
 	}
 
 
-	private static void clearCachesForLocale(String locale) {
+
+	private static void clearCachesForLocale(Locale locale) {
 		logger.debug("clearing caches for {}", locale);
 		simplePackageCache.put(locale, null);
+		simpleServiceCache.put(locale, null);
 		if (fullPackageCache.get(locale)!=null)
 			fullPackageCache.get(locale).clear();
 		if (fullServiceCache.get(locale)!=null)
 			fullServiceCache.get(locale).clear();
+		if (pricePointCache.get(locale)!=null)
+			pricePointCache.get(locale).clear();
 
 	}
 
 	static void clearAllCaches()	{
 		for (Locale locale: allLocales){
 			logger.info("clearing catalog api cache for {}", locale);
-			clearCachesForLocale(locale.getCountry());
+			clearCachesForLocale(locale);
 		}
 	}
 
