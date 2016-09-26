@@ -151,5 +151,14 @@ public class TransactionStatus
 	public static String translate(int code) {
 		return getTransactionStatusName(code);
 	}
+
+    /**
+     * @param val
+     * @return val is completed or reserved
+     */
+    public static boolean isCompletedOrReserved(int val)
+    {
+        return (val==COMPLETED || val==RESERVED);
+    }
     
 }

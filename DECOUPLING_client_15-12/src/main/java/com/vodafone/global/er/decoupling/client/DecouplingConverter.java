@@ -1,47 +1,20 @@
 package com.vodafone.global.er.decoupling.client;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
-import java.util.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.Element;
-
-import com.vizzavi.ecommerce.business.catalog.CatalogPackage;
-import com.vizzavi.ecommerce.business.catalog.CatalogService;
-import com.vizzavi.ecommerce.business.catalog.ExpressData;
-import com.vizzavi.ecommerce.business.catalog.ExpressDisplayAttribute;
-import com.vizzavi.ecommerce.business.catalog.PaymentContent;
-import com.vizzavi.ecommerce.business.catalog.PricePoint;
-import com.vizzavi.ecommerce.business.catalog.PromotionsResult;
-import com.vizzavi.ecommerce.business.catalog.internal.BalanceImpact;
-import com.vizzavi.ecommerce.business.catalog.internal.BalanceImpacts;
-import com.vizzavi.ecommerce.business.catalog.internal.CatalogPackageImpl;
-import com.vizzavi.ecommerce.business.catalog.internal.CatalogServiceImpl;
-import com.vizzavi.ecommerce.business.catalog.internal.PricePointImpl;
-import com.vizzavi.ecommerce.business.catalog.internal.PricePointTier;
-import com.vizzavi.ecommerce.business.catalog.internal.PricePointsImpl;
-import com.vizzavi.ecommerce.business.catalog.internal.model.DateTimeTier;
-import com.vizzavi.ecommerce.business.catalog.internal.model.DayRange;
-import com.vizzavi.ecommerce.business.catalog.internal.model.PricingModel;
-import com.vizzavi.ecommerce.business.catalog.internal.model.RangeValue;
-import com.vizzavi.ecommerce.business.catalog.internal.model.Tier;
+import com.vizzavi.ecommerce.business.catalog.*;
+import com.vizzavi.ecommerce.business.catalog.internal.*;
+import com.vizzavi.ecommerce.business.catalog.internal.model.*;
 import com.vizzavi.ecommerce.business.charging.*;
-import com.vizzavi.ecommerce.business.common.ChargingMethod;
+import com.vizzavi.ecommerce.business.common.*;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
-import com.vizzavi.ecommerce.business.common.Constants;
-import com.vizzavi.ecommerce.business.common.Duration;
-import com.vizzavi.ecommerce.business.common.RatingAttributes;
-import com.vizzavi.ecommerce.business.common.ReasonCode;
-import com.vizzavi.ecommerce.business.common.ResponseStatus;
 import com.vizzavi.ecommerce.business.provision.UpdateServiceStatusAuthorization;
-import com.vizzavi.ecommerce.business.selfcare.*;
 import com.vizzavi.ecommerce.business.selfcare.BasicAccount;
+import com.vizzavi.ecommerce.business.selfcare.*;
+import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
+import com.vizzavi.ecommerce.business.selfcare.SpendLimits;
+import com.vizzavi.ecommerce.business.selfcare.Subscription;
+import com.vizzavi.ecommerce.business.selfcare.Transaction;
 import com.vizzavi.ecommerce.business.selfcare.TransactionType;
+import com.vizzavi.ecommerce.util.TaxUtil;
 import com.vodafone.global.er.business.selfcare.BalanceFilter;
 import com.vodafone.global.er.decoupling.binding.request.ExpressPackageRequest;
 import com.vodafone.global.er.decoupling.binding.request.ExpressPackageRequest.ExpressDisplayAttributes;
@@ -58,14 +31,20 @@ import com.vodafone.global.er.decoupling.binding.response.PackageType.PricePoint
 import com.vodafone.global.er.decoupling.binding.response.PricePointFullType.PricePointTiers;
 import com.vodafone.global.er.decoupling.binding.response.PricingModelFullType.Tiers;
 import com.vodafone.global.er.decoupling.binding.response.PurchaseOptions.Packages;
-import com.vodafone.global.er.decoupling.binding.response.v2.ModifyTransaction;
-import com.vodafone.global.er.decoupling.binding.response.v2.PaymentTransaction;
-import com.vodafone.global.er.decoupling.binding.response.v2.Pricepoint;
-import com.vodafone.global.er.decoupling.binding.response.v2.RefundTransaction;
-import com.vodafone.global.er.decoupling.binding.response.v2.UsageTransaction;
+import com.vodafone.global.er.decoupling.binding.response.v2.*;
 import com.vodafone.global.er.partner.B2BPartner;
 import com.vodafone.global.er.rating.RatedEvent;
+import com.vodafone.global.er.util.CurrencyUtils;
 import com.vodafone.global.er.util.DateTimeUtil;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.Element;
+import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 class DecouplingConverter   {
 
@@ -660,7 +639,9 @@ class DecouplingConverter   {
 				//JIRA ET-302 - VF-IT ER clients needs custom-attributes - End
 
 				cataloPackageImpl_.setDynamicDefault(packType.isIsDynamicDefault());
-
+				//ET-619: ECOM-DECOUPLING Adaptor gap changes
+                //TODO try and populate
+//				cataloPackageImpl_.setTaxCode(packType.getTaxCode());
 				return cataloPackageImpl_;
 			}
 			catch(final Exception e)
@@ -692,6 +673,9 @@ class DecouplingConverter   {
 			}
 		}
 		//JIRA ET-302 - VF-IT ER clients needs custom-attributes - End
+		//ET-619: ECOM_DECOUPLING Adaptor gap changes
+		//TODO check for null
+//		catalogService_.setRefundable(serviceType.isRefundable());
 		return catalogService_;
 	}
 
@@ -874,6 +858,9 @@ class DecouplingConverter   {
 				pricePointImpl_.setPricingText1(ppType.getPricingText2());
 				pricePointImpl_.setPromoCodes(new String[]{(ppType.getPromoCode() != null?ppType.getPromoCode():"")});
 				pricePointImpl_.setRateWithoutTax(ppType.getNetRate());       
+				//ET-619: ET-619: Ecom Adaptor for Decoupling - Ecom interface
+				pricePointImpl_.setTaxRate(TaxUtil.computeTaxRateIfRequired(0.0, ppType.getRate(), ppType.getNetRate()));
+				pricePointImpl_.setNetRate(ppType.getNetRate());
 				pricePointImpl_.setDuration(ppType.getDuration().getValue());
 				pricePointImpl_.setPromoCodes( new String [] {ppType.getPromoCode()} );
 				pricePointImpl_.setPricingText1(ppType.getPricingText1());
@@ -918,17 +905,21 @@ class DecouplingConverter   {
 				//CR2241end
 
 				final BalanceImpactRates balanceImpactsType_ =  ppType.getBalanceImpactRates();
-				if(balanceImpactsType_ != null)
-				{
-					if(logger.isDebugEnabled())
-						logger.debug("BalanceImpacts exist");
-
+				if(balanceImpactsType_ != null)				{
 					final List<BalanceImpactRate> balanceImpactsType =  balanceImpactsType_.getBalanceImpactRate();
 					final BalanceImpacts balanceImpacts_ = new BalanceImpacts();
 					for (final BalanceImpactRate balanceImpactType_ : balanceImpactsType)
 					{
-						final BalanceImpact balanceImpact_ = new BalanceImpact(new ChargingResource(new Integer(balanceImpactType_.getChargingResourceCode()), ""), balanceImpactType_.getRate());
+						//ET-619: Ecom decoupling Adaptor
+						//ET-657: Impacts resetting
+						BalanceImpact balanceImpact_ = null;
+						boolean isCurrency = Long.valueOf(balanceImpactType_.getChargingResourceCode())>0 && Long.valueOf(balanceImpactType_.getChargingResourceCode())<1000;
+						double biRate = isCurrency?ppType.getNetRate():balanceImpactType_.getRate();
+						balanceImpact_ = new BalanceImpact(new ChargingResource(new Integer(balanceImpactType_.getChargingResourceCode()), ""), biRate, 0.0, !isCurrency?"CREDIT":"");
+
+						if (balanceImpact_ != null) {
 						balanceImpacts_.addBalanceImpact(balanceImpact_);
+					}
 					}
 					pricePointImpl_.setBalanceImpacts(balanceImpacts_, new Date());
 				}
@@ -957,39 +948,6 @@ class DecouplingConverter   {
 				pricePointImpl_.setPricepointIdLink((ppType.getPricePointIdLink() != null?ppType.getPricePointIdLink():""));
 				pricePointImpl_.setTranslatedPricingText((ppType.getPurchaseLinkText() != null?ppType.getPurchaseLinkText():""));
 
-				//				pricePointImpl_.setRoamingGrossAmount(ppType.getRoamingGrossAmount());
-				//				pricePointImpl_.setRoamingNetAmount(ppType.getRoamingNetAmount());
-				//				final SuperCreditPricePointsType superCreditPricePointsType_ = ppType.getSuperCreditPricePoints();
-				//				if(superCreditPricePointsType_ != null)
-				//				{
-				//					final List<SuperCreditPricePointType> superCreditPricePointTypes_ = superCreditPricePointsType_.getSuperCreditPricePoint();
-				//					if(superCreditPricePointTypes_ != null)
-				//					{
-				//						final SuperCreditPricePoint[] superCreditPricePoints_ = new SuperCreditPricePoint[superCreditPricePointTypes_.size()];
-				//						if(superCreditPricePoints_ != null)
-				//						{
-				//							int i=0;
-				//							for (final SuperCreditPricePointType superCreditPricePointType_ : superCreditPricePointTypes_)
-				//							{
-				//								superCreditPricePoints_[i++] = convertSuperCreditPricePointType(superCreditPricePointType_);          
-				//							}
-				//							pricePointImpl_.setCreditPurchasePricePoints(superCreditPricePoints_);
-				//						}
-				//					}
-				//				}
-
-				//TODO remove this crap
-				//				final NetworkCode networkCode_ = new NetworkCode();
-				//				if(ppType.getRoamingType().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_DOMESTIC]))
-				//					networkCode_.setRoamingType(ErCoreConst.ROAMING_DOMESTIC);
-				//				else if(ppType.getRoamingType().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_DUMMY_NETWORK_CODE_ID]))
-				//					networkCode_.setRoamingType(ErCoreConst.ROAMING_DUMMY_NETWORK_CODE_ID);
-				//				else if(ppType.getRoamingType().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_OFF_FOOTPRINT]))
-				//					networkCode_.setRoamingType(ErCoreConst.ROAMING_OFF_FOOTPRINT);
-				//				else if(ppType.getRoamingType().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_ON_FOOTPRINT]))
-				//					networkCode_.setRoamingType(ErCoreConst.ROAMING_ON_FOOTPRINT);
-
-				//pricePointImpl_.setUserGroups(new String[]{"*"});
 
 				try	{
 					if(ppType.getUserGroups() != null && ppType.getUserGroups().getUserGroup() != null)	{
@@ -1027,6 +985,9 @@ class DecouplingConverter   {
 			try
 			{
 				final PricePointImpl pricePointImpl_ = new PricePointImpl();
+				//ET-619: Ecom Adaptor for Decoupling - Ecom interface
+				pricePointImpl_.setTaxRate(TaxUtil.computeTaxRateIfRequired(ppType.getTaxRate(), ppType.getRate(), ppType.getNetRate()));
+				pricePointImpl_.setNetRate(ppType.getNetRate());
 				pricePointImpl_.setResource(new Integer(ppType.getChargingResource().getChargingResourceType().getCode()));
 				pricePointImpl_.setId(ppType.getId());
 				pricePointImpl_.setDiscountPromoText((ppType.getDiscountPromoText() != null?ppType.getDiscountPromoText():""));
@@ -1034,7 +995,6 @@ class DecouplingConverter   {
 				pricePointImpl_.setPricingText1(ppType.getPricingText2());
 				pricePointImpl_.setPromoCodes(new String[]{(ppType.getPromoCode() != null?ppType.getPromoCode():"")});
 				pricePointImpl_.setRateWithoutTax(ppType.getNetRate());
-				pricePointImpl_.setTaxRate(ppType.getTaxRate());
 				pricePointImpl_.setDuration(ppType.getDuration().getValue());
 				pricePointImpl_.setPromoCodes( new String [] {ppType.getPromoCode()} );
 				pricePointImpl_.setPricingText1(ppType.getPricingText1());
@@ -1070,21 +1030,38 @@ class DecouplingConverter   {
 					}
 				}
 
-				final PricePointFullType.BalanceImpacts balanceImpacts_ = ppType.getBalanceImpacts();
-				if(balanceImpacts_ != null)
+//				final PricePointFullType.BalanceImpacts balanceImpacts_ = ppType.getBalanceImpacts();
+//				if(balanceImpacts_ != null)
+//				{
+//					final BalanceImpacts bis = new BalanceImpacts();
+//					final List<ChargingResourceFullType> balanceImpactsList_ = balanceImpacts_.getBalanceImpact();
+//					for (final ChargingResourceFullType chargingResourceFullType : balanceImpactsList_)
+//					{
+//						final ChargingResourceType c_ =  chargingResourceFullType.getChargingResourceType();
+//						BalanceImpact b_ = new BalanceImpact(new ChargingResource(new Integer(c_.getCode()),c_.getName()), pricePointImpl_.getNetRate());
+//						bis.addBalanceImpact(b_);
+//					}
+//					pricePointImpl_.setBalanceImpacts(bis,new Date());
+//				}
+
+				//ET-657
+				final BalanceImpactRates balanceImpactsType_ =  ppType.getBalanceImpactRates();
+				if(balanceImpactsType_ != null)				{
+					final List<BalanceImpactRate> balanceImpactsType =  balanceImpactsType_.getBalanceImpactRate();
+					final BalanceImpacts balanceImpacts_ = new BalanceImpacts();
+					for (final BalanceImpactRate balanceImpactType_ : balanceImpactsType)
 				{
-					final BalanceImpacts bis = new BalanceImpacts();
-					final List<ChargingResourceFullType> balanceImpactsList_ = balanceImpacts_.getBalanceImpact();
-					for (final ChargingResourceFullType chargingResourceFullType : balanceImpactsList_)
-					{
+						BalanceImpact balanceImpact_ = null;
+						boolean isCurrency = Long.valueOf(balanceImpactType_.getChargingResourceCode())>0 && Long.valueOf(balanceImpactType_.getChargingResourceCode())<1000;
+						double biRate = isCurrency?ppType.getNetRate():balanceImpactType_.getRate();
+						balanceImpact_ = new BalanceImpact(new ChargingResource(new Integer(balanceImpactType_.getChargingResourceCode()), ""), biRate, 0.0, !isCurrency?"CREDIT":"");
 
-						final ChargingResourceType c_ =  chargingResourceFullType.getChargingResourceType();
-						final BalanceImpact b_ = new BalanceImpact(new ChargingResource(new Integer(c_.getCode()),c_.getName()),pricePointImpl_.getNetRate());
-						bis.addBalanceImpact(b_);
+						if (balanceImpact_ != null) {
+							balanceImpacts_.addBalanceImpact(balanceImpact_);
 					}
-					pricePointImpl_.setBalanceImpacts(bis,new Date());  
 				}
-
+					pricePointImpl_.setBalanceImpacts(balanceImpacts_, new Date());
+				}
 
 				try
 				{
@@ -1260,91 +1237,7 @@ class DecouplingConverter   {
 		}
 	}
 
-	//	public SuperCreditPricePoint convertSuperCreditPricePointType(SuperCreditPricePointType ppType)
-	//	{
-	//		if(logger.isDebugEnabled())
-	//			logger.debug("SuperCreditPricePoint convertSuperCreditPricePointType(SuperCreditPricePointType ppType)");
-	//
-	//		try
-	//		{
-	//			final String promoCode    = ppType.getPromoCode();
-	//			final RatedEvent ratedEvent = new RatedEvent();
-	//			ratedEvent.setNetRate(ppType.getNetRate());
-	//			ratedEvent.setNetStandardRate(ppType.getStandardRate());
-	//			final SuperCreditPricePoint pp = new SuperCreditPricePoint();
-	//			final String[] pm = new String[1];
-	//			pm[0] = promoCode;
-	//			pp.setPricingText1(ppType.getPricingText1());
-	//			pp.setPricingText1(ppType.getPricingText2());
-	//			pp.setPromoCodes(pm);
-	//			pp.setPromoCodes( new String [] {ppType.getPromoCode()} );
-	//			pp.setPricingText1(ppType.getPricingText1());
-	//			pp.setPricingText2(ppType.getPricingText2());
-	//			pp.setTranslatedPricingText((ppType.getPurchaseLinkText() != null?ppType.getPurchaseLinkText():""));
-	////			pp.setRoamingGrossAmount(ppType.getRoamingGrossAmount());
-	////			pp.setRoamingNetAmount(ppType.getRoamingNetAmount());
-	//			return pp;
-	//		}
-	//		catch(final Exception e)
-	//		{
-	//			logger.error("Problem converting values in Pricepoint");
-	//			return null;
-	//		}
-	//	}
 
-	//	public DRMObject convertDRMObjectType(DrmObjectType drmObjectType)
-	//	{
-	//		if(logger.isDebugEnabled())
-	//			logger.debug("DRMObject convertDRMObjectType(DrmObjectType drmObjectType)");
-	//
-	//		try
-	//		{
-	//			final DrmTypeType drmTypeType_ = drmObjectType.getDrmType();
-	//			DRMType drmType_ = DRMType.NOT_DRM;
-	//			if(drmTypeType_.getName() != null && !drmTypeType_.getName().equalsIgnoreCase(""))
-	//			{
-	//				drmType_ = DRMType.convertStringToDRMType(drmTypeType_.getName());
-	//			}
-	//			//CR1455 - start
-	//			String description_ = null;
-	//			if(drmObjectType.getDescription() != null && drmObjectType.getDescription().length() > 0)
-	//				description_ = drmObjectType.getDescription();
-	//			return new DRMObject(drmObjectType.getId(), description_, drmType_);  
-	//			//CR1455 - end
-	//		}
-	//		catch(final Exception e)
-	//		{
-	//			logger.error("Problem converting values in DRMObject");
-	//			return null;
-	//		}
-	//	}
-	//
-	//	public DRMObject convertDRMObjectFullType(DrmObjectFullType drmObjectType)
-	//	{
-	//		if(logger.isDebugEnabled())
-	//			logger.debug("DRMObject convertDRMObjectFullType(DrmObjectFullType drmObjectType)");
-	//
-	//		try
-	//		{
-	//			final DrmTypeFullType drmTypeType_ = drmObjectType.getDrmType();
-	//			DRMType drmType_ = DRMType.NOT_DRM;
-	//			if(drmTypeType_.getName() != null && !drmTypeType_.getName().equalsIgnoreCase(""))
-	//			{
-	//				drmType_ = DRMType.convertStringToDRMType(drmTypeType_.getName());
-	//			}
-	//			//CR1455 - start
-	//			String description_ = null;
-	//			if(drmObjectType.getDescription() != null && drmObjectType.getDescription().length() > 0)
-	//				description_ = drmObjectType.getDescription();
-	//			return new DRMObject(drmObjectType.getId(), description_, drmType_);  
-	//			//CR1455 - end
-	//		}
-	//		catch(final Exception e)
-	//		{
-	//			logger.error("Problem converting values in DRMObject");
-	//			return null;
-	//		}
-	//	}
 
 	//	public SuperCreditPricePoint convertFullSuperCreditPricePointType(SuperCreditPricePointFullType ppType)
 	//	{
@@ -1730,7 +1623,25 @@ class DecouplingConverter   {
 
 	}
 
-	public UpdateServiceStatusAuthorization convertUpdateServiceStatusAuthorisationFullType(UpdateServiceStatusAuthorisationFullType ussaft) 
+	public ReasonCode convertFullReasonCode(ReasonCodeFullType rct)
+	{
+		logger.debug("converting reason code {} ({})", rct.getCode(), rct.getName());
+
+		ReasonCode rv = null;
+
+		if (StringUtils.isNotBlank(rct.getName())) {	//should always be true
+			rv = ReasonCode.getReasonCode(rct.getCode(), rct.getSubCode(), rct.getName());
+		}
+		else {
+			logger.warn("no name for reason code {}", rct.getCode());
+			rv = ReasonCode.getReasonCode(rct.getCode(), rct.getSubCode());
+		}
+
+		return rv;
+
+	}
+
+	public UpdateServiceStatusAuthorization convertUpdateServiceStatusAuthorisationFullType(UpdateServiceStatusAuthorisationFullType ussaft)
 	{
 		logger.debug(" ussaft {}", ussaft);
 
@@ -2479,7 +2390,7 @@ class DecouplingConverter   {
 	/**
 	 * Generate the Subscription from the v2.Subscription 
 	 * 
-	 * @param subscription
+	 * @param subs
 	 * @return
 	 */
 	private Subscription buildSubscription(com.vodafone.global.er.decoupling.binding.response.v2.Subscription subs) {
@@ -2560,11 +2471,11 @@ class DecouplingConverter   {
 //			s.setPenaltyCharge(subs.getPenaltyCharge().doubleValue());
 		//ET-280 |End
 
-		if(subs.getServices() != null && subs.getServices().getServiceId() != null) {
-            for(String id : subs.getServices().getServiceId()) {
-                s.setServiceProvTag(id,"N/A");
-            }
-        }
+//		if(subs.getServices() != null && subs.getServices().getServiceId() != null) {
+//            for(String id : subs.getServices().getServiceId()) {
+//                s.setServiceProvTag(id,"N/A");
+//            }
+//        }
 
 		// ET391 - Add external fields to ER_subscriptions and pass to ERIF & PNH starts here
 		s.setExtIdentifier1(subs.getExternalIdentifier1());
@@ -2589,7 +2500,7 @@ class DecouplingConverter   {
 	/**
 	 * Generate usageTransactions
 	 * 
-	 * @param transactionsList
+	 * @param usageTransactions
 	 * @return
 	 */
 	private List<PaymentTxn> buildUsageTransactions(List<UsageTransaction> usageTransactions){
@@ -2607,7 +2518,7 @@ class DecouplingConverter   {
 	/**
 	 * Generate paymentTransactions
 	 * 
-	 * @param transactionsList
+	 * @param paymentTrans
 	 * @return
 	 */
 	private List<PaymentTxn> buildPaymentTransactions(List<PaymentTransaction> paymentTrans){
@@ -2624,7 +2535,7 @@ class DecouplingConverter   {
 	/**
 	 * Generate modifyTransactions
 	 * 
-	 * @param transactionsList
+	 * @param modifyTrans
 	 * @return
 	 */
 	private List<ModifyTxn> buildModifyTransactions(List<ModifyTransaction> modifyTrans){
@@ -2702,7 +2613,7 @@ class DecouplingConverter   {
 	/**
 	 * Build resourceBalance list frpm v2.resourceBalance
 	 * 
-	 * @param resourceBalances
+	 * @param resourceBalancesList
 	 * @return
 	 */
 	private List<ResourceBalance> buildResourceBalances(List<com.vodafone.global.er.decoupling.binding.response.v2.ResourceBalance> resourceBalancesList){
@@ -2729,7 +2640,7 @@ class DecouplingConverter   {
 	/**
 	 * Build ChargingResource  frpm v2.ChargingResource
 	 * 
-	 * @param chargingResource
+	 * @param resource
 	 * @return
 	 */
 	private ChargingResource buildChargingResource(
@@ -2765,64 +2676,134 @@ class DecouplingConverter   {
 		t.setPartnerId(txn.getPartnerId());
 		t.setPaymentInfo(txn.getPaymentInfo());
 		t.setPurchaseDate(txn.getPurchaseDate().getTime());
-		if(txn.getAmount() != null)
-			t.setPurchaseRate(txn.getAmount().getValue().doubleValue());
-//		if (txn.getRefundPaymentTransactionIdLong()>0)
-//			t.setRefundPaymentTransactionId(txn.getRefundPaymentTransactionIdLong());
-//		t.setRefundReason(txn.getReason());
-		t.setServiceId(txn.getServiceId());
-		t.setStatus(txn.getStatus());
+		Amount amount = txn.getAmount();
+		if (amount != null)	{
+			t.setPurchaseRate(amount.getValue().doubleValue());
+			t.setAmount(amount.getValue());
+			//charging resource
+			ChargingResource cr;
+			if (amount.getResourceCode()!=null)
+				cr = new ChargingResource(amount.getResourceCode(), amount.getResource());
+			else	//use the currency lookup - could be monetary usage
+				cr = new ChargingResource(CurrencyUtils.getCurrency(amount.getResource()));
+			t.setChargingResource(cr);
+
+		}
+		//tax rate
 		if(txn.getTaxRate() != null)
 			t.setTaxRate(txn.getTaxRate().doubleValue());
+		else if (amount!=null && amount.getTaxRate()!=null)
+			t.setTaxRate(amount.getTaxRate().doubleValue());
+
+		t.setServiceId(txn.getServiceId());
+		t.setStatus(txn.getStatus());
+
 		t.setTransactionIdLong(txn.getId());
 		t.setType(new TransactionType(txn.getType()));
 		return t;
 	}
-	
+
 	/**
 	 * 
 	 * Build PaymentTxn Object from PaymentTransaction
 	 * 
-	 * @param txn
+	 * @param payment
 	 * @return
 	 */
 	public PaymentTxn buildPaymentTransaction(
-			PaymentTransaction txn) {
+			PaymentTransaction payment) {
 		PaymentTxn t = new PaymentTxn();
-		t.setAffiliateID(txn.getAffiliateId());
-		t.setAggregatorId(txn.getAggregatorId());
-		t.setAssetId(txn.getAssetId());
-		t.setContentName(txn.getContentName());
-		t.setDeviceId(txn.getDeviceId());
-		t.setPaymentErrorId(txn.getErrorId());
-		t.setPaymentErrorDescription(txn.getErrorDescription());
-		t.setExternalField1(txn.getExternalField1());
-		t.setExternalField2(txn.getExternalField2());
-		t.setExternalTransId(txn.getExternalTransId());
-		t.setPartnerId(txn.getPartnerId());
-		t.setPaymentInfo(txn.getPaymentInfo());
-		t.setPurchaseDate(txn.getPurchaseDate().getTime());
-		if(txn.getAmount() != null)
-			t.setPurchaseRate(txn.getAmount().getValue().doubleValue());
-//		if (txn.getRefundPaymentTransactionIdLong()>0)
-//			t.setRefundPaymentTransactionId(txn.getRefundPaymentTransactionIdLong());
-//		t.setRefundReason(txn.getReason());
-		t.setServiceId(txn.getServiceId());
-		t.setStatus(txn.getStatus());
-		if(txn.getTaxRate() != null)
-			t.setTaxRate(txn.getTaxRate().doubleValue());
-		t.setTransactionIdLong(txn.getId());
-		t.setType(new TransactionType(txn.getType()));
-        t.setRefundTransactions(new ArrayList<RefundTxn>());
+		t.setAffiliateID(payment.getAffiliateId());
+		t.setAggregatorId(payment.getAggregatorId());
+
+		Amount amount = payment.getAmount();
+		if (amount != null)	{
+			t.setPurchaseRate(amount.getValue().doubleValue());
+			t.setAmount(amount.getValue());
+
+			//charging resource
+			ChargingResource cr;
+			if (amount.getResourceCode()!=null)
+				cr = new ChargingResource(amount.getResourceCode(), amount.getResource());
+			else	//use the currency lookup - could be monetary usage
+				cr = new ChargingResource(CurrencyUtils.getCurrency(amount.getResource()));
+			t.setChargingResource(cr);
+			//check for standard rate
+			if (amount.getUndiscountedPrice()!=null)
+				t.setStandardRate(amount.getUndiscountedPrice().doubleValue());
+			else
+				t.setStandardRate(amount.getValue().doubleValue());
+		}
+		//tax rate
+		if (payment.getTaxRate() != null)
+			t.setTaxRate(payment.getTaxRate().doubleValue());
+		else if (amount!=null && amount.getTaxRate()!=null)
+			t.setTaxRate(amount.getTaxRate().doubleValue());
+
+		t.setAssetId(payment.getAssetId());
+
+		t.setContentName(payment.getContentName());
+		t.setDeviceId(payment.getDeviceId());
+		//response does not specify OK, only errors.
+		String errorId = calculateErrorId(payment.getStatus(), payment.getErrorId());
+		t.setPaymentErrorId(errorId);
+		t.setPaymentErrorDescription(payment.getErrorDescription());
+		t.setExternalField1(payment.getExternalField1());
+		t.setExternalField2(payment.getExternalField2());
+		t.setExternalTransId(payment.getExternalTransId());
+		t.setId(payment.getId());
+		t.setTransactionIdLong(payment.getId());
+		t.setMerchantName(payment.getMerchantName());
+		t.setPackageId(payment.getPackageId());
+
+		t.setPartnerId(payment.getPartnerId());
+		t.setPaymentInfo(payment.getPaymentInfo());
+		t.setPurchaseDate(payment.getPurchaseDate().getTime());
+		t.setServiceId(payment.getServiceId());
+		t.setStatus(payment.getStatus());
+		t.setPaymentStatus(payment.getStatus());
+
+		t.setType(new TransactionType(payment.getType()));
+
+		RatingAttributes r = new RatingAttributes();
+		t.setMatchingAttributes(r);
+		if (isNotBlank(payment.getPromoCode()))
+			t.getMatchingAttributes().setPromoCodes(new String[]{payment.getPromoCode()});
+		t.getMatchingAttributes().setChargingMethod((payment.getChargingMethod()));
+		//t.setBearer("*");
+		t.setSubscriptionId(payment.getSubscriptionId());
+		//TODO
+
+//		payment.getSubscriptionId();
+//		payment.getSubscriptionStatus();
+//		payment.getB2BPartner();
+//		if (payment.getRefunds()!=null)	{
+//			for (RefundTransaction r : payment.getRefunds().getRefund())
+//				txn.getRefundTransactions().add(convertTransaction(r, payment.getId()));
+//		}
+
 		return t;
 	}
 	
 	/**
+	 * work out the payment transaction error id based on the error id in the response and the txn status
+	 * @param status
+	 * @param errorId
+	 * @return
+	 */
+	private String calculateErrorId(int status, String errorId) {
+		if (isNotBlank(errorId))
+			return errorId;
+		else if (TransactionStatus.isCompletedOrReserved(status))
+			return "OK";
+		else return null;
+	}
+
+
+	/**
 	 * 
 	 * Build Transaction Object from ModifyTransaction
 	 * 
-	 * @param transaction
-	 * @return
 	 */
 	public Transaction buildModifyTransaction(
 			ModifyTransaction txn) {
@@ -2843,8 +2824,6 @@ class DecouplingConverter   {
 	 * 
 	 * Build RefundTxn Object from RefundTransaction
 	 * 
-	 * @param refundTxn
-	 * @return
 	 */
 	public RefundTxn buildRefundTransaction(RefundTransaction rTxn) {
 		RefundTxn refundTxn = new RefundTxn();
@@ -2870,7 +2849,7 @@ class DecouplingConverter   {
 			PricePoint pricePoint = subs.getPricePoint();
 			RatingAttributes ratingAttributes = new RatingAttributes();
 			//CatalogPackage and rating attributes added to support the customer care api call
-			CatalogPackage catalogPackage = getCatalogePackage(subs.getPackageId(),clientId);
+			CatalogPackage catalogPackage = getCatalogPackage(subs.getPackageId(),clientId);
 			catalogPackage.setPricePoint(pricePoint);
 			subs.setPackage(catalogPackage);
 
@@ -2894,9 +2873,14 @@ class DecouplingConverter   {
 	 * @param clientId
 	 * @return
 	 */
-	private CatalogPackage getCatalogePackage(String packageId,String clientId)	{
+	private CatalogPackage getCatalogPackage(String packageId,String clientId)	{
 		CachingCatalogApiImpl catalogApi = (CachingCatalogApiImpl) DecouplingApiFactory.getCatalogApi(locale, clientId);
-		CatalogPackage cpack = catalogApi.getSimplePackage(packageId);
+		//CatalogPackage cpack = catalogApi.getSimplePackage(packageId);
+		CatalogPackage cpack = catalogApi.getPackage(packageId);
+		if (cpack==null)	{
+			//basic null protection
+			cpack = new CatalogPackage(packageId, packageId);
+		}
 		return cpack;
 	}
 	//End for ET-280

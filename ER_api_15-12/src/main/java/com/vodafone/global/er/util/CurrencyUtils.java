@@ -1,6 +1,9 @@
 package com.vodafone.global.er.util;
 
+import java.util.Currency;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * NB this class needs to be encoded correctly, since it contains euro (���) and pound (��) symbols.  
@@ -8,7 +11,26 @@ import java.util.Locale;
  *
  */
 public class CurrencyUtils {
-	
+
+    private static Map<String, Currency> currencies=new TreeMap<>();
+
+    private static void initCurrencyMap()	{
+        for (Currency c: Currency.getAvailableCurrencies())	{
+            currencies.put(c.getCurrencyCode(), c);
+        }
+    }
+
+    /**
+     * return a {@link Currency} given the code - eg pass in "GBP" and get the pound currency instance
+     * @param code
+     * @return
+     */
+    public static Currency getCurrency(String code)	{
+        if (currencies.isEmpty())
+            initCurrencyMap();
+        return currencies.get(code);
+    }
+
     public static String toCurrency(double d) {
         long l = StrictMath.abs(StrictMath.round(d * 100.00));
         if (l != 0) {

@@ -48,7 +48,7 @@ public class PaymentTxn extends Transaction {
 		return amount;
 	}
 
-	protected void setAmount(BigDecimal amount)	{
+	public void setAmount(BigDecimal amount)	{
 		this.amount = amount;
 	}
 

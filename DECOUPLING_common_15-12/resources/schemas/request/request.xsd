@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema 
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-	xmlns:common="http://localhost:8080/decoupling/schemas/common"
-	 elementFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:common="http://localhost:8080/decoupling/schemas/common"
+		elementFormDefault="unqualified">
 	<xs:import namespace="http://localhost:8080/decoupling/schemas/common" schemaLocation="../common/pa_common.xsd"/>
 	<!--
 	An er-request encapsulates all request packets that are sent to
@@ -17,7 +16,7 @@
 				-->
 				<xs:element name="payload" type="common:payloadType" minOccurs="0"/>
 				<!-- CR1231 -->
-				<!-- <xs:element name="log-id" type="xs:string" minOccurs="0"/> -->				
+				<!-- <xs:element name="log-id" type="xs:string" minOccurs="0"/> -->
 			</xs:sequence>
 			<xs:attribute name="id" use="required">
 				<xs:simpleType>
@@ -82,7 +81,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
- 				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
 				<xs:element name="service-ids">
 					<xs:complexType>
 						<xs:sequence>
@@ -92,7 +91,7 @@
 				</xs:element>
 				<!-- CR1231 -->
 				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-                                <xs:element name="full-response-required" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="full-response-required" type="xs:boolean" minOccurs="0"/>
 				<xs:element name="express-display-attributes">
 					<xs:complexType>
 						<xs:sequence>
@@ -114,13 +113,13 @@
 	<!--
 		End Express Package Request Definition
 	-->
-	
-<!-- CR1789 FindPackagesByServiceIdOneStep START -->
+
+	<!-- CR1789 FindPackagesByServiceIdOneStep START -->
 	<xs:element name="onestep-package-request">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
- 				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
 				<xs:element name="service-ids">
 					<xs:complexType>
 						<xs:sequence>
@@ -131,9 +130,9 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-<!-- CR1789 FindPackagesByServiceIdOneStep END -->
-	
-	
+	<!-- CR1789 FindPackagesByServiceIdOneStep END -->
+
+
 	<!--
 		The Inactivate Subscription maps to the inactivateSubscription
 		method available on the CustcareApi. It's response can be found
@@ -144,19 +143,19 @@
 			<xs:sequence>
 				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
 				<!-- Convergence -->
- 				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
 				<xs:element name="subscription-id" type="xs:string"/>
 				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
 				<xs:element name="reason" type="xs:string" minOccurs="0"/>
 				<!-- CR1231 -->
 				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
 
-                <!-- MQC6976 -->
-                <xs:element name="apply-penalty-charge" type="xs:boolean" minOccurs="0"/>
-                <!-- MQC 7622-->
-                <xs:element name="override-disallow-flag" type="xs:boolean" minOccurs="0"/>
-                <!-- JIRA-ET486 - Add optional context field to inactivate-subscription decoupling call -->
-                <xs:element name="context" type="xs:string" minOccurs="0"/>
+				<!-- MQC6976 -->
+				<xs:element name="apply-penalty-charge" type="xs:boolean" minOccurs="0"/>
+				<!-- MQC 7622-->
+				<xs:element name="override-disallow-flag" type="xs:boolean" minOccurs="0"/>
+				<!-- JIRA-ET486 - Add optional context field to inactivate-subscription decoupling call -->
+				<xs:element name="context" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -181,10 +180,10 @@
 				<xs:element name="reason" type="xs:string" minOccurs="0"/>
 				<!-- CR1231 -->
 				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-                <!-- MQC6976 -->
-                <xs:element name="apply-penalty-charge" type="xs:boolean" minOccurs="0"/>
-                <!-- MQC9420 flag to immediately inactive a subscription if it is in grace or suspended status-->
-                <xs:element name="inactivate-grace-or-suspended-sub" type="xs:boolean" minOccurs="0"/>
+				<!-- MQC6976 -->
+				<xs:element name="apply-penalty-charge" type="xs:boolean" minOccurs="0"/>
+				<!-- MQC9420 flag to immediately inactive a subscription if it is in grace or suspended status-->
+				<xs:element name="inactivate-grace-or-suspended-sub" type="xs:boolean" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -205,14 +204,14 @@
 				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
 				<xs:element name="package-id" type="xs:string" minOccurs="0"/>
 				<!-- MD 19/4/12 - purchase attributes are common to some other calls so are moved to pa_common.xsd -->
-				<!-- external-sub-id is in purchaseAttributesType -->				
+				<!-- external-sub-id is in purchaseAttributesType -->
 				<xs:element name="purchase-attributes" type="common:purchaseAttributesType" minOccurs="0"/>
 				<!-- pre-rate, external-trans-id and partner-id are in ratingAttributesType -->
 				<xs:element name="rating-attributes" type="common:ratingAttributesType" minOccurs="0"/>
 				<!-- CR1231 -->
 				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-                <!-- JIRA-ET567 - Add optional context field to purchase decoupling call -->
-                <xs:element name="context" type="xs:string" minOccurs="0"/>
+				<!-- JIRA-ET567 - Add optional context field to purchase decoupling call -->
+				<xs:element name="context" type="xs:string" minOccurs="0"/>
 
 			</xs:sequence>
 		</xs:complexType>
@@ -225,18 +224,18 @@
 	-->
 	<xs:element name="selfcare-subscriptions-request">
 		<xs:complexType>
-		<xs:sequence>
-			<xs:element name="msisdn" type="xs:string"/>
-			<xs:element name="device" type="xs:int" minOccurs="0" />
-			<xs:element name="subscription-filter" type="common:subscription-filterType" minOccurs="0"/>
-			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-        	<!-- MQC 5985 -->
-			<xs:element name="enable-disallow-cancellations" type="xs:boolean" minOccurs="0"/>
-			<!-- CR2255 return b2b partner info if required -->
-			<xs:element name="b2b-partner-info-required" type="xs:boolean" minOccurs="0"/>
-		      </xs:sequence>
-		</xs:complexType> 
-			
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="device" type="xs:int" minOccurs="0" />
+				<xs:element name="subscription-filter" type="common:subscription-filterType" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+				<!-- MQC 5985 -->
+				<xs:element name="enable-disallow-cancellations" type="xs:boolean" minOccurs="0"/>
+				<!-- CR2255 return b2b partner info if required -->
+				<xs:element name="b2b-partner-info-required" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+
 	</xs:element>
 	<!--
 		End Selfcare Subscriptions Definition
@@ -276,7 +275,7 @@
 					MQC 6569 - Added to return extra attributes if they are required.
 					Choose whether to  have some additional transaction attributes returned or not.
 				-->
-				<xs:element name="transaction-attributes-required" type="xs:boolean" minOccurs="0"/>						
+				<xs:element name="transaction-attributes-required" type="xs:boolean" minOccurs="0"/>
 
 				<xs:element name="transactions-filter" minOccurs="0">
 					<xs:complexType>
@@ -318,13 +317,13 @@
       	 the service usage instance is only used for volume rating
     -->
 
-    <xs:complexType name="usageAuthRateRequestType">
+	<xs:complexType name="usageAuthRateRequestType">
 		<xs:annotation><xs:documentation>
-		This is the request type for both usage-auth-rate and usage-auth-rate-plus requests
+			This is the request type for both usage-auth-rate and usage-auth-rate-plus requests
 		</xs:documentation></xs:annotation>
-			<xs:sequence>
+		<xs:sequence>
 			<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
- 			<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+			<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
 			<xs:element name="service-id" type="xs:string"/>
 			<xs:element name="usage-attributes" type="common:usageAttributesType" minOccurs="0"/>
 			<xs:element name="rating-attributes" type="common:ratingAttributesType" minOccurs="0"/>
@@ -334,31 +333,31 @@
 			<xs:element name="pricepoint_custom_fields_required" type="xs:boolean" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-		
+
 
 	<xs:element name="usage-auth-rate" type="usageAuthRateRequestType"/>
 
 	<!-- like a usage-auth-rate but will have a more verbose response
 	 and it doesn't take an external subId -->
 	<xs:element name="usage-auth-rate-plus" type="usageAuthRateRequestType"/>
-	
-	
-	
+
+
+
 	<!-- based on usageAuthRequestType but with one more element at the end -->
 	<xs:complexType name="usageAuthRateChargeRequestType">
-		  <xs:annotation><xs:documentation>
-		This is the request type for both usage-auth-rate-charge and usage-auth-rate-charge-plus requests
+		<xs:annotation><xs:documentation>
+			This is the request type for both usage-auth-rate-charge and usage-auth-rate-charge-plus requests
 		</xs:documentation></xs:annotation>
-		  <xs:complexContent>
-		    <xs:extension base="usageAuthRateRequestType">
-		      <xs:sequence>
-		        	<xs:element name="external-sub-id" type="xs:string" minOccurs="0" />
-	                <!-- JIRA-ET573 - Add optional context field to force purchase decoupling call -->
-	                <xs:element name="context" type="xs:string" minOccurs="0"/>
-		      </xs:sequence>
-		    </xs:extension>
-		  </xs:complexContent>
-		</xs:complexType> 
+		<xs:complexContent>
+			<xs:extension base="usageAuthRateRequestType">
+				<xs:sequence>
+					<xs:element name="external-sub-id" type="xs:string" minOccurs="0" />
+					<!-- JIRA-ET573 - Add optional context field to force purchase decoupling call -->
+					<xs:element name="context" type="xs:string" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 
 	<xs:element name="usage-auth-rate-charge" type="usageAuthRateChargeRequestType" />
 
@@ -369,7 +368,7 @@
        	 
     -->
 	<xs:element name="usage-auth-rate-charge-plus" type="usageAuthRateChargeRequestType" />
-	
+
 
 	<!--
 		This payload is sent to fulfill a usage complete in the case of a 2 phase purchase.
@@ -383,10 +382,10 @@
 						<xs:sequence>
 							<xs:element name="delivery-status" type="xs:int"/>
 							<xs:element name="event-units" type="xs:double" minOccurs="0"/>
-                            <!-- CR-0869 start-->
-                            <xs:element name="partner-id" type="xs:string" minOccurs="0"/>
-                            <xs:element name="aggregator-id" type="xs:string" minOccurs="0"/>
-                            <!-- CR-0869 end-->
+							<!-- CR-0869 start-->
+							<xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+							<xs:element name="aggregator-id" type="xs:string" minOccurs="0"/>
+							<!-- CR-0869 end-->
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -661,9 +660,9 @@
 	<!--
 		End - get version request
 	-->
-	
+
 	<xs:element name="er-version-info-request" nillable="true"/>
-	
+
 	<!--
 		This payload is sent to fulfill a get tax request.
 	 -->
@@ -797,7 +796,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<xs:element name="notification-subscribe">
 		<xs:complexType>
 			<xs:sequence>
@@ -808,7 +807,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<xs:element name="inactivate-account">
 		<xs:complexType>
 			<xs:sequence>
@@ -818,11 +817,11 @@
 				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
 				<xs:element name="reason" type="xs:string" minOccurs="0"/>
 				<!-- CR1231 -->
-				<xs:element name="log-id" type="xs:string" minOccurs="0"/>				
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<xs:element name="modify-ban">
 		<xs:complexType>
 			<xs:sequence>
@@ -835,7 +834,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<xs:element name="modify-msisdn">
 		<xs:complexType>
 			<xs:sequence>
@@ -847,10 +846,10 @@
 				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
-	</xs:element>	
-	
+	</xs:element>
+
 	<!-- END REMEDY 6780  and 6778 -->
-	
+
 	<!-- 
 	CR-0978 Location Services 
 	Modify Tariff API
@@ -876,7 +875,7 @@
 		sourceTariff = B
 		destinationTariff = *
 	-->
-	
+
 	<xs:element name="modify-tariff-request">
 		<xs:complexType>
 			<xs:sequence>
@@ -887,12 +886,12 @@
 				<xs:element name="client-id" type="xs:string" minOccurs="0"/>
 				<xs:element name="reason" type="xs:string" minOccurs="0"/>
 				<!-- CR1231 -->
-				<xs:element name="log-id" type="xs:string" minOccurs="0"/>				
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
-	
+
+
 	<xs:element name="get-tariff-request">
 		<xs:complexType>
 			<xs:sequence>
@@ -902,7 +901,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<!-- END CR-0978 Location Services -->
 
 	<!-- 
@@ -924,46 +923,46 @@
 		End Selfcare Lite Transactions Definition
 	-->
 	<!-- CR1564-utc timezone for diff region in country -->
-	
+
 	<xs:element name="modify-timezone">
-	<xs:complexType>
-	        <xs:sequence>
+		<xs:complexType>
+			<xs:sequence>
 				<xs:element name="msisdn" type="xs:string"/>
 				<xs:element name="timezone" type="common:utcTimezoneOffset"/>
-			    <xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
 				<xs:element name="reason" type="xs:string" minOccurs="0"/>
 				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-           </xs:sequence>
-         </xs:complexType>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<!-- Billlingcycle -->
-   <xs:element name="modify-billingcycle">
-   		<xs:complexType>
-   			<xs:sequence>
-     			<xs:element name="msisdn" type="xs:string" />
-     			<xs:element name="billingcycle" type="common:billingcycle"/>
-     			<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
-	 			<xs:element name="reason" type="xs:string" minOccurs="0"/>
-	 			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-   			</xs:sequence>
-   		</xs:complexType>
-   </xs:element>	
+	<xs:element name="modify-billingcycle">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string" />
+				<xs:element name="billingcycle" type="common:billingcycle"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="reason" type="xs:string" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<!-- Usergroups -->
-	
+
 	<xs:annotation>
-			<xs:documentation>
-				CR-2229 Add action to Modify Usergroup
-	action can only have the value ADD or REMOVE or OVERWRITE
-	
-	For ADD - all usergroups specified are added to the user account, if they dont exist. An empty usergroup list will mean that the user account usergroups will be unchanged
-	
-	For REMOVE - all usergroups specified are removed from the user account if they exist. An empty usergroup list will mean that the user account usergroups will be unchanged
-	
-	For OVERWRITE -  all usergroups are replaced with the ones specified from the user account. An empty usergroup list will mean all usergroups will be deleted from the user account
-	
-	If no action is specified, then this will default to the OVERWRITE use case
-			</xs:documentation>
-		</xs:annotation>
+		<xs:documentation>
+			CR-2229 Add action to Modify Usergroup
+			action can only have the value ADD or REMOVE or OVERWRITE
+
+			For ADD - all usergroups specified are added to the user account, if they dont exist. An empty usergroup list will mean that the user account usergroups will be unchanged
+
+			For REMOVE - all usergroups specified are removed from the user account if they exist. An empty usergroup list will mean that the user account usergroups will be unchanged
+
+			For OVERWRITE -  all usergroups are replaced with the ones specified from the user account. An empty usergroup list will mean all usergroups will be deleted from the user account
+
+			If no action is specified, then this will default to the OVERWRITE use case
+		</xs:documentation>
+	</xs:annotation>
 	<xs:element name="modify-usergroup">
 		<xs:complexType>
 			<xs:sequence>
@@ -989,7 +988,7 @@
 				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
 				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
 				<xs:element name="device" type="xs:int" minOccurs="0" />
-			    <xs:element name="subscription-filter" type="common:subscription-filterType" minOccurs="0"/>
+				<xs:element name="subscription-filter" type="common:subscription-filterType" minOccurs="0"/>
 				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -1028,13 +1027,13 @@
 							<!-- MQC 6628 - filter by usage credit transactions, add transaction type and descending order -->
 							<xs:element name="transaction-type" type="xs:string" minOccurs="0"/>
 							<xs:element name="descending-order" type="xs:boolean" minOccurs="0"/>
-							 <!--CR2241 START-->
+							<!--CR2241 START-->
 							<xs:element name="external-field1" type="xs:string" minOccurs="0"/>
 							<xs:element name="external-field2" type="xs:string" minOccurs="0"/>
 							<xs:element name="external-trans-id" type="xs:string" minOccurs="0"/>
 							<xs:element name="transaction-id-long" type="xs:long" minOccurs="0"/>
 							<xs:element name="ascending-order" type="xs:boolean" minOccurs="0"/>
-							 <!--CR2241 END-->
+							<!--CR2241 END-->
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -1074,14 +1073,14 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	 	
-	 	<!-- CR1791  Modify Subscription End -->
+
+	<!-- CR1791  Modify Subscription End -->
 
 
-        <!-- 
-                CR 1619 - Return application configuration - no content required
-        -->
-        <xs:element name="get-application-config" nillable="true" />
+	<!--
+            CR 1619 - Return application configuration - no content required
+    -->
+	<xs:element name="get-application-config" nillable="true" />
 
 
 	<!-- 
@@ -1118,141 +1117,141 @@
 	<!-- 
 	CR1759 - UpdateServiceStatus
 	-->
-	
-	
+
+
 	<xs:complexType name="provisionUpdateRequestType">
-			<xs:annotation>
-			<xs:documentation>This is the request type for both provision-full-update-service-status-request 
-			and provision-simple-update-service-status-request
+		<xs:annotation>
+			<xs:documentation>This is the request type for both provision-full-update-service-status-request
+				and provision-simple-update-service-status-request
 			</xs:documentation>
-			</xs:annotation>
-			<xs:sequence>
-				<xs:element name="provisioning-id" type="xs:string"/>
-				<xs:element name="service-status" type="xs:int"/>
-				<xs:element name="provisioning-status" type="xs:int"/>
-				<xs:element name="provisioning-tag" type="xs:string" minOccurs="0"/>
-				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-			</xs:sequence>
-			
-		</xs:complexType>
-	
-		<xs:element name="provision-full-update-service-status-request" type="provisionUpdateRequestType"/>
-	
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="provisioning-id" type="xs:string"/>
+			<xs:element name="service-status" type="xs:int"/>
+			<xs:element name="provisioning-status" type="xs:int"/>
+			<xs:element name="provisioning-tag" type="xs:string" minOccurs="0"/>
+			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+
+	</xs:complexType>
+
+	<xs:element name="provision-full-update-service-status-request" type="provisionUpdateRequestType"/>
+
 	<xs:element name="provision-simple-update-service-status-request" type="provisionUpdateRequestType"/>
 	<!-- 
 	End 1759
 	-->
-	
+
 	<!-- CR1759 - start -->
 	<xs:element name="catalog-full-pricepoint-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="pricepoint-id" type="xs:string"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pricepoint-id" type="xs:string"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="catalog-full-package-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="id" type="xs:string"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="catalog-full-packages-request" nillable="true"/>
-  
-  <!-- MQC 7353-->
-  <xs:element name="catalog-little-packages-request"/>
-  <!-- MQC 7353-->
-  
-  <xs:element name="custcare-full-refund-monetary-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="msisdn" type="xs:string" minOccurs="0"/>
-        <xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
-        <xs:element name="transaction-id" type="xs:string"/>
-        <xs:element name="amount" type="xs:double" minOccurs="0"/>
-        <xs:element name="chargingResource" type="common:simple-charging-resourceType" minOccurs="0"/>
-        <xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="custcare-full-refund-enlargement-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="msisdn" type="xs:string" minOccurs="0"/>
-        <xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
-        <xs:element name="transaction-id" type="xs:string"/>
-        <xs:element name="extensiondays" type="xs:int"/>
-        <xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="custcare-full-refund-discount-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="msisdn" type="xs:string" minOccurs="0"/>
-        <xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
-        <xs:element name="transaction-id" type="xs:string"/>
-        <xs:element name="discount" type="xs:double"/>
-        <xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="catalog-full-package-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:string"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="custcare-full-refund-credit-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="msisdn" type="xs:string"/>
-        <xs:element name="refund-attributes" type="common:refundAttributesType"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="catalog-full-service-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="service-id" type="xs:string" minOccurs="0"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="selfcare-full-balances-request">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="msisdn" type="xs:string"/>
-        <xs:element name="client-id" type="xs:string"/>
-        <xs:element name="device-id" type="xs:int"/>
-        <xs:element name="balance-filter" type="common:Balance-filter" minOccurs="0"/>
-        <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
+	<xs:element name="catalog-full-packages-request" nillable="true"/>
+
+	<!-- MQC 7353-->
+	<xs:element name="catalog-little-packages-request"/>
+	<!-- MQC 7353-->
+
+	<xs:element name="custcare-full-refund-monetary-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="transaction-id" type="xs:string"/>
+				<xs:element name="amount" type="xs:double" minOccurs="0"/>
+				<xs:element name="chargingResource" type="common:simple-charging-resourceType" minOccurs="0"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="custcare-full-refund-enlargement-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="transaction-id" type="xs:string"/>
+				<xs:element name="extensiondays" type="xs:int"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="custcare-full-refund-discount-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="transaction-id" type="xs:string"/>
+				<xs:element name="discount" type="xs:double"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="custcare-full-refund-credit-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="refund-attributes" type="common:refundAttributesType"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="catalog-full-service-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="service-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="selfcare-full-balances-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="client-id" type="xs:string"/>
+				<xs:element name="device-id" type="xs:int"/>
+				<xs:element name="balance-filter" type="common:Balance-filter" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 	<!-- CR1759 - end -->
-  <!-- CR1923 - start -->
-  <xs:element name="get-partners-with-trading-limit"/>
-	
-  <xs:element name="get-partner-trading-limit">
-      <xs:complexType>
-        <xs:sequence>
-          <xs:element name="partner-id" type="xs:string"/>
-          <xs:element name="log-id" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:complexType>
-  </xs:element>
-  <!-- CR1923 - end -->
-  
+	<!-- CR1923 - start -->
+	<xs:element name="get-partners-with-trading-limit"/>
+
+	<xs:element name="get-partner-trading-limit">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="partner-id" type="xs:string"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- CR1923 - end -->
+
 	<!--
 		CR2068 This payload is sent to fulfill a get all services with partners request.
 		This will return all serviceids with a list of there associated partner information
@@ -1262,76 +1261,76 @@
 		CR2068 End
 	-->
 
-  <!-- 
-  	CR2082 This payload is sent to fulfill a validate msisdn request.
-  	This will make a validation call to the opco ERIF and return the result. 
-  -->
-  <xs:element name="validate-msisdn-request">
-      <xs:complexType>
-        <xs:sequence>
-          <xs:element name="msisdn" type="xs:string"/>
-          <xs:element name="service-id" type="xs:string" minOccurs="0"/>
-          <xs:element name="partner-id" type="xs:string" minOccurs="0"/>
-          <!-- CR2134 add vendor id -->
-          <xs:element name="vendor-id" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-      </xs:complexType>
-  </xs:element>
-     <!-- ET-521  Start -->
-     <xs:element name="validate-account-request">
-       <xs:complexType>
-         <xs:sequence>
-           <xs:element name="charging-id" type="common:chargingId"/>
-           <xs:element name="service-id" type="xs:string" minOccurs="0"/>
-           <xs:element name="partner-id" type="xs:string" minOccurs="0"/>
-           <!-- CR2134 add vendor id -->
-           <xs:element name="vendor-id" type="xs:string" minOccurs="0"/>
-         </xs:sequence>
-       </xs:complexType>
-   </xs:element>
-   <!-- ET-521  End -->
-  <!--
-	CR2082 End
-  -->
-  
-  <!-- CR2040 MPAY Goodwill credit request -->
-  <xs:element name="goodwill-credit-request">
-	<xs:complexType>
-		<xs:sequence>
- 			<xs:element name="msisdn" type="xs:string"/> <!-- customer's MSISDN -->
-			<xs:element name="package-id" type="xs:string"/> <!-- fully qualified package ID (price point) -->
-			<xs:element name="pre-rate" type="xs:double"/> <!-- pre-rated amount to be credited -->
-			<xs:element name="partner-id" type="xs:string"/> <!-- aggregator's ID -->
-			<xs:element name="merchant-id" type="xs:string"/> <!-- merchant's ID -->
-			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-			<xs:element name="invoice-text" type="xs:string" minOccurs="0" /> <!-- invoice text -->
-		</xs:sequence>
-	</xs:complexType>
-  </xs:element>
-  <!-- CR2040 MPAY Goodwill credit request End -->
-  
-  <!-- CR2040 MPAY Modify spend limits -->
-  <xs:element name="modify-spend-limits-request">
-	<xs:complexType>
-		<xs:sequence>
- 			<xs:element name="msisdn" type="xs:string"/> <!-- customer's MSISDN -->
-			<xs:element name="spend-limits"> <!-- NEW spend limits -->
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="per-tx-limit" type="xs:double" minOccurs="0"/> <!-- per transaction spend limit -->
-						<xs:element name="per-day-limit" type="xs:double" minOccurs="0"/> <!--   per day spend limit -->
-						<xs:element name="per-month-limit" type="xs:double" minOccurs="0"/> <!-- per month spend limit -->
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
-			<xs:element name="log-id" type="xs:string" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-</xs:element>
-<!-- CR2040 MPAY Modify spend limits End -->
- 
- 	<!-- CR2198 Add Child Service Provider Id to Account -->
+	<!--
+        CR2082 This payload is sent to fulfill a validate msisdn request.
+        This will make a validation call to the opco ERIF and return the result.
+    -->
+	<xs:element name="validate-msisdn-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="service-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+				<!-- CR2134 add vendor id -->
+				<xs:element name="vendor-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ET-521  Start -->
+	<xs:element name="validate-account-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="charging-id" type="common:chargingId"/>
+				<xs:element name="service-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="partner-id" type="xs:string" minOccurs="0"/>
+				<!-- CR2134 add vendor id -->
+				<xs:element name="vendor-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ET-521  End -->
+	<!--
+      CR2082 End
+    -->
+
+	<!-- CR2040 MPAY Goodwill credit request -->
+	<xs:element name="goodwill-credit-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/> <!-- customer's MSISDN -->
+				<xs:element name="package-id" type="xs:string"/> <!-- fully qualified package ID (price point) -->
+				<xs:element name="pre-rate" type="xs:double"/> <!-- pre-rated amount to be credited -->
+				<xs:element name="partner-id" type="xs:string"/> <!-- aggregator's ID -->
+				<xs:element name="merchant-id" type="xs:string"/> <!-- merchant's ID -->
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="invoice-text" type="xs:string" minOccurs="0" /> <!-- invoice text -->
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- CR2040 MPAY Goodwill credit request End -->
+
+	<!-- CR2040 MPAY Modify spend limits -->
+	<xs:element name="modify-spend-limits-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/> <!-- customer's MSISDN -->
+				<xs:element name="spend-limits"> <!-- NEW spend limits -->
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="per-tx-limit" type="xs:double" minOccurs="0"/> <!-- per transaction spend limit -->
+							<xs:element name="per-day-limit" type="xs:double" minOccurs="0"/> <!--   per day spend limit -->
+							<xs:element name="per-month-limit" type="xs:double" minOccurs="0"/> <!-- per month spend limit -->
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="log-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- CR2040 MPAY Modify spend limits End -->
+
+	<!-- CR2198 Add Child Service Provider Id to Account -->
 	<xs:element name="modify-child-sp-id">
 		<xs:complexType>
 			<xs:sequence>
@@ -1352,7 +1351,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<!--  JIRA ET-43 QC 9847 - moved from partner_request.xsd  -->
 	<xs:element name="get-details-for-external-transaction-request">
 		<xs:complexType>
@@ -1373,46 +1372,46 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<!--
 		JIRA ET86 get user groups list from the core DB
 	 -->
 	<xs:element name="get-user-groups">
-    <xs:complexType>
-      <xs:sequence>
-       <xs:element name="client-id" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-    <!--
-		JIRA ET148 Add SMS blacklist flag to opt out of courtesy SMS notifications
-    -->
-	<xs:element name="modify-account">
-	    <xs:complexType>
-	      <xs:sequence>
-	       <xs:element name="msisdn" type="xs:string"/>
-	       <xs:element name="suppress-courtesy-notifications" type="xs:boolean"/>
-	       <xs:element name="csr-id" type="xs:string" minOccurs="0"/>	       
-			<!--in future to extend modify account with more fields, add stuff here. When you add any more fields then make sure to make the suppress-courtesy-notifications as minoccurs = 0.
-			Also each new field added will need its own transaction type and individual entry in the ER_MODIFY table i.e. a future modify-account call could result in multiple entries in the ER_MODIFY table -->
-	      </xs:sequence>
-	    </xs:complexType>
-	  </xs:element>
-	  
-	  
-	  <!-- JIRA ET197 DE CTB migration -->
-	 <xs:element name="modify-barring-status-request">
 		<xs:complexType>
 			<xs:sequence>
-			    <xs:element name="client-id" type="xs:string" minOccurs="0"/>
-			    <xs:element name="msisdn" type="xs:string" />
-			    <xs:element name="bar-name" type="xs:string" />
+				<xs:element name="client-id" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!--
+        JIRA ET148 Add SMS blacklist flag to opt out of courtesy SMS notifications
+    -->
+	<xs:element name="modify-account">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="msisdn" type="xs:string"/>
+				<xs:element name="suppress-courtesy-notifications" type="xs:boolean"/>
+				<xs:element name="csr-id" type="xs:string" minOccurs="0"/>
+				<!--in future to extend modify account with more fields, add stuff here. When you add any more fields then make sure to make the suppress-courtesy-notifications as minoccurs = 0.
+                Also each new field added will need its own transaction type and individual entry in the ER_MODIFY table i.e. a future modify-account call could result in multiple entries in the ER_MODIFY table -->
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<!-- JIRA ET197 DE CTB migration -->
+	<xs:element name="modify-barring-status-request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="client-id" type="xs:string" minOccurs="0"/>
+				<xs:element name="msisdn" type="xs:string" />
+				<xs:element name="bar-name" type="xs:string" />
 				<xs:element name="value" type="xs:boolean" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<xs:element name="get-barring-status">
 		<xs:complexType>
 			<xs:sequence>
@@ -1421,15 +1420,15 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
-	  
+
+
 	<!-- JIRA ET196 Get account subscription promo-codes info -->
 	<xs:element name="get-account-subscription-promo-codes">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
-					<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
-				 <xs:element name="client-id" type="xs:string"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="client-id" type="xs:string"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1447,19 +1446,19 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<!-- JIRA ET-238 - new service offers call -->
 	<xs:element name="get-service-offers">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="msisdn" type="xs:string" minOccurs="0"/>
 				<!-- Convergence -->
- 				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
+				<xs:element name="charging-id" type="common:chargingId" minOccurs="0"/>
 				<xs:element name="service-ids" type="xs:string" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<!-- JIRA-ET451 - add get sibling accounts api -->
 	<xs:element name="get-sibling-accounts">
 		<xs:complexType>
@@ -1468,7 +1467,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<xs:element name="get-full-accounts">
 		<xs:complexType>
 			<xs:sequence>
@@ -1476,7 +1475,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 	<!-- MQC 13714 Re-triggering provisioning requests api -->
 	<xs:element name="reprovision-subscription">
 		<xs:complexType>
@@ -1489,5 +1488,5 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 </xs:schema>

@@ -1,18 +1,17 @@
 package com.vizzavi.ecommerce.business.common;
 
+import com.vizzavi.ecommerce.business.common.generated.currency.Currencies;
+import com.vizzavi.ecommerce.business.common.generated.currency.Currency;
+import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
+
+import javax.persistence.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
-import com.vizzavi.ecommerce.business.common.generated.currency.Currencies;
-import com.vizzavi.ecommerce.business.common.generated.currency.Currency;
-import com.vizzavi.ecommerce.business.selfcare.ResourceBalance;
 
 /**
 * Represents the resources that customers use to pay for goods.
@@ -124,6 +123,19 @@ public final class ChargingResource implements Serializable	{
     	this.name = currency.getName();
     	this.description = currency.getDescription();
     }
+
+    /**
+     * create a ChargingResource from a {@link java.util.Currency}
+     * @param currency
+     * @see {@link CurrencyUtils#getCurrency(String)}
+     * @see ChargingResource#ChargingResource(Currency)
+     */
+    public ChargingResource(java.util.Currency currency) {
+        this.code = currency.getNumericCode();	//eg 826
+        this.name = currency.getCurrencyCode();	//eg GBP
+        this.description = currency.getDisplayName();	//eg British Pound
+    }
+
 
     /**
     */
