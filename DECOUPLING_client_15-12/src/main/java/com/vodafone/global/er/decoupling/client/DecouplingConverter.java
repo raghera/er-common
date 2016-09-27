@@ -2538,20 +2538,20 @@ class DecouplingConverter   {
 	 * @param modifyTrans
 	 * @return
 	 */
-	private List<ModifyTxn> buildModifyTransactions(List<ModifyTransaction> modifyTrans){
-		List<ModifyTxn> transactionsList = new ArrayList<ModifyTxn>();
-		
+	private List<Transaction> buildModifyTransactions(List<ModifyTransaction> modifyTrans){
+		List<Transaction> transactionsList = new ArrayList<>();
+
 		for(ModifyTransaction modifyTran: modifyTrans){
-			transactionsList.add((ModifyTxn) buildModifyTransaction(modifyTran));
+			transactionsList.add(buildModifyTransaction(modifyTran));
 		}
-		
+
 		return transactionsList;
-			
+
 	}
 
 	private List<RefundTxn> buildRefundTransactions(List<RefundTransaction> refundTrans){
-		List<RefundTxn> refundTxnList = new ArrayList<RefundTxn>();
-		
+		List<RefundTxn> refundTxnList = new ArrayList<>();
+		//TODO Not setting this value anywhere!
 		for(RefundTransaction refundTran: refundTrans){
 			refundTxnList.add(buildRefundTransaction(refundTran));
 		}

@@ -172,7 +172,7 @@ public class Subscription implements Serializable	{
 
 	protected List<PaymentTxn> paymentTxns = new ArrayList<>();
 
-	protected List<ModifyTxn> modifyTxns = new ArrayList<>();
+	protected List<Transaction> modifyTxns = new ArrayList<>();
 
 	// CR - Enhanced Bundle Reporting (Feb 2010)
 	@Transient
@@ -1954,12 +1954,12 @@ public class Subscription implements Serializable	{
 	 * @since May 2015
 	 * @return
 	 */
-	@OneToMany(mappedBy = "subscription", targetEntity = ModifyTxn.class, fetch = FetchType.LAZY)
-	public List<ModifyTxn> getModifyTransactions() {
+	@OneToMany(mappedBy = "subscription", targetEntity = Transaction.class, fetch = FetchType.LAZY)
+	public List<Transaction> getModifyTransactions() {
 		return modifyTxns;
 	}
 
-	public void setModifyTransactions(List<ModifyTxn> txns) {
+	public void setModifyTransactions(List<Transaction> txns) {
 		modifyTxns = txns;
 	}
 
