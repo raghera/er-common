@@ -170,7 +170,7 @@ public class Subscription implements Serializable	{
 	 //    @OneToMany( mappedBy="subscription",targetEntity=Transaction.class,     fetch=FetchType.LAZY)
 	protected List<? extends Transaction> transactions = new ArrayList<>();
 
-	protected List<PaymentTxn> paymentTxns = new ArrayList<>();
+	protected List<Transaction> paymentTxns = new ArrayList<>();
 
 	protected List<Transaction> modifyTxns = new ArrayList<>();
 
@@ -733,10 +733,6 @@ public class Subscription implements Serializable	{
 		return discount * 100;
 	}
 
-	/**
-	 * @deprecated use getNextPaymentAmount in {@link #com.vizzavi.ecommerce.business.selfcare.SelfcareApi} instead
-	 * @return
-	 */
 	@Deprecated
 	@Transient
 	public double getNextPaymentAmount()	 {
@@ -1181,15 +1177,16 @@ public class Subscription implements Serializable	{
 	 * @since May 2015
 	 * @return
 	 */
+	//TODO Not used anywhere and now we have removed the XXXTxn objects for backward compatibility
 	@Transient
 	public List<RefundTxn> getRefundTransactions() {
 	        List<RefundTxn> txns = new ArrayList<>();
 	        if (paymentTxns==null || paymentTxns.isEmpty())
 	                return txns;
-	        for (PaymentTxn txn: paymentTxns)       {
-	        	if(txn.getRefundTransactions() != null) {
-					txns.addAll(txn.getRefundTransactions());
-				}
+	        for (Transaction txn: paymentTxns)       {
+//	        	if(txn.getRefundTransactions() != null) {
+//					txns.addAll(txn.getRefundTransactions());
+//				}
 	        }
 	        return txns;
 	}
@@ -1792,7 +1789,7 @@ public class Subscription implements Serializable	{
 	}
 
 	/**
-	 * @param lastAmount, the lastToLastPaymentTransactionAmount to set
+	 * @param lastToLastAmount, the lastToLastPaymentTransactionAmount to set
 	 */
 	public void setLastToLastPaymentTransactionAmount (double lastToLastAmount) {
 		this.lastToLastPaymentTransactionAmount = lastToLastAmount;
@@ -1809,7 +1806,7 @@ public class Subscription implements Serializable	{
 
 	/**
 	 * JIRAET65
-	 * @param pricepointChange, the pricepointChangeOnRenewal to set
+	 * @param pricePointChange, the pricepointChangeOnRenewal to set
 	 */
 	public void setPricePointChangeOnRenewal(boolean pricePointChange) {
 		this.pricePointChangeOnRenewal = pricePointChange;
@@ -1842,7 +1839,7 @@ public class Subscription implements Serializable	{
 
 	/**
 	 * JIRAET96 - Add the old msisdn, if this subscription is part of the change msisdn flow
-	 * @param s, the oldAccountId to set
+	 * @param oldAccMsisdn, the oldAccountId to set
 	 */
 	public void setOldMsisdn( String oldAccMsisdn ) {
 		oldMsisdn = oldAccMsisdn;
@@ -1934,17 +1931,17 @@ public class Subscription implements Serializable	{
 	 * @return
 	 */
 	@OneToMany(mappedBy = "subscription", targetEntity = PaymentTxn.class, fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-	public List<PaymentTxn> getPaymentTransactions() {
+	public List<Transaction> getPaymentTransactions() {
 		return paymentTxns;
 	}
 
-	public void setPaymentTransactions(List<PaymentTxn> txns) {
+	public void setPaymentTransactions(List<Transaction> txns) {
 		paymentTxns = txns;
 		//QC-13161: to set the last price values starts here
-		if(txns!=null && !txns.isEmpty()){
-			if(txns.get(0)!=null && txns.get(0).getAmount() != null)
-			lastPaymentTransactionAmount = txns.get(0).getAmount().doubleValue();
-		}
+//		if(txns!=null && !txns.isEmpty()){
+//			if(txns.get(0)!=null && txns.get(0).getAmount() != null)
+//			lastPaymentTransactionAmount = txns.get(0).getAmount().doubleValue();
+//		}
 		//QC-13161: to set the last price values ends here
 	}
 

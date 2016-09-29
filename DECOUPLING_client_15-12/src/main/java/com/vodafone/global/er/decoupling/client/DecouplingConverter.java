@@ -873,8 +873,8 @@ class DecouplingConverter   {
 				else
 					pricePointImpl_.setChargingMethod(ChargingMethod.NON_RECURRING);
 
-				//pricePointImpl_.setChannel(ppType.getChannel());	
-				//pricePointImpl_.setChannel(getChannelFromPricePointId(ppType.getId()));	
+//				pricePointImpl_.setChannel(ppType.getChannel());
+//				pricePointImpl_.setChannel(getChannelFromPricePointId(ppType.getId()));
 				ppType.getUserGroups();
 				//CR2241start
 				//looks like missed implementation - was:
@@ -2503,8 +2503,8 @@ class DecouplingConverter   {
 	 * @param usageTransactions
 	 * @return
 	 */
-	private List<PaymentTxn> buildUsageTransactions(List<UsageTransaction> usageTransactions){
-		List<PaymentTxn> transactionsList = new ArrayList<PaymentTxn>();
+	private List<Transaction> buildUsageTransactions(List<UsageTransaction> usageTransactions){
+		List<Transaction> transactionsList = new ArrayList<>();
 		
 		for(UsageTransaction usageTransaction: usageTransactions){
 			transactionsList.add(buildUsageTransaction(usageTransaction));
@@ -2521,8 +2521,8 @@ class DecouplingConverter   {
 	 * @param paymentTrans
 	 * @return
 	 */
-	private List<PaymentTxn> buildPaymentTransactions(List<PaymentTransaction> paymentTrans){
-		List<PaymentTxn> transactionsList = new ArrayList<PaymentTxn>();
+	private List<Transaction> buildPaymentTransactions(List<PaymentTransaction> paymentTrans){
+		List<Transaction> transactionsList = new ArrayList<>();
 		
 		for(PaymentTransaction paymentTran: paymentTrans){
 			transactionsList.add(buildPaymentTransaction(paymentTran));
@@ -2551,7 +2551,7 @@ class DecouplingConverter   {
 
 	private List<RefundTxn> buildRefundTransactions(List<RefundTransaction> refundTrans){
 		List<RefundTxn> refundTxnList = new ArrayList<>();
-		//TODO Not setting this value anywhere!
+		//TODO Not setting this value anywhere so pointless!
 		for(RefundTransaction refundTran: refundTrans){
 			refundTxnList.add(buildRefundTransaction(refundTran));
 		}
@@ -2660,9 +2660,10 @@ class DecouplingConverter   {
 	 * @param txn
 	 * @return
 	 */
-	public PaymentTxn buildUsageTransaction(
+	public Transaction buildUsageTransaction(
 			UsageTransaction txn) {
-		PaymentTxn t = new PaymentTxn();
+//		PaymentTxn t = new PaymentTxn();
+        Transaction t = new Transaction();
 		t.setAffiliateID(txn.getAffiliateId());
 		t.setAggregatorId(txn.getAggregatorId());
 		t.setAssetId(txn.getAssetId());
@@ -2679,7 +2680,7 @@ class DecouplingConverter   {
 		Amount amount = txn.getAmount();
 		if (amount != null)	{
 			t.setPurchaseRate(amount.getValue().doubleValue());
-			t.setAmount(amount.getValue());
+//			t.setAmount(amount.getValue());
 			//charging resource
 			ChargingResource cr;
 			if (amount.getResourceCode()!=null)
@@ -2710,16 +2711,20 @@ class DecouplingConverter   {
 	 * @param payment
 	 * @return
 	 */
-	public PaymentTxn buildPaymentTransaction(
+	public Transaction buildPaymentTransaction(
 			PaymentTransaction payment) {
-		PaymentTxn t = new PaymentTxn();
+
+        Transaction t = new Transaction();
+
+
+//		PaymentTxn t = new PaymentTxn();
 		t.setAffiliateID(payment.getAffiliateId());
 		t.setAggregatorId(payment.getAggregatorId());
 
 		Amount amount = payment.getAmount();
 		if (amount != null)	{
 			t.setPurchaseRate(amount.getValue().doubleValue());
-			t.setAmount(amount.getValue());
+//			t.setAmount(amount.getValue());
 
 			//charging resource
 			ChargingResource cr;
@@ -2751,7 +2756,7 @@ class DecouplingConverter   {
 		t.setExternalField1(payment.getExternalField1());
 		t.setExternalField2(payment.getExternalField2());
 		t.setExternalTransId(payment.getExternalTransId());
-		t.setId(payment.getId());
+//		t.setId(payment.getId());
 		t.setTransactionIdLong(payment.getId());
 		t.setMerchantName(payment.getMerchantName());
 		t.setPackageId(payment.getPackageId());
