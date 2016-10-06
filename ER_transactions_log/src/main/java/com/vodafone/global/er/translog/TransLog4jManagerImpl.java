@@ -1,21 +1,13 @@
 package com.vodafone.global.er.translog;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
+import com.vodafone.config.ConfigProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vodafone.config.ConfigProvider;
+import java.util.*;
+import java.util.Map.Entry;
 
 
 /**
@@ -252,6 +244,11 @@ public class TransLog4jManagerImpl implements TransLogManager{
 	public boolean isTransLoggingOn(){
     	return transLogModelThreadLocal.get().isTransLoggingOn();
     }
+
+    @Override
+	public void setIsTransLoggingOn(boolean value) {
+		transLogModelThreadLocal.get().setIsTransloggingOn(value);
+	}
     
     //CR 2085
     @Override

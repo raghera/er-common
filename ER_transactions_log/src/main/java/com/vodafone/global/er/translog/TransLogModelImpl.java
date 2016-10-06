@@ -1,17 +1,17 @@
 package com.vodafone.global.er.translog;
 
+import com.vodafone.global.er.translog.TransLogManager.Attr;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.vodafone.config.ConfigProvider;
-import com.vodafone.global.er.translog.TransLogManager.Attr;
 
 public class TransLogModelImpl implements TransLogModel {
 	private Map<Attr, String> attributesContext = new HashMap<Attr, String>();
 	private Map<Attr, String> attributesOnce = new HashMap<Attr, String>();
 	//private Map<Attr, String> attributesULFContext = new HashMap<, String>();
-	
-	
+
+    boolean isTransloggingOn = false;
+
 	private TransLogManager.Execution_Context executionUseCase;
 	private String executionContext;
 
@@ -103,11 +103,17 @@ public class TransLogModelImpl implements TransLogModel {
 	public boolean isTransLoggingOn() {
 		// CR1978 - Global-ER
 		// return trx_loggin_on;
-		return ConfigProvider.getPropertyAsBoolean(TransLogConstants.PROPERTY_TRANSLOG_LOGGING_ON, false);
+//		return ConfigProvider.getPropertyAsBoolean(TransLogConstants.PROPERTY_TRANSLOG_LOGGING_ON, false);
+        return isTransloggingOn;
+
 		// CR1978 - ends
 	}
 
-	
+	@Override
+	public void setIsTransloggingOn(boolean value) {
+        isTransloggingOn = value;
+    }
+
 	//CR TBD
 	@Override
 	public  void setExecutionContext(String context)

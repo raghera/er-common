@@ -42,8 +42,9 @@ public class ERULFConstants {
 		ER_IF("er-if"),
 		ER_PRICINGTOOL("er-pricingtool"),
 		ER_CUSTOMERCARE("er-customercare"),
-		ER_BPS("er-bps");
-		
+		ER_BPS("er-bps"),
+		EPA("ecom-proxy-app");
+
 	    private final String key;
 
 	    private ComponentName(String key) {

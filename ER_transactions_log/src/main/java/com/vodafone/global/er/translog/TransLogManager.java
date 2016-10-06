@@ -1,10 +1,7 @@
 package com.vodafone.global.er.translog;
 
 import java.util.List;
-
 import java.util.Map;
-
-import com.vodafone.application.logging.ULFKeys;
 
 public interface TransLogManager {
     
@@ -144,7 +141,9 @@ public interface TransLogManager {
 
     boolean isTransLoggingOn();
 
-    
+    void setIsTransLoggingOn(boolean value);
+
+
     void logClientData(TransLogData data);
 
     /**
