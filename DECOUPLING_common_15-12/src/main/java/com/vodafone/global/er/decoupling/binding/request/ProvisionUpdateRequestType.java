@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * This is the request type for both provision-full-update-service-status-request 
- * 			and provision-simple-update-service-status-request
- * 			
+ * This is the request type for both provision-full-update-service-status-request
+ *                 and provision-simple-update-service-status-request
+ *             
  * 
  * <p>Java class for provisionUpdateRequestType complex type.
  * 

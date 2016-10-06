@@ -43,7 +43,7 @@ public class ResourceBalance
     @XmlValue
     protected BigDecimal value;
     @XmlAttribute(name = "code", required = true)
-    @XmlJavaTypeAdapter(Adapter2 .class)
+    @XmlJavaTypeAdapter(Adapter3 .class)
     @XmlSchemaType(name = "integer")
     protected Integer code;
     @XmlAttribute(name = "name")

@@ -45,7 +45,7 @@ public class Amount
     @XmlValue
     protected BigDecimal value;
     @XmlAttribute(name = "resource-code")
-    @XmlJavaTypeAdapter(Adapter2 .class)
+    @XmlJavaTypeAdapter(Adapter3 .class)
     @XmlSchemaType(name = "integer")
     protected Integer resourceCode;
     @XmlAttribute(name = "resource", required = true)

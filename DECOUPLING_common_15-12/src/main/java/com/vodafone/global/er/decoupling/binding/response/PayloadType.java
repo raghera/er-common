@@ -44,8 +44,8 @@ public class PayloadType
      * 
      * @return
      *     possible object is
-     *     {@link Object }
      *     {@link org.w3c.dom.Element }
+     *     {@link Object }
      *     
      */
     public Object getAny() {
@@ -57,8 +57,8 @@ public class PayloadType
      * 
      * @param value
      *     allowed object is
-     *     {@link Object }
      *     {@link org.w3c.dom.Element }
+     *     {@link Object }
      *     
      */
     public void setAny(Object value) {

@@ -96,7 +96,7 @@ public class ErRequest
     @XmlAttribute(name = "domain-translator-context")
     protected String domainTranslatorContext;
     @XmlAttribute(name = "version")
-    @XmlJavaTypeAdapter(Adapter2 .class)
+    @XmlJavaTypeAdapter(Adapter3 .class)
     protected Integer version;
 
     /**
