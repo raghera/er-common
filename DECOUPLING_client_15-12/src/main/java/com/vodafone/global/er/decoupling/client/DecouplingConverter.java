@@ -547,7 +547,7 @@ class DecouplingConverter   {
 
 				if(pricePointType_ != null && pricePointType_.getId() != null && pricePointType_.getId().trim().length()>0)
 				{
-					singlePricePoint_ = this.convertFullPricePointType(pricePointType_, cataloPackageImpl_.getPricingModel());
+					singlePricePoint_ = this.convertFullPricePointType(pricePointType_, cataloPackageImpl_.getPricingModel(), packType.getTaxCode() );
 					cataloPackageImpl_.setPricePoint(singlePricePoint_);
 				}
 				//CR1455 - end
@@ -562,7 +562,7 @@ class DecouplingConverter   {
 						final HashMap<String, PricePoint> map_ = new HashMap<>();
 						for (final PricePointFullType pricePoint_ : points_)
 						{
-							map_.put(pricePoint_.getId(), this.convertFullPricePointType(pricePoint_, cataloPackageImpl_.getPricingModel()));
+							map_.put(pricePoint_.getId(), this.convertFullPricePointType(pricePoint_, cataloPackageImpl_.getPricingModel(), packType.getTaxCode()));
 						}
 						cataloPackageImpl_.setPricePoints(new PricePointsImpl(map_));
 					}
@@ -640,7 +640,6 @@ class DecouplingConverter   {
 
 				cataloPackageImpl_.setDynamicDefault(packType.isIsDynamicDefault());
 				//ET-619: ECOM-DECOUPLING Adaptor gap changes
-                //TODO try and populate
 				cataloPackageImpl_.setTaxCode(packType.getTaxCode());
 				return cataloPackageImpl_;
 			}
@@ -813,7 +812,7 @@ class DecouplingConverter   {
 		if(pricePointType_ != null)
 		{
 			if(pricePointType_.getId() != null)
-				catalogService_.setPricePoint(this.convertFullPricePointType(pricePointType_,null));
+				catalogService_.setPricePoint(this.convertFullPricePointType(pricePointType_,null, ""));
 		}
 
 		final ErServiceFullType.PricePoints pps_ = serviceType.getPricePoints();
@@ -821,7 +820,7 @@ class DecouplingConverter   {
 		final HashMap<String, PricePoint> map_ = new HashMap<>();
 		for (final PricePointFullType pricePoint_ : points_)
 		{
-			map_.put(pricePoint_.getId(), this.convertFullPricePointType(pricePoint_,null));
+			map_.put(pricePoint_.getId(), this.convertFullPricePointType(pricePoint_,null, ""));
 		}
 		catalogService_.setPricePoints(new PricePointsImpl(map_));
 		return catalogService_;
@@ -977,7 +976,7 @@ class DecouplingConverter   {
 		}
 	}
 
-	public PricePointImpl convertFullPricePointType(PricePointFullType ppType, String pricingModel)
+	public PricePointImpl convertFullPricePointType(PricePointFullType ppType, String pricingModel, String taxCode)
 	{
 		if(logger.isDebugEnabled())
 			logger.debug("PricePointImpl convertFullPricePointType(PricePointFullType ppType)");
@@ -989,6 +988,8 @@ class DecouplingConverter   {
 				final PricePointImpl pricePointImpl_ = new PricePointImpl();
 				//ET-619: Ecom Adaptor for Decoupling - Ecom interface
 				pricePointImpl_.setTaxRate(TaxUtil.computeTaxRateIfRequired(ppType.getTaxRate(), ppType.getRate(), ppType.getNetRate()));
+                pricePointImpl_.setTax(new Tax("", taxCode, pricePointImpl_.getTaxRate()));
+                pricePointImpl_.setTaxCode(taxCode);
 				pricePointImpl_.setNetRate(ppType.getNetRate());
 				pricePointImpl_.setResource(new Integer(ppType.getChargingResource().getChargingResourceType().getCode()));
 				pricePointImpl_.setId(ppType.getId());

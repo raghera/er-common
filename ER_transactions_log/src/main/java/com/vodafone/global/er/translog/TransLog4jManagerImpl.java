@@ -111,33 +111,30 @@ public class TransLog4jManagerImpl implements TransLogManager{
     @Override
 	public void logRequest(boolean generateNewId)
     {
-    	if (generateNewId)
-    		generateErTxLogId();
+//    	if (generateNewId)
+//    		generateErTxLogId();
         log();
 
     }
 
-    @Override
-    public String generateErTxLogId()	{
-    	String rv=null;
-		if ( transLogModelThreadLocal.get().isTransLoggingOn() )        {
-			//MQC9519 - added log message and rewritten for performance
-			rv = new Date().getTime() + "-" + UUID.randomUUID().toString() +(trxjunit_testing_on?"junit":"") ;
-			transLogModelThreadLocal.get().getAttributesConText().put( Attr.ER_TX_LOG_ID, rv );
-        	logger.warn("generating new ER_TX_LOG_ID: {}", rv);
-            transLogModelThreadLocal.get().setCounter(transLogModelThreadLocal.get().getCounter() + 1);
-        }
-        return rv;
-    }
+//    @Override
+//    public String generateErTxLogId()	{
+//    	String rv=null;
+//		if ( transLogModelThreadLocal.get().isTransLoggingOn() )        {
+//			//MQC9519 - added log message and rewritten for performance
+//			rv = new Date().getTime() + "-" + UUID.randomUUID().toString() +(trxjunit_testing_on?"junit":"") ;
+//			transLogModelThreadLocal.get().getAttributesConText().put( Attr.ER_TX_LOG_ID, rv );
+//        	logger.warn("generating new ER_TX_LOG_ID: {}", rv);
+//            transLogModelThreadLocal.get().setCounter(transLogModelThreadLocal.get().getCounter() + 1);
+//        }
+//        return rv;
+//    }
 	
 	
 	/**
 	 * write the actual log entry, then clear 'ONCE' attributes
 	 */
 	private void log() {
-		
-//		if (trx_loggin_on){
-		
 		if ( transLogModelThreadLocal.get().isTransLoggingOn() ) {
 			
 			TransLogModel translog = transLogModelThreadLocal.get();
@@ -149,15 +146,15 @@ public class TransLog4jManagerImpl implements TransLogManager{
 			}
 			transactionLogger.info(""); // don't really need a msg here
 			
-			// TODO MDC maybe conflic with existing MDC using in the project
-			for (Entry<Attr, String> entry : translog.getAttributesConText().entrySet()) {
-				MDC.remove(entry.getKey().toString());
-			}
-			for (Entry<Attr, String> entry : translog.getAttributesOnce().entrySet()) {
-				MDC.remove(entry.getKey().toString());
-			}
-			
-			translog.getAttributesOnce().clear();
+//			// TODO MDC maybe conflic with existing MDC using in the project
+//			for (Entry<Attr, String> entry : translog.getAttributesConText().entrySet()) {
+//				MDC.remove(entry.getKey().toString());
+//			}
+//			for (Entry<Attr, String> entry : translog.getAttributesOnce().entrySet()) {
+//				MDC.remove(entry.getKey().toString());
+//			}
+//
+//			translog.getAttributesOnce().clear();
 		}
 		
 	}
@@ -175,27 +172,41 @@ public class TransLog4jManagerImpl implements TransLogManager{
 	 */
 	@Override
 	public void logResponse( boolean eraseAfterOutput ) {
-		
-		
-		if ( transLogModelThreadLocal.get().isTransLoggingOn() ) { 
-			
+		if ( transLogModelThreadLocal.get().isTransLoggingOn() ) {
 			TransLogModel translog = transLogModelThreadLocal.get();
-			log();
+
+
+            log();
 	
 			translog.setCounter(translog.getCounter() - 1);
-			// erase me
-			if ( eraseAfterOutput ) {
-				for (Entry<Attr, String> entry : translog.getAttributesOnce().entrySet()) {
-					MDC.remove(entry.getKey().toString());
-				}
-				transLogModelThreadLocal.remove();
-				for (Entry<Attr, String> entry : translog.getAttributesConText().entrySet()) {
-					MDC.remove(entry.getKey().toString());
-				}
+
+            // erase me
+			if (eraseAfterOutput) {
+                emptyTranslogMDC();
+//				for (Entry<Attr, String> entry : translog.getAttributesOnce().entrySet()) {
+//					MDC.remove(entry.getKey().toString());
+//				}
+//				transLogModelThreadLocal.remove();
+//				for (Entry<Attr, String> entry : translog.getAttributesConText().entrySet()) {
+//					MDC.remove(entry.getKey().toString());
+//				}
 			}
 		}
 	}
-	 
+
+	@Override
+	public void emptyTranslogMDC() {
+        TransLogModel translog = transLogModelThreadLocal.get();
+        // erase me
+            for (Entry<Attr, String> entry : translog.getAttributesOnce().entrySet()) {
+                MDC.remove(entry.getKey().toString());
+            }
+            transLogModelThreadLocal.remove();
+            for (Entry<Attr, String> entry : translog.getAttributesConText().entrySet()) {
+                MDC.remove(entry.getKey().toString());
+            }
+    }
+
 	@Override
 	public List<String> getLogMessageForJunit() {
 		return logMessageForJunit;
@@ -322,29 +333,29 @@ public class TransLog4jManagerImpl implements TransLogManager{
         	addAttributeContext( Attr.ER_RESPONSE_ERROR_DESCRIPTION, data.getVfIntCallerId());
         }
         
-        if(data.isDataIsRequest())
-        {
+//        if(data.isDataIsRequest())
+//        {
         	if(data.getRequest() != null)
         		addAttributeOnce( Attr.REQUEST_PL, data.getRequest());
         	
         	if(data.getRequestName() != null)
         		addAttributeOnce( Attr.REQUEST_NAME, data.getRequestName());    
         	
-        	//logRequest( false );
-        	logRequest( data.isGenerateNewTransLogId() );
-        }
-        else
-        {
+//        	logRequest( false );
+//        	logRequest( data.isGenerateNewTransLogId() );
+//        }
+//        else
+//        {
         	if(data.getResponse() != null)
         		addAttributeOnce( Attr.RESPONSE_PL, data.getResponse());
         	
         	if(data.getResponseCode() != null)
         		addAttributeOnce( Attr.ER_RESPONSE_CODE, data.getResponseCode() );
         	
-            //logResponse( false );
-            logResponse( data.isGenerateNewTransLogId() );
+            logResponse( false );
+//            logResponse( data.isGenerateNewTransLogId() );
         	
-        }
+//        }
 	}
 
 	@Override
