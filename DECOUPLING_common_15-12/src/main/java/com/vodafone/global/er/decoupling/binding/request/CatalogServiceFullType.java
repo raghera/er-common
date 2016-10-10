@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element name="refundable" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -54,7 +55,8 @@ import javax.xml.bind.annotation.XmlType;
     "status",
     "description",
     "provisioningTag",
-    "customFields"
+    "customFields",
+    "refundable"
 })
 public class CatalogServiceFullType
     implements Serializable, Element
@@ -73,6 +75,7 @@ public class CatalogServiceFullType
     protected String provisioningTag;
     @XmlElement(name = "custom-fields")
     protected CatalogServiceFullType.CustomFields customFields;
+    protected Boolean refundable;
 
     /**
      * Gets the value of the id property.
@@ -244,6 +247,34 @@ public class CatalogServiceFullType
      */
     public void setCustomFields(CatalogServiceFullType.CustomFields value) {
         this.customFields = value;
+    }
+
+    /**
+     * Gets the value of the refundable property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isRefundable() {
+        if (refundable == null) {
+            return false;
+        } else {
+            return refundable;
+        }
+    }
+
+    /**
+     * Sets the value of the refundable property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setRefundable(Boolean value) {
+        this.refundable = value;
     }
 
 

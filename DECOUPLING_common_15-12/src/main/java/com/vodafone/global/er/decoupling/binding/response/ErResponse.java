@@ -64,10 +64,10 @@ public class ErResponse
     @XmlAttribute(name = "id", required = true)
     protected int id;
     @XmlAttribute(name = "sub-id")
-    @XmlJavaTypeAdapter(Adapter2 .class)
+    @XmlJavaTypeAdapter(Adapter3 .class)
     protected Integer subId;
     @XmlAttribute(name = "version")
-    @XmlJavaTypeAdapter(Adapter2 .class)
+    @XmlJavaTypeAdapter(Adapter3 .class)
     protected Integer version;
 
     /**

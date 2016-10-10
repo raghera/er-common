@@ -1,10 +1,7 @@
 package com.vodafone.global.er.translog;
 
 import java.util.List;
-
 import java.util.Map;
-
-import com.vodafone.application.logging.ULFKeys;
 
 public interface TransLogManager {
     
@@ -125,6 +122,8 @@ public interface TransLogManager {
 	 */
 	void logResponse(boolean emptyAfterOutput);
 
+    void emptyTranslogMDC();
+
 	List<String> getLogMessageForJunit();
 	
 	/**
@@ -144,14 +143,16 @@ public interface TransLogManager {
 
     boolean isTransLoggingOn();
 
-    
+    void setIsTransLoggingOn(boolean value);
+
+
     void logClientData(TransLogData data);
 
     /**
      * generate a new ER_TX_LOG_ID value and add it to the context
      * @return the logId generated, or null if trans logging is disabled
      */
-	String generateErTxLogId();
+//	String generateErTxLogId();
 
 	/**
 	 * does the context have a ER_TX_LOG_ID value set?

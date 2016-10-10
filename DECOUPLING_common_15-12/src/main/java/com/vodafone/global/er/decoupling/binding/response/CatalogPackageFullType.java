@@ -118,6 +118,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;element name="status" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="tax-code" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -164,7 +165,8 @@ import javax.xml.bind.annotation.XmlType;
     "kpiPackageProductCategory",
     "notificationCategory",
     "customFields",
-    "status"
+    "status",
+    "taxCode"
 })
 public class CatalogPackageFullType
     implements Serializable, Element
@@ -243,6 +245,8 @@ public class CatalogPackageFullType
     @XmlElement(name = "custom-fields")
     protected CatalogPackageFullType.CustomFields customFields;
     protected String status;
+    @XmlElement(name = "tax-code")
+    protected String taxCode;
 
     /**
      * Gets the value of the id property.
@@ -1086,6 +1090,30 @@ public class CatalogPackageFullType
      */
     public void setStatus(String value) {
         this.status = value;
+    }
+
+    /**
+     * Gets the value of the taxCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTaxCode() {
+        return taxCode;
+    }
+
+    /**
+     * Sets the value of the taxCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTaxCode(String value) {
+        this.taxCode = value;
     }
 
 

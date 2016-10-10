@@ -1,8 +1,8 @@
 package com.vodafone.global.er.translog;
 
-import java.util.Map;
-
 import com.vodafone.global.er.translog.TransLogManager.Attr;
+
+import java.util.Map;
 
 public interface TransLogModel {
 
@@ -30,6 +30,8 @@ public interface TransLogModel {
 	 */
 	public abstract boolean isTransLoggingOn();
 	//MQC 6791 Start
+
+	public void setIsTransloggingOn(boolean value);
 
 	public abstract void setExecutionContext(String context);
 

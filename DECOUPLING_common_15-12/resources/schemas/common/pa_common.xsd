@@ -1094,6 +1094,8 @@
 			</xs:element>
 			<!-- MQC 7733 - add package status -->
 			<xs:element name="status" type="xs:string" minOccurs="0" />
+			<!-- ET-619: ECOM - DECOUPLING Adaptor changes -->
+			<xs:element name="tax-code" type="xs:string" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -1426,6 +1428,8 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<!-- ET-619: ECOM_DECOUPLING Adaptor gap changes -->
+			<xs:element name="refundable" type="xs:boolean" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 

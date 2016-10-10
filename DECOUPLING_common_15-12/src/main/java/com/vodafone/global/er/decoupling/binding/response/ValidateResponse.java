@@ -70,8 +70,8 @@ import javax.xml.bind.annotation.XmlType;
     "userGroups"
 })
 @XmlSeeAlso({
-    ValidateAccountResponse.class,
-    ValidateMsisdnResponse.class
+    ValidateMsisdnResponse.class,
+    ValidateAccountResponse.class
 })
 public class ValidateResponse
     implements Serializable, Element

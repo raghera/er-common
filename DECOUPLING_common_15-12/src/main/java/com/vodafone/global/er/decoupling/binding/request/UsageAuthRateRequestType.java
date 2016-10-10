@@ -12,8 +12,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * 
- * 		This is the request type for both usage-auth-rate and usage-auth-rate-plus requests
- * 		
+ *                 This is the request type for both usage-auth-rate and usage-auth-rate-plus requests
+ *             
  * 
  * <p>Java class for usageAuthRateRequestType complex type.
  * 

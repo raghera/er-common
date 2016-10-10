@@ -1,27 +1,6 @@
 package com.vodafone.global.er.decoupling.client;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
-
-import javax.xml.bind.Element;
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.common.ErCountry;
 import com.vodafone.application.logging.ULFEntry;
@@ -38,6 +17,25 @@ import com.vodafone.global.er.translog.TransLogManager.Attr;
 import com.vodafone.global.er.translog.TransLogManagerFactory;
 import com.vodafone.global.er.ulf.service.ERULFLogDataManager;
 import com.vodafone.global.er.ulf.service.impl.ERULFLogDataManagerImpl;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.Element;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 /**
  * This class does the http stuff - stream handling, headers, etc
@@ -232,7 +230,7 @@ class DecouplingClient	{
 			//transactionalLogger(request, response);
 			
 			//ULF Response got from core 
-			transLogManager.addAttributeOnce(Attr.RESPONSE_PL, response);
+//			transLogManager.addAttributeOnce(Attr.RESPONSE_PL, response);
 	    	manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
 
 	    	transactionalLogger(request, response);
@@ -259,21 +257,20 @@ class DecouplingClient	{
 
 	/**
 	 * Write the request and response object into transaction log file.
-	 * @param out
+     *
+	 * @param request
 	 * @param response
 	 */
 	private void transactionalLogger(String request, String response) {
 		TransLogManager transLogManager = TransLogManagerFactory.getInstance();
-		boolean transLogging = ConfigProvider.getPropertyAsBoolean("translog.logging.mode", false); 
 		TransLogData data=null;
-		if (transLogging){
-			transLogManager.generateErTxLogId();
+		if (transLogManager.isTransLoggingOn()) {
 			data = new TransLogData();
-			data.setDataIsRequest(true);
+//			data.setDataIsRequest(true);
 			data.setRequest(request);
-			transLogManager.logClientData(data);
+//			transLogManager.logClientData(data);
 			data.setResponse(response);
-			data.setDataIsRequest(false);
+//			data.setDataIsRequest(false);
 			transLogManager.logClientData(data);
 		}
 	}
@@ -286,6 +283,7 @@ class DecouplingClient	{
 	 * @throws UnsupportedEncodingException 
 	 */
 	Object getResponseObject(String xmlResponse) throws JAXBException, UnsupportedEncodingException{
+        //TODO - Why is no TransactionLogging done here???
 		ErResponse r =JAXBResponseHelper.getInstance().bind(xmlResponse);
 		return r.getPayload().getAny();
 	}
