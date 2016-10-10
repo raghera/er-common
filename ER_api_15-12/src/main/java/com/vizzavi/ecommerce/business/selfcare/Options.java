@@ -1,16 +1,15 @@
 package com.vizzavi.ecommerce.business.selfcare;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.*;
 
 
 @Entity
 @Table(name="ER_OPTIONS")
 public class Options implements Serializable	{
 
-    private static final long	serialVersionUID	= 3299708651771836112l;
+    private static final long	serialVersionUID	= 3299708651771836112L;
     
 	public Options() {
 	}
