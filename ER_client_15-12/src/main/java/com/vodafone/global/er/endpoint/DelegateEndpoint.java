@@ -21,6 +21,7 @@ public class DelegateEndpoint {
 
         Optional<String> serverHostOpt = CommonPropertyService.getProperty(ER_SERVER_HOST.getValue(), "127.0.0.1");
         Optional<String> serverPortOpt = CommonPropertyService.getProperty(ER_SERVER_PORT.getValue(), "8094");
+
         if(serverHostOpt.isPresent() && serverPortOpt.isPresent()) {
             serverHost = serverHostOpt.get();
             serverPort = Integer.valueOf(serverPortOpt.get());
