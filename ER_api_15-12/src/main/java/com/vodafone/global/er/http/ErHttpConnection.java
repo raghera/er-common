@@ -189,7 +189,7 @@ public class ErHttpConnection {
 		}
 
 		Optional<String> protocolOpt = CommonPropertyService.getProperty(CommonPropertiesEnum.PROP_EPA_PROTOCOL.getValue(), "http");
-		if (protocolOpt.isPresent() && "https".equals(protocolOpt.get())) {
+		if (protocolOpt.isPresent() && "https".equalsIgnoreCase(protocolOpt.get())) {
 			configureSSL();
 		}
 	}
