@@ -11,9 +11,7 @@ public enum CommonPropertiesEnum {
     PROP_HTTPS_ER_SERVER_PATH("https.er.server.path"),
     PROP_TRUSTSTORE("ssl.truststore"),
     PROP_TRUSTSTORE_PASSWORD("ssl.truststore.password"),
-    PROP_EPA_PROTOCOL("protocol");
-
-
+    PROP_EPA_PROTOCOL("application.protocol");
 
     private String value;
 

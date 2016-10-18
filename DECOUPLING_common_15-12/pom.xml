@@ -129,7 +129,6 @@
         <!-- we only want to deploy promoted ie released modules not snapshots -->
     </distributionManagement>
 
-
     <build>
         <!-- the name of the jar file we will create -->
         <finalName>${project.artifactId}</finalName>
@@ -156,11 +155,8 @@
                         </Export-Package>
                     </instructions>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>
-
-
 
 </project>

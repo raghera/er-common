@@ -1,8 +1,6 @@
 package com.vodafone.global.er.http;
 
 import com.google.common.base.Optional;
-import com.vodafone.global.er.properties.CommonPropertiesEnum;
-import com.vodafone.global.er.properties.CommonPropertyService;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -19,78 +17,49 @@ import java.security.cert.X509Certificate;
 
 public class ErX509TrustManager implements X509TrustManager {
 
-    private static Logger    log = Logger.getLogger(ErX509TrustManager.class);
+    private static Logger log = Logger.getLogger(ErX509TrustManager.class);
 
     private X509TrustManager defaultTrustManager = null;
     private X509KeyManager defaultKeyManager = null;
-
-    //Load the ssl properties
-    static {
-        Optional<String> store = CommonPropertyService.getProperty(CommonPropertiesEnum.PROP_TRUSTSTORE.getValue(), "./truststore/cacerts");
-        Optional<String> pass = CommonPropertyService.getProperty(CommonPropertiesEnum.PROP_TRUSTSTORE_PASSWORD.getValue(), "changeit");
-
-        if(store.isPresent() && pass.isPresent()) {
-            System.setProperty("javax.net.ssl.trustStore", store.get());
-            System.setProperty("javax.net.ssl.trustStorePassword", pass.get());
-        } else {
-            log.warn("Could not find javax.net.ssl.trustStore property" );
-        }
-    }
+    private static final String SYS_PROP_TRUSTSTORE = "javax.net.ssl.trustStore";
+    private static final String SYS_PROP_TRUSTSTORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+    private static final String SYS_PROP_KEYSTORE = "javax.net.ssl.keyStore";
+    private static final String SYS_PROP_KEYSTORE_PASSWORD = "javax.net.ssl.keyStorePassword";
 
     private void init() throws GeneralSecurityException, IOException {
-        Optional<String> trustStore = Optional.of(System.getProperty("javax.net.ssl.trustStore"));
-        Optional<String> password = Optional.of(System.getProperty("javax.net.ssl.trustStorePassword"));
+        Optional<String> kStore = Optional.of(System.getProperty(SYS_PROP_KEYSTORE));
+        Optional<String> kStorePw = Optional.of(System.getProperty(SYS_PROP_KEYSTORE_PASSWORD));
+
+        if(!kStore.isPresent() || !kStorePw.isPresent()) {
+            throw new HttpsConfigurationException("Property " +
+                    SYS_PROP_KEYSTORE + ", and/or "+
+                    SYS_PROP_KEYSTORE_PASSWORD +
+                    " are required for https communication but not found");
+        }
 
         final KeyStore keyStore = KeyStore.getInstance("JKS");
-        try (final InputStream is = new FileInputStream(trustStore.get())) {
-            keyStore.load(is, password.get().toCharArray());
+        try (final InputStream is = new FileInputStream(kStore.get())) {
+            keyStore.load(is, kStorePw.get().toCharArray());
         }
         final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory
                 .getDefaultAlgorithm());
-        kmf.init(keyStore, password.get().toCharArray());
+        kmf.init(keyStore, kStorePw.get().toCharArray());
 
         final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory
                 .getDefaultAlgorithm());
+
         tmf.init(keyStore);
 
         defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
         defaultKeyManager = (X509KeyManager) kmf.getKeyManagers()[0];
     }
 
-    /**
-     * Constructor. Configures the TrustManagerFactory and gets the trust
-     * manager.
-     */
     public ErX509TrustManager() {
         try {
             init();
-//            log.debug("Loading keystore for our custom trustmanager...");
-//
-//            KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
-//
-//            Optional<String> certfile = CommonPropertyService.getProperty(CommonPropertiesEnum.PROP_TRUSTSTORE.getValue(), "./truststore/cacerts");
-//            Optional<String> password = CommonPropertyService.getProperty(CommonPropertiesEnum.PROP_TRUSTSTORE_PASSWORD.getValue(), "changeit");
-//
-//            if((!certfile.isPresent() || !password.isPresent())) {
-//                throw new ErHttpException("Could not find truststore at: " + CommonPropertiesEnum.PROP_TRUSTSTORE.getValue());
-//            } else {
-//                FileInputStream in = new FileInputStream(certfile.get());
-//
-//                store.load(in, password.get().toCharArray());
-//
-//                log.debug("Keystore loaded.");
-//                TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-//
-//                log.debug("Configuring trustmanager factory...");
-//
-//                factory.init(store);
-//
-//                log.debug("Trustmanager factory configured.");
-//
-//                defaultTrustManager = (X509TrustManager) factory.getTrustManagers()[0];
         } catch (GeneralSecurityException | IOException e) {
             log.error(e);
-            //TODO should be failing here so rethrow an Exception.  No point continuing if you couldn't setup
+            throw new HttpsConfigurationException("Could not configure https connection correctly. Fatal error.", e);
         }
     }
 

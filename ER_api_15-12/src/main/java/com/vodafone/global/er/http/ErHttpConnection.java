@@ -196,14 +196,15 @@ public class ErHttpConnection {
 
 	private void configureSSL() throws ErHttpException {
 
-		log.debug("configureConnection starting");
-		ErX509TrustManager myTrustManager = new ErX509TrustManager();
+		log.debug("SSL Configuaration starting");
+		ErX509TrustManager tm = new ErX509TrustManager();
 		SSLContext sslcontext;
 
 		try {
 			sslcontext = SSLContext.getInstance("TLS");
-			sslcontext.init(new KeyManager[] {myTrustManager.getDefaultKeyManager()},
-                    new TrustManager[] { myTrustManager }, null);
+			sslcontext.init(new KeyManager[] {tm.getDefaultKeyManager()},
+                    new TrustManager[] { tm.getDefaultTrustManager() },
+                    null);
 		} catch (Exception e) {
 			log.error("error getting SSL Context", e);
 			throw new ErHttpException(ErHttpException.E0006 , e);
