@@ -215,8 +215,8 @@ class DecouplingClient	{
 	 * @return a jaxb object from the com.vodafone.global.er.decoupling.binding.response package
 	 * @throws EcommerceException 
 	 */
-	public Object getPayload(ErRequest element,  List<Header> headers) throws EcommerceException	{	
-		
+	public Object getPayload(ErRequest element,  List<Header> headers) throws EcommerceException	{
+        _log.info("Enter DecouplingClient.getPayload");
 		String request = null;
 		try		{
 			String clientId = element.getClientApplicationId();
@@ -304,7 +304,7 @@ class DecouplingClient	{
 	 * @throws UnsupportedEncodingException 
 	 */
 	Object getResponseObject(String xmlResponse) throws JAXBException, UnsupportedEncodingException{
-        //TODO - Why is no TransactionLogging done here???
+        _log.info("Enter DecouplingClient.getResponseObject");
 		ErResponse r =JAXBResponseHelper.getInstance().bind(xmlResponse);
 		return r.getPayload().getAny();
 	}
