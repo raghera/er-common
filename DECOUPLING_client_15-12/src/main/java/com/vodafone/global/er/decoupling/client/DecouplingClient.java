@@ -1,6 +1,7 @@
 package com.vodafone.global.er.decoupling.client;
 
 
+import com.google.common.base.Optional;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.common.ErCountry;
 import com.vodafone.application.logging.ULFEntry;
@@ -11,6 +12,7 @@ import com.vodafone.global.er.decoupling.util.xml.JAXBRequestHelper;
 import com.vodafone.global.er.decoupling.util.xml.JAXBResponseHelper;
 import com.vodafone.global.er.http.ErHttpConnection;
 import com.vodafone.global.er.http.ErHttpException;
+import com.vodafone.global.er.properties.CommonPropertiesEnum;
 import com.vodafone.global.er.translog.TransLogData;
 import com.vodafone.global.er.translog.TransLogManager;
 import com.vodafone.global.er.translog.TransLogManager.Attr;
@@ -36,6 +38,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+
+import static com.vodafone.global.er.properties.CommonPropertyService.getProperty;
 
 /**
  * This class does the http stuff - stream handling, headers, etc
@@ -77,11 +81,9 @@ class DecouplingClient	{
 //	private final String _ER_SERVER_HOST = ConfigProvider.getProperty("er.server.host", "0.0.0.0");
 //	private final int 	 _ER_SERVER_PORT = ConfigProvider.getPropertyAsInteger("er.server.port", 8094);
 
-
-
 	//MQC 8714 - set from config parameter
 	private final String _GIG_BASIC_AUTH_CREDENTIALS = ConfigProvider.getProperty("erif.gig.credentials","");
-	private final String _DECOUPLING_PROTOCOL = ConfigProvider.getProperty("ER.SERVER.PAYMENT.ROUTER.HTTP.PROTOCOL", "http");
+	private final String _DECOUPLING_PROTOCOL = getProperty(CommonPropertiesEnum.PROP_EPA_PROTOCOL.getValue(), "http").get();
 	private final String _DECOUPLING_URL = ConfigProvider.getProperty("server.decoupling.url","/decoupling/DecouplingProcessServlet");
 
 	private String 	_PAYLOAD_CLIENT_APPLICATION_ID = ConfigProvider.getProperty("payload.clientapplicationid");	//we want to force clients to supply a client id
@@ -163,14 +165,33 @@ class DecouplingClient	{
 		//ULF Request sent to core
 		transLogManager.addAttributeOnce(Attr.REQUEST_PL, xml);
         manager.logULFRequestOut(transLogManager, ULFEntry.Logpoint.REQUEST_OUT);
-		resp_ = conn_.doPost(getDecouplingUrl(), xml, _HEADER_CONTENT_TYPE, true, headers);
+
+        if(_DECOUPLING_PROTOCOL.equals("https")) {
+            resp_ = conn_.doHttpsPost(getHttpsDecouplingUrl(), xml, _HEADER_CONTENT_TYPE, true, headers);
+        } else {
+            resp_ = conn_.doPost(getDecouplingUrl(), xml, _HEADER_CONTENT_TYPE, true, headers);
+        }
+
 		return new String(resp_, "utf-8");
 
 	}
 
-	protected String getDecouplingUrl() {
+	private String getDecouplingUrl() {
 		//The URL is the same regardless of whether it is GIG or ER.  
 		return _DECOUPLING_PROTOCOL +"://" + _ER_SERVER_HOST + ":" + _ER_SERVER_PORT + _DECOUPLING_URL;
+	}
+	private String getHttpsDecouplingUrl() throws ErHttpException {
+
+		String protocol = getProperty(CommonPropertiesEnum.PROP_EPA_PROTOCOL.getValue(), "https").get();
+        Optional<String> host = getProperty(CommonPropertiesEnum.PROP_HTTPS_ER_SERVER_HOST.getValue(), "0.0.0.0");
+        Optional<String> port = getProperty(CommonPropertiesEnum.PROP_HTTPS_ER_SERVER_PORT.getValue(), "8094");
+        Optional<String> path = getProperty(CommonPropertiesEnum.PROP_HTTPS_ER_SERVER_PATH.getValue(), "/");
+
+        if(!host.isPresent() || !port.isPresent() || !path.isPresent()) {
+            throw new ErHttpException("HTTPS Host, Port or Path is not configured correctly");
+        }
+
+        return protocol  +"://" + host.get() + ":" + port.get() + path.get();
 	}
 
 //	/**
@@ -194,8 +215,8 @@ class DecouplingClient	{
 	 * @return a jaxb object from the com.vodafone.global.er.decoupling.binding.response package
 	 * @throws EcommerceException 
 	 */
-	public Object getPayload(ErRequest element,  List<Header> headers) throws EcommerceException	{	
-		
+	public Object getPayload(ErRequest element,  List<Header> headers) throws EcommerceException	{
+        _log.info("Enter DecouplingClient.getPayload");
 		String request = null;
 		try		{
 			String clientId = element.getClientApplicationId();
@@ -283,7 +304,7 @@ class DecouplingClient	{
 	 * @throws UnsupportedEncodingException 
 	 */
 	Object getResponseObject(String xmlResponse) throws JAXBException, UnsupportedEncodingException{
-        //TODO - Why is no TransactionLogging done here???
+        _log.info("Enter DecouplingClient.getResponseObject");
 		ErResponse r =JAXBResponseHelper.getInstance().bind(xmlResponse);
 		return r.getPayload().getAny();
 	}

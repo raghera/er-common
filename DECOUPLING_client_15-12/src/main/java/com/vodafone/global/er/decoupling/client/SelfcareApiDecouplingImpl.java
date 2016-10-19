@@ -70,8 +70,8 @@ public class SelfcareApiDecouplingImpl extends BaseErApiDecouplingImpl implement
     }
 
 	@Override
-	public Subscription[] getSubscriptions(String clientId, String msisdn, int device, SubscriptionFilter filter) throws EcommerceException
-	{
+	public Subscription[] getSubscriptions(String clientId, String msisdn, int device, SubscriptionFilter filter) throws EcommerceException {
+		log.debug("Enter SelfcareApiDecouplingImpl.getSubscriptions");
 		checkNullParams(msisdn);
 		final SelfcareFullSubscriptions request_ = createRequest(PayloadConstants.SELFCARE_FULL_SUBSCRIPTIONS_REQUEST_PAYLOAD);
 
@@ -137,25 +137,29 @@ public class SelfcareApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 		if ( ConfigProvider.getPropertyAsBoolean("er.decoupling.use.v2", true))	{
 			SelfcareFullSubscriptionsV2 subscriptionsType_;
 			try {
+                log.debug("Calling DecouplingClient V2 from  SelfcareApiDecouplingImpl.getSubscriptions");
 				subscriptionsType_ = sendRequestAndGetResponse(PayloadConstants.SELFCARE_FULL_SUBSCRIPTIONS_REQUEST_PAYLOAD, request_, com.vodafone.global.er.decoupling.binding.response.v2.SelfcareFullSubscriptionsV2.class, 2);
+                log.debug("Received response in SelfcareApiDecouplingImpl.getSubscriptions");
 			} catch (EcommerceException e) {
 				throw new SubsManagementException(e);
 			}
-			
+
+            log.debug("Converting SelfcareApiDecouplingImpl response ");
 			//List<Subscription> listsubs = converter.buildSubscriptions(subscriptionsType_.getSubscription());
 			List<Subscription> listsubs = converter.buildPackageForSubscription(subscriptionsType_.getSubscription(),clientId);
+            log.debug("Converted subs in SelfcareApiDecouplingImpl " + listsubs);
 			//listsubs = converter.buildPackageForSubscription(listsubs);
 			return listsubs.toArray(new Subscription[listsubs.size()]);
 			
 		
 		//ET-280 // added v2 flow end
 		}else{
-		
-			final com.vodafone.global.er.decoupling.binding.response.SelfcareFullSubscriptions subscriptionsType_ = 
+            log.debug("Calling DecouplingClient from  SelfcareApiDecouplingImpl.getSubscriptions V1");
+			final com.vodafone.global.er.decoupling.binding.response.SelfcareFullSubscriptions subscriptionsType_ =
 					sendRequestAndGetResponse(PayloadConstants.SELFCARE_FULL_SUBSCRIPTIONS_REQUEST_PAYLOAD, request_, com.vodafone.global.er.decoupling.binding.response.SelfcareFullSubscriptions.class);
+            log.debug("Response recieved from DecouplingClient in SelfcareApiDecouplingImpl.getSubscriptions V1");
 			return converter.convertSubscriptionsArray(subscriptionsType_);
 		}
-
 	}
 
 	@Override

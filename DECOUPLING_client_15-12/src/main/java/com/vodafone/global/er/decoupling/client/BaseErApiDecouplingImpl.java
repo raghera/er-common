@@ -97,6 +97,7 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	 * IOException talking to ER, or ER responds with an empty response
 	 */
 	protected <T> T  sendRequestAndGetResponse(int requestTypeId, Object request, Class<T> expectedResponse, String clientId, int requestVersion) throws EcommerceException	{
+		logger.debug("Enter BaseErApiDecouplingImpl.sendRequestAndGetResponse");
 		Object payload = null;
 		final ErRequest element = _factory_.buildEnvelope(requestTypeId, request, clientId);
 		if (requestVersion>1)
@@ -115,8 +116,11 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
-		}	else
+		}	else {
+			logger.debug("Calling DecouplingClient.getPayload");
 			payload = _client.getPayload(element, getHeaders(request));
+		}
+        logger.debug("Enter BaseErApiDecouplingImpl.sendRequestAndGetResponse response received." + payload);
 		return getResultFromPayload(payload, expectedResponse);
 	}
 	
@@ -224,6 +228,7 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	 * @see #sendRequestAndGetResponse
 	 */
 	protected <T> T getResultFromPayload(Object responsePayload, Class<T> expectedClass) throws EcommerceException {
+		logger.info("Enter BaseErApiDecouplingImpl.getResultFromPayload");
 		if (responsePayload==null)
 			throw new EcommerceException("response payload was null");
 		//check for Error first, in case the client passed in expectedClass of Object
@@ -234,6 +239,7 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 		else if (expectedClass.isAssignableFrom(responsePayload.getClass()))	{
 			@SuppressWarnings("unchecked")
 			T result = (T) responsePayload;
+			logger.info("Enter BaseErApiDecouplingImpl.sendRequestAndGetResponse returning result");
 			return result;
 		}
 		else

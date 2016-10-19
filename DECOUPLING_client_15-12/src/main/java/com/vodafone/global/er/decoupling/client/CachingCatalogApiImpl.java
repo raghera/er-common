@@ -64,10 +64,14 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 
 	@Override
 	public CatalogPackage[] getPackages() throws EcommerceRuntimeException	{
-		//get from cache for this locale
+
+		logger.debug("Enter CachingCatalogApiImpl.getPackages");
+
 		CatalogPackage[] packs = simplePackageCache.get(locale);
-		if (packs!=null && packs.length>0)
-			return packs;
+		if (packs!=null && packs.length>0) {
+            logger.debug("Returning CachingCatalogApiImpl.getPackages from CACHE" + packs.length);
+            return packs;
+        }
 		//if there's nothing from the cache, get from ER
 		logger.info("no packages found in cache - fetching from ER");
 		packs = super.getPackages();

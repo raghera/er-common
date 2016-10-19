@@ -81,12 +81,13 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 	@Override
 	public CatalogPackage[] getPackages() throws EcommerceRuntimeException
 	{
+		logger.debug("Enter CatalogApiDecouplingImpl.getPackages");
 
 		GetPackagesResponse packageResponse;
 		final GetPackagesRequest request = createRequest(PayloadConstants.GET_PACKAGES_REQUEST_PAYLOAD);
 		try	{
 			packageResponse= sendRequestAndGetResponse(PayloadConstants.GET_PACKAGES_REQUEST_PAYLOAD, request, GetPackagesResponse.class);
-
+			logger.debug("Enter CatalogApiDecouplingImpl.getPackages response received " + packageResponse);
 		}	catch (EcommerceException e) {
 			throw new EcommerceRuntimeException(e);
 		}
@@ -107,9 +108,9 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 		for (final BasicPackageType packageType_ : packagesList)	{
 			packages[i++] = new CatalogPackage(packageType_.getPackageId(), packageType_.getPackageName());
 		}
+		logger.debug("Returning CatalogApiDecouplingImpl.getPackages response array " + packages);
 
 		return packages;
-
 	}
 
 	@Override

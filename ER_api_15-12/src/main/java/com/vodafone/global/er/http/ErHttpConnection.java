@@ -1,16 +1,14 @@
 package com.vodafone.global.er.http;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-
+import com.google.common.base.Optional;
+import com.vizzavi.ecommerce.common.Utils;
+import com.vizzavi.ecommerce.util.XmlUtils;
+import com.vodafone.config.ConfigProvider;
+import com.vodafone.config.util.RequestUtil;
+import com.vodafone.global.er.PerfLogger;
+import com.vodafone.global.er.PerfLogger.Type;
+import com.vodafone.global.er.properties.CommonPropertiesEnum;
+import com.vodafone.global.er.properties.CommonPropertyService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -43,12 +41,12 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vizzavi.ecommerce.common.Utils;
-import com.vizzavi.ecommerce.util.XmlUtils;
-import com.vodafone.config.ConfigProvider;
-import com.vodafone.config.util.RequestUtil;
-import com.vodafone.global.er.PerfLogger;
-import com.vodafone.global.er.PerfLogger.Type;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 /**
  * This class should be used to establish HTTP or HTTPS connections. Use {@link #getInstance} to retrieve a connection.
@@ -190,24 +188,23 @@ public class ErHttpConnection {
 			log.info("ErHttpConnection.CONFIG_HTTP_SECURITY_CONNECTION_TIMEOUT: ", connectionTimeout);
 		}
 
-		//MQC 6898, only configure SSL if required
-		String protocol = ConfigProvider.getProperty(CONFIG_HTTP_SECURITY_PROTOCOL, "http");
-
-		if ("https".equals(protocol)) {
+		Optional<String> protocolOpt = CommonPropertyService.getProperty(CommonPropertiesEnum.PROP_EPA_PROTOCOL.getValue(), "http");
+		if (protocolOpt.isPresent() && "https".equalsIgnoreCase(protocolOpt.get())) {
 			configureSSL();
 		}
 	}
 
 	private void configureSSL() throws ErHttpException {
 
-		log.debug("configureConnection starting");
-		ErX509TrustManager myTrustManager = new ErX509TrustManager();
+		log.debug("SSL Configuaration starting");
+		ErX509TrustManager tm = new ErX509TrustManager();
 		SSLContext sslcontext;
 
 		try {
 			sslcontext = SSLContext.getInstance("TLS");
-			sslcontext.init(null, new TrustManager[] { myTrustManager }, null);
-			//sslcontext.init(null, null, null);
+			sslcontext.init(new KeyManager[] {tm.getDefaultKeyManager()},
+                    new TrustManager[] { tm.getDefaultTrustManager() },
+                    null);
 		} catch (Exception e) {
 			log.error("error getting SSL Context", e);
 			throw new ErHttpException(ErHttpException.E0006 , e);
@@ -279,6 +276,29 @@ public class ErHttpConnection {
 		return getResponse(post);
 
 	}
+
+    public byte[] doHttpsPost(String uri, String requestBody, String contentType, boolean closePost, List<Header> headers) throws ErHttpException {
+
+        HttpPost post = new HttpPost(uri);
+        post.setHeaders(headers.toArray(new Header[headers.size()]));
+        StringEntity reqEntity = null;
+        try {
+            reqEntity = new StringEntity(requestBody, XmlUtils.getCharacterEncoding());
+            reqEntity.setContentType(contentType);
+            post.setEntity(reqEntity);
+        } catch (UnsupportedEncodingException e) {
+            throw new ErHttpException(ErHttpException.E0005 , e);
+        }
+        reqEntity.setContentType(contentType);
+
+        return getResponse(post);
+
+//        throw new UnsupportedOperationException();
+
+    }
+
+
+
 
 	private void addHeaders(List<Header> headers, HttpRequestBase method)	{
 		if (headers != null)	{
