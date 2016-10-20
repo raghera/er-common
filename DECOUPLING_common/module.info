@@ -1,3 +1,0 @@
-This module contains all the code which is common to both decoupling client and server.
-This means schemas, generated classes, and other common classes like payload constants
-prior to  version 0-4, it uses jaxb 2.0 
