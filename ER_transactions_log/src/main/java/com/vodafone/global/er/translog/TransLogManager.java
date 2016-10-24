@@ -49,9 +49,13 @@ public interface TransLogManager {
         PARTNER_ID, // Introduced as part of MQC 13807
         RESPONSE_TIME, // Introduced as part of MQC 13807
         DESTINATION, // Introduced as part of MQC 13807
-        OUTBOUND_REQ_URL // Introduced as part of MQC 13807
+        OUTBOUND_REQ_URL, // Introduced as part of MQC 13807
+        ER_API_NAME,
+        LOG_POINT,
+        START_TS,
+        COMPLETE_TS,
+        DURATION,
         ;
-        
     }
 
 

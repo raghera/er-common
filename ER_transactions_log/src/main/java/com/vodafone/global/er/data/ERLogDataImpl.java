@@ -16,15 +16,17 @@ public class ERLogDataImpl implements ERLogData {
 	private String clientId;
 	private String requestName;
 	private String countryCode;
-	
-	public ERLogDataImpl(String msisdn, String clientId, String requestName,
-			String countryCode) {
-		super();
-		this.msisdn = msisdn;
-		this.clientId = clientId;
-		this.requestName = requestName;
-		this.countryCode = countryCode;
-	}
+	private String apiName;
+
+    public ERLogDataImpl(String msisdn, String clientId, String requestName,
+                         String countryCode, String apiName) {
+        super();
+        this.msisdn = msisdn;
+        this.clientId = clientId;
+        this.requestName = requestName;
+        this.countryCode = countryCode;
+        this.apiName = apiName;
+    }
 	
 	public String getMsisdn() {
 		return msisdn;
@@ -50,11 +52,25 @@ public class ERLogDataImpl implements ERLogData {
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
+
+	@Override
+	public void setApiName(String apiName) {
+        this.apiName = apiName;
+	}
+
+	@Override
+	public String getApiName() {
+		return apiName;
+	}
+
 	@Override
 	public String toString() {
-		return "ERLogDataImpl [msisdn=" + msisdn + ", clientId=" + clientId
+		return "ERLogDataImpl [msisdn=" + msisdn
+                + ", clientId=" + clientId
 				+ ", requestName=" + requestName
-				+ ", countryCode=" + countryCode + "]";
+				+ ", countryCode=" + countryCode
+				+ ", apiName=" + apiName +
+				"]";
 	}
 	
 

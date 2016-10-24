@@ -146,15 +146,15 @@ public class TransLog4jManagerImpl implements TransLogManager{
 			}
 			transactionLogger.info(""); // don't really need a msg here
 			
-//			// TODO MDC maybe conflic with existing MDC using in the project
-//			for (Entry<Attr, String> entry : translog.getAttributesConText().entrySet()) {
-//				MDC.remove(entry.getKey().toString());
-//			}
-//			for (Entry<Attr, String> entry : translog.getAttributesOnce().entrySet()) {
-//				MDC.remove(entry.getKey().toString());
-//			}
-//
-//			translog.getAttributesOnce().clear();
+			// TODO MDC maybe conflic with existing MDC using in the project
+			for (Entry<Attr, String> entry : translog.getAttributesConText().entrySet()) {
+				MDC.remove(entry.getKey().toString());
+			}
+			for (Entry<Attr, String> entry : translog.getAttributesOnce().entrySet()) {
+				MDC.remove(entry.getKey().toString());
+			}
+
+			translog.getAttributesOnce().clear();
 		}
 		
 	}

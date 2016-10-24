@@ -163,8 +163,8 @@ class DecouplingClient	{
 		}
 
 		//ULF Request sent to core
-		transLogManager.addAttributeOnce(Attr.REQUEST_PL, xml);
-        manager.logULFRequestOut(transLogManager, ULFEntry.Logpoint.REQUEST_OUT);
+//		transLogManager.addAttributeOnce(Attr.REQUEST_PL, xml);
+//        manager.logULFRequestOut(transLogManager, ULFEntry.Logpoint.REQUEST_OUT);
 
         if(_DECOUPLING_PROTOCOL.equals("https")) {
             resp_ = conn_.doHttpsPost(getHttpsDecouplingUrl(), xml, _HEADER_CONTENT_TYPE, true, headers);
@@ -206,7 +206,19 @@ class DecouplingClient	{
 //		return getPayload(element, null);
 //	}
 
+    private void logRequestOut(String requestXml) {
+        transLogManager.addAttributeOnce(Attr.REQUEST_PL, requestXml);
+        transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.REQUEST_OUT.name());
+        manager.logULFRequestOut(transLogManager, ULFEntry.Logpoint.REQUEST_OUT);
+        transLogManager.logRequest(false);
+    }
 
+    private void logResponseIn(String responseXml) {
+        transLogManager.addAttributeOnce(Attr.RESPONSE_PL, responseXml);
+        transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.RESPONSE_IN.name());
+        manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
+        transLogManager.logResponse(false);
+    }
 
 	/**
 	 * Converts the element to an xml ByteStream, sends it to the ER core, then parses the xml response and marshalls the payload to a JAXB object which is then returned
@@ -243,19 +255,19 @@ class DecouplingClient	{
 			transLogManager.addAttributeOnce(Attr.VF_TRACE_TRANSACTION_ID, transactionId);
 			//Added for transaction id || End
 
+            logRequestOut(request);
+
 			_log.info("have created xml request:\n{}" , request);
 			String response = getResponse(request, headers);
-
 			_log.info("xml response:\n{}" , response);
-	    	
-			//transactionalLogger(request, response);
-			
-			//ULF Response got from core 
-//			transLogManager.addAttributeOnce(Attr.RESPONSE_PL, response);
-	    	manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
 
-	    	transactionalLogger(request, response);
-	    	
+			//ULF Response got from core
+            logResponseIn(response);
+//			transLogManager.addAttributeOnce(Attr.RESPONSE_PL, response);
+//	    	manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
+//
+//            transLogManager.logResponse(false);
+
 			if (StringUtils.isBlank(response) )			{
 				throw new IOException("response is empty");
 			}

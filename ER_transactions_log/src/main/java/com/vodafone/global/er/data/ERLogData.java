@@ -14,21 +14,24 @@ package com.vodafone.global.er.data;
 public interface ERLogData {
 	
 
-	public String getMsisdn();
+	String getMsisdn();
 	
-	public void setMsisdn(String msisdn);
+	void setMsisdn(String msisdn);
 	
-	public String getClientId();
+	String getClientId();
 	
-	public void setClientId(String clientId);
+	void setClientId(String clientId);
 	
-	public String getRequestName();
+	String getRequestName();
 	
-	public void setRequestName(String requestName);
+	void setRequestName(String requestName);
 	
-	public String getCountryCode();
+	String getCountryCode();
 	
-	public void setCountryCode(String countryCode);
-	
+	void setCountryCode(String countryCode);
+
+	void setApiName(String apiName);
+
+    String getApiName();
 	
 }
