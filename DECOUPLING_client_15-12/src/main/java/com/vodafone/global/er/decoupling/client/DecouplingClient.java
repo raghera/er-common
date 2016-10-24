@@ -119,7 +119,7 @@ class DecouplingClient	{
 		if (StringUtils.isNotBlank(clientId))
 			_PAYLOAD_CLIENT_APPLICATION_ID=clientId;
 		else if (StringUtils.isBlank(_PAYLOAD_CLIENT_APPLICATION_ID))	{
-			_log.error("no decoupling client id supplied");
+			_log.warn("no decoupling client id supplied");
 			throw new RuntimeException("you must supply a client id when creating a decoupling client - either in the method call or by setting property 'payload.clientapplicationid'");
 		}	//else
 			//_log.info("no clientId supplied creating a decoupling client. will use value from config '{}'", _PAYLOAD_CLIENT_APPLICATION_ID);
@@ -209,6 +209,7 @@ class DecouplingClient	{
     private void logRequestOut(String requestXml) {
         transLogManager.addAttributeOnce(Attr.REQUEST_PL, requestXml);
         transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.REQUEST_OUT.name());
+        transLogManager.addAttributeOnce(Attr.STATUS, "OK");
         manager.logULFRequestOut(transLogManager, ULFEntry.Logpoint.REQUEST_OUT);
         transLogManager.logRequest(false);
     }
@@ -217,6 +218,15 @@ class DecouplingClient	{
         transLogManager.addAttributeOnce(Attr.RESPONSE_PL, responseXml);
         transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.RESPONSE_IN.name());
         manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
+        transLogManager.addAttributeOnce(Attr.STATUS, "OK");
+        transLogManager.logResponse(false);
+    }
+
+    private void logResponseErrorIn(String errorDescription) {
+        transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.RESPONSE_IN.name());
+        transLogManager.addAttributeOnce(Attr.ERROR, errorDescription );
+        manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
+        transLogManager.addAttributeOnce(Attr.STATUS, "ERROR");
         transLogManager.logResponse(false);
     }
 
@@ -225,7 +235,7 @@ class DecouplingClient	{
 	 * @param element {@link Element}
 	 * @param headers a List of {@link Header} http headers to be stuck on the request.  Can be null
 	 * @return a jaxb object from the com.vodafone.global.er.decoupling.binding.response package
-	 * @throws EcommerceException 
+	 * @throws EcommerceException
 	 */
 	public Object getPayload(ErRequest element,  List<Header> headers) throws EcommerceException	{
         _log.info("Enter DecouplingClient.getPayload");
@@ -248,7 +258,7 @@ class DecouplingClient	{
 			byte[] byteData = JAXBRequestHelper.getInstance().toByteArray(element);
 			request = new String(byteData,"UTF-8");
 			//request = JAXBRequestHelper.getInstance().toString(element);
-			
+
 			//Added for transaction id || Start
 			String transactionId = getUlfTransactionId();
 			headers.add(new BasicHeader("vf-trace-transaction-id",transactionId));
@@ -262,30 +272,26 @@ class DecouplingClient	{
 			_log.info("xml response:\n{}" , response);
 
 			//ULF Response got from core
-            logResponseIn(response);
-//			transLogManager.addAttributeOnce(Attr.RESPONSE_PL, response);
 //	    	manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
-//
-//            transLogManager.logResponse(false);
-
-			if (StringUtils.isBlank(response) )			{
-				throw new IOException("response is empty");
-			}
-
+            if(!StringUtils.isBlank(response)) {
+                logResponseIn(response);
+            } else {
+                logResponseErrorIn("Response from ER Core is empty.");
+                throw new IOException("Response from ER Core is empty.");
+            }
 			return getResponseObject(response);
-
 		}
-		catch (final ErHttpException e2)
-		{
+		catch (final ErHttpException e2) {
+            logResponseErrorIn(e2.getMessage());
 			_log.error("Caught IOException during serialization - is CORE BATCH running?", e2);
 			throw new EcommerceException(e2);
 		}
 		//MQC 8029
 		catch (Exception ex) {
+            logResponseErrorIn(ex.getMessage());
 			_log.error("Unexpected Exception when trying to call ER Core", ex);
 			throw new EcommerceException(ex);
 		}
-
 	}
 
 	/**
