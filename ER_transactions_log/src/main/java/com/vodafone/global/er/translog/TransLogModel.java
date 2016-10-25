@@ -33,6 +33,10 @@ public interface TransLogModel {
 
 	public void setIsTransloggingOn(boolean value);
 
+	boolean isOutputPayload();
+
+	void setIsOutputPayload(boolean value);
+
 	public abstract void setExecutionContext(String context);
 
 	public abstract String getExecutionContext();	

@@ -12,5 +12,6 @@ package com.vodafone.global.er.translog;
 public class TransLogConstants {
 
 	public static String PROPERTY_TRANSLOG_LOGGING_ON = "translog.logging.mode";
-	
+	public static String PROPERTY_OUTPUT_PAYLOAD = "translog.output.payload";
+
 }

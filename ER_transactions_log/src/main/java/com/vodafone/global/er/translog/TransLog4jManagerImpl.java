@@ -254,6 +254,16 @@ public class TransLog4jManagerImpl implements TransLogManager{
         transLogModelThreadLocal.get().setIsTransloggingOn(value);
     }
 
+    @Override
+    public void setIsOutputPayload(boolean value) {
+        transLogModelThreadLocal.get().setIsOutputPayload(value);
+    }
+
+    @Override
+    public boolean isOutputPayload() {
+        return transLogModelThreadLocal.get().isOutputPayload();
+    }
+
     //CR 2085
     @Override
     public String getExecutionContext()

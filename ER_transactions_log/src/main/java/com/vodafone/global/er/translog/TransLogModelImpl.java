@@ -11,6 +11,7 @@ public class TransLogModelImpl implements TransLogModel {
 	//private Map<Attr, String> attributesULFContext = new HashMap<, String>();
 
     boolean isTransloggingOn = false;
+    boolean isOutputPayload = false;
 
 	private TransLogManager.Execution_Context executionUseCase;
 	private String executionContext;
@@ -113,6 +114,16 @@ public class TransLogModelImpl implements TransLogModel {
 	public void setIsTransloggingOn(boolean value) {
         isTransloggingOn = value;
     }
+
+    @Override
+	public boolean isOutputPayload() {
+		return isOutputPayload;
+	}
+
+	@Override
+	public void setIsOutputPayload(boolean value) {
+		this.isOutputPayload = value;
+	}
 
 	//CR TBD
 	@Override

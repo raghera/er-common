@@ -207,7 +207,10 @@ class DecouplingClient	{
 //	}
 
     private void logRequestOut(String requestXml) {
-        transLogManager.addAttributeOnce(Attr.REQUEST_PL, requestXml);
+        if(transLogManager.isOutputPayload()) {
+            transLogManager.addAttributeOnce(Attr.REQUEST_PL, requestXml);
+        }
+
         transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.REQUEST_OUT.name());
         transLogManager.addAttributeOnce(Attr.STATUS, "OK");
         manager.logULFRequestOut(transLogManager, ULFEntry.Logpoint.REQUEST_OUT);
@@ -215,7 +218,10 @@ class DecouplingClient	{
     }
 
     private void logResponseIn(String responseXml) {
-        transLogManager.addAttributeOnce(Attr.RESPONSE_PL, responseXml);
+        if(transLogManager.isOutputPayload()) {
+            transLogManager.addAttributeOnce(Attr.RESPONSE_PL, responseXml);
+        }
+
         transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.RESPONSE_IN.name());
         manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
         transLogManager.addAttributeOnce(Attr.STATUS, "OK");

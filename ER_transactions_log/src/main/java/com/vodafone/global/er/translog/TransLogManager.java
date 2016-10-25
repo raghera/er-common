@@ -150,6 +150,10 @@ public interface TransLogManager {
 
     void setIsTransLoggingOn(boolean value);
 
+    void setIsOutputPayload(boolean value);
+
+    boolean isOutputPayload();
+
 
     void logClientData(TransLogData data);
 
