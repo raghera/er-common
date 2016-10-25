@@ -13,6 +13,7 @@ import com.vodafone.global.er.decoupling.util.xml.JAXBResponseHelper;
 import com.vodafone.global.er.http.ErHttpConnection;
 import com.vodafone.global.er.http.ErHttpException;
 import com.vodafone.global.er.properties.CommonPropertiesEnum;
+import com.vodafone.global.er.translog.TransLogConstants;
 import com.vodafone.global.er.translog.TransLogData;
 import com.vodafone.global.er.translog.TransLogManager;
 import com.vodafone.global.er.translog.TransLogManager.Attr;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.Element;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -206,18 +208,20 @@ class DecouplingClient	{
 //		return getPayload(element, null);
 //	}
 
-    private void logRequestOut(String requestXml) {
+    private void logRequestOut(String requestXml, String requestName) {
         if(transLogManager.isOutputPayload()) {
             transLogManager.addAttributeOnce(Attr.REQUEST_PL, requestXml);
         }
 
         transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.REQUEST_OUT.name());
         transLogManager.addAttributeOnce(Attr.STATUS, "OK");
+        transLogManager.addAttributeOnce(Attr.REQUEST_TYPE, TransLogConstants.REQUEST_TYPE_DECOUPLING);
+        transLogManager.addAttributeOnce(Attr.DI_REQUEST, requestName);
         manager.logULFRequestOut(transLogManager, ULFEntry.Logpoint.REQUEST_OUT);
         transLogManager.logRequest(false);
     }
 
-    private void logResponseIn(String responseXml) {
+    private void logResponseIn(String responseXml, String requestName) {
         if(transLogManager.isOutputPayload()) {
             transLogManager.addAttributeOnce(Attr.RESPONSE_PL, responseXml);
         }
@@ -225,6 +229,8 @@ class DecouplingClient	{
         transLogManager.addAttributeOnce(Attr.LOG_POINT, ULFEntry.Logpoint.RESPONSE_IN.name());
         manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
         transLogManager.addAttributeOnce(Attr.STATUS, "OK");
+        transLogManager.addAttributeOnce(Attr.REQUEST_TYPE, TransLogConstants.REQUEST_TYPE_DECOUPLING);
+        transLogManager.addAttributeOnce(Attr.DI_REQUEST, requestName);
         transLogManager.logResponse(false);
     }
 
@@ -233,6 +239,7 @@ class DecouplingClient	{
         transLogManager.addAttributeOnce(Attr.ERROR, errorDescription );
         manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
         transLogManager.addAttributeOnce(Attr.STATUS, "ERROR");
+        transLogManager.addAttributeOnce(Attr.REQUEST_TYPE, TransLogConstants.REQUEST_TYPE_DECOUPLING);
         transLogManager.logResponse(false);
     }
 
@@ -271,7 +278,8 @@ class DecouplingClient	{
 			transLogManager.addAttributeOnce(Attr.VF_TRACE_TRANSACTION_ID, transactionId);
 			//Added for transaction id || End
 
-            logRequestOut(request);
+            String requestName = getRequestName(element);
+            logRequestOut(request, requestName);
 
 			_log.info("have created xml request:\n{}" , request);
 			String response = getResponse(request, headers);
@@ -280,7 +288,7 @@ class DecouplingClient	{
 			//ULF Response got from core
 //	    	manager.logULFResponseIn(transLogManager, ULFEntry.Logpoint.RESPONSE_IN);
             if(!StringUtils.isBlank(response)) {
-                logResponseIn(response);
+                logResponseIn(response, requestName);
             } else {
                 logResponseErrorIn("Response from ER Core is empty.");
                 throw new IOException("Response from ER Core is empty.");
@@ -299,6 +307,15 @@ class DecouplingClient	{
 			throw new EcommerceException(ex);
 		}
 	}
+
+	private String getRequestName(ErRequest reqObj) {
+        String result = "";
+        if(reqObj.getPayload() != null &&
+                reqObj.getPayload().getAny() instanceof JAXBElement) {
+            result = ((JAXBElement) reqObj.getPayload().getAny()).getName().toString();
+        }
+        return result;
+    }
 
 	/**
 	 * Write the request and response object into transaction log file.

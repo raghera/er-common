@@ -55,7 +55,8 @@ public interface TransLogManager {
         TX_START_TS,
         TX_COMPLETE_TS,
         TX_DURATION,
-        TX_CLIENT_ID
+        TX_CLIENT_ID,
+        REQUEST_TYPE
         ;
     }
 
