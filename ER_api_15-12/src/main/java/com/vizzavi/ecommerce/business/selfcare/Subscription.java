@@ -22,12 +22,7 @@ import com.vizzavi.ecommerce.business.catalog.CatalogService;
 import com.vizzavi.ecommerce.business.catalog.PricePoint;
 import com.vizzavi.ecommerce.business.common.ChargingMethod;
 import com.vizzavi.ecommerce.business.common.RatingAttributes;
-import com.vizzavi.ecommerce.business.selfcare.BasicAccount;
 import com.vodafone.global.er.business.selfcare.MicroServiceStatus;
-import com.vizzavi.ecommerce.business.selfcare.PurchasedService;
-import com.vizzavi.ecommerce.business.selfcare.ModifyTxn;
-import com.vizzavi.ecommerce.business.selfcare.PaymentTxn;
-import com.vizzavi.ecommerce.business.selfcare.RefundTxn;
 import com.vizzavi.ecommerce.common.ErCountry;
 //import com.vodafone.global.er.common.BizLogger;
 import com.vodafone.global.er.partner.B2BPartner;
@@ -168,7 +163,7 @@ public class Subscription implements Serializable	{
 	protected String mPackageClass = null;
 	
 	 //    @OneToMany( mappedBy="subscription",targetEntity=Transaction.class,     fetch=FetchType.LAZY)
-	protected List<? extends Transaction> transactions = new ArrayList<>();
+	protected List<Transaction> transactions = new ArrayList<>();
 
 	protected List<Transaction> paymentTxns = new ArrayList<>();
 
@@ -1169,7 +1164,7 @@ public class Subscription implements Serializable	{
 	 * This returns a list of Transactions. The transaction objects returned are not always fully populated.
 	 */
 	@Transient
-	public List<? extends Transaction> getTransactions() {
+	public List<Transaction> getTransactions() {
 		return transactions;
 	}
 

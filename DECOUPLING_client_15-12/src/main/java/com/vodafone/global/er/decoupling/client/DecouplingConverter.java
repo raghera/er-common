@@ -2733,8 +2733,10 @@ class DecouplingConverter   {
 
 			if (amount.getResourceCode() != null) {
 				ChargingResource cr = new ChargingResource(amount.getResourceCode(), amount.getResource());
+
 //			else	//use the currency lookup - could be monetary usage
-				cr = new ChargingResource(CurrencyUtils.getCurrency(amount.getResource()));
+//				cr = new ChargingResource(CurrencyUtils.getCurrency(amount.getResource()));
+
 				t.setChargingResource(cr);
 			}
 			//check for standard rate
