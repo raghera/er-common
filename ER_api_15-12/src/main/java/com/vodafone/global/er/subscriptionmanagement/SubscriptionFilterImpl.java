@@ -1,12 +1,11 @@
 package com.vodafone.global.er.subscriptionmanagement;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import com.vizzavi.ecommerce.business.common.ChargingMethod;
 import com.vizzavi.ecommerce.business.selfcare.SubscriptionFilter;
+import org.apache.log4j.Logger;
+
+import java.util.Date;
+import java.util.List;
 
 /**
     The attributes that the user can set when retrieving subscriptions
@@ -231,39 +230,43 @@ public class SubscriptionFilterImpl extends FilterAttributesImpl implements Subs
 	 }
 
 
+	@Override
+	public String toString() {
+		return "SubscriptionFilterImpl{" +
+				"subscriptionId='" + subscriptionId + '\'' +
+				", mMethod=" + mMethod +
+				", mSubscriptionStatus=" + mSubscriptionStatus +
+				", mEndDateStartValue=" + mEndDateStartValue +
+				", mEndDateEndValue=" + mEndDateEndValue +
+				", mPackageId='" + mPackageId + '\'' +
+				", mServiceId='" + mServiceId + '\'' +
+				", mPreOrder=" + mPreOrder +
+				", isParent=" + isParent +
+				", mParentPackageId='" + mParentPackageId + '\'' +
+				", mNeedMicroServiceStatus=" + mNeedMicroServiceStatus +
+				", retryDateEndValue=" + retryDateEndValue +
+				", mDuration=" + mDuration +
+				", transactionsNotRequired='" + transactionsNotRequired + '\'' +
+				", mClientId='" + mClientId + '\'' +
+				", mTariff='" + mTariff + '\'' +
+				", mPackageClass='" + mPackageClass + '\'' +
+				", mUseMaxEventsForTransactions=" + mUseMaxEventsForTransactions +
+				", usingLocalDate=" + usingLocalDate +
+				", mPartnerId='" + mPartnerId + '\'' +
+				", mRetrieveLastPaymentTransaction=" + mRetrieveLastPaymentTransaction +
+				", packageIds=" + packageIds +
+				", includeModifyTxns=" + includeModifyTxns +
+				", includeRefundTxns=" + includeRefundTxns +
+				", includePaymentTxns=" + includePaymentTxns +
+				'}';
+	}
 
-	 /**
+	/**
 	  * Returns the string representation.
 	  * 
 	  * @return		The String object containing string representation.
 	  */
-	 @Override
-	 public String toString()
-	 {
 
-		 StringBuffer stringBuffer = new StringBuffer( "Charging Method=" ) ;
-		 stringBuffer.append( mMethod ) ;
-		 stringBuffer.append( ", SubscriptionStatus=" ) ;
-		 stringBuffer.append( mSubscriptionStatus ) ;
-		 logger.debug("calculating offset between "+mEndDateStartValue+" and today");
-		 stringBuffer.append(", offset="+numDaysBetweenDates(mEndDateStartValue, new Date()));
-		 if(mPackageId != null && !mPackageId.equals("") )	{
-			 stringBuffer.append( ", packageId=" ) ;
-			 stringBuffer.append( mPackageId ) ;
-		 }
-		 if(usingLocalDate)	{
-			 stringBuffer.append( ", usingLocalDate=true" ) ;
-		 stringBuffer.append( ", mRetrieveLastPaymentTransaction=" ) ;
-		 stringBuffer.append( mRetrieveLastPaymentTransaction ) ;
-		 }
-		 stringBuffer.append(", maxEvents ").append(getMaxEvents());
-		 
-	    // MQC 9655 - add parent package id to subscription filter
-		stringBuffer.append(", mParentPackageId=");
-		stringBuffer.append(mParentPackageId);
-
-		 return stringBuffer.toString() ;
-	 }
 
 
 	 //@hud STKHREQ36 ER9
