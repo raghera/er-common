@@ -230,38 +230,8 @@ public class SubscriptionFilterImpl extends FilterAttributesImpl implements Subs
 	 }
 
 
-	@Override
-	public String toString() {
-		return "SubscriptionFilterImpl{" +
-				"subscriptionId='" + subscriptionId + '\'' +
-				", mMethod=" + mMethod +
-				", mSubscriptionStatus=" + mSubscriptionStatus +
-				", mEndDateStartValue=" + mEndDateStartValue +
-				", mEndDateEndValue=" + mEndDateEndValue +
-				", mPackageId='" + mPackageId + '\'' +
-				", mServiceId='" + mServiceId + '\'' +
-				", mPreOrder=" + mPreOrder +
-				", isParent=" + isParent +
-				", mParentPackageId='" + mParentPackageId + '\'' +
-				", mNeedMicroServiceStatus=" + mNeedMicroServiceStatus +
-				", retryDateEndValue=" + retryDateEndValue +
-				", mDuration=" + mDuration +
-				", transactionsNotRequired='" + transactionsNotRequired + '\'' +
-				", mClientId='" + mClientId + '\'' +
-				", mTariff='" + mTariff + '\'' +
-				", mPackageClass='" + mPackageClass + '\'' +
-				", mUseMaxEventsForTransactions=" + mUseMaxEventsForTransactions +
-				", usingLocalDate=" + usingLocalDate +
-				", mPartnerId='" + mPartnerId + '\'' +
-				", mRetrieveLastPaymentTransaction=" + mRetrieveLastPaymentTransaction +
-				", packageIds=" + packageIds +
-				", includeModifyTxns=" + includeModifyTxns +
-				", includeRefundTxns=" + includeRefundTxns +
-				", includePaymentTxns=" + includePaymentTxns +
-				'}';
-	}
 
-	/**
+	 /**
 	  * Returns the string representation.
 	  * 
 	  * @return		The String object containing string representation.
