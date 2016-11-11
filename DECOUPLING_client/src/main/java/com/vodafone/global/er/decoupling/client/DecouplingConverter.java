@@ -34,6 +34,7 @@ import com.vodafone.global.er.decoupling.binding.response.PurchaseOptions.Packag
 import com.vodafone.global.er.decoupling.binding.response.v2.*;
 import com.vodafone.global.er.partner.B2BPartner;
 import com.vodafone.global.er.rating.RatedEvent;
+import com.vodafone.global.er.util.CatalogUtil;
 import com.vodafone.global.er.util.CurrencyUtils;
 import com.vodafone.global.er.util.DateTimeUtil;
 import org.apache.commons.lang.StringUtils;
@@ -988,6 +989,12 @@ class DecouplingConverter   {
 				final PricePointImpl pricePointImpl_ = new PricePointImpl();
 				//ET-619: Ecom Adaptor for Decoupling - Ecom interface
 				pricePointImpl_.setTaxRate(TaxUtil.computeTaxRateIfRequired(ppType.getTaxRate(), ppType.getRate(), ppType.getNetRate()));
+                if(taxCode == null || taxCode.length() == 0 ){
+                    String calculatedTaxCode = CatalogUtil.getTaxCodeFromPricePointId(ppType.getId());
+                    if(calculatedTaxCode != null && calculatedTaxCode.length() > 0) {
+                        taxCode = calculatedTaxCode;
+                    }
+                }
                 pricePointImpl_.setTax(new Tax("", taxCode, pricePointImpl_.getTaxRate()));
                 pricePointImpl_.setTaxCode(taxCode);
 				pricePointImpl_.setNetRate(ppType.getNetRate());
@@ -2888,7 +2895,16 @@ class DecouplingConverter   {
 		CachingCatalogApiImpl catalogApi = (CachingCatalogApiImpl) DecouplingApiFactory.getCatalogApi(locale, clientId);
 		//CatalogPackage cpack = catalogApi.getSimplePackage(packageId);
 		CatalogPackage cpack = catalogApi.getPackage(packageId);
-		if (cpack==null)	{
+        if(cpack != null) {
+            for (PricePoint pricePoint : cpack.getPricePoints()) {
+                String taxCode = CatalogUtil.getTaxCodeFromPricePointId(pricePoint.getId());
+                if(taxCode != null && taxCode.length() > 0) {
+                    pricePoint.setTaxCode(taxCode);
+                    pricePoint.getTax().setTaxCode(taxCode);
+                }
+
+            }
+        } else {
 			//basic null protection
 			cpack = new CatalogPackage(packageId, packageId);
 		}
