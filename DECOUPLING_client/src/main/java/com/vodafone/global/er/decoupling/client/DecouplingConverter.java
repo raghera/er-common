@@ -35,7 +35,6 @@ import com.vodafone.global.er.decoupling.binding.response.v2.*;
 import com.vodafone.global.er.partner.B2BPartner;
 import com.vodafone.global.er.rating.RatedEvent;
 import com.vodafone.global.er.util.CatalogUtil;
-import com.vodafone.global.er.util.CurrencyUtils;
 import com.vodafone.global.er.util.DateTimeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -2693,12 +2692,14 @@ class DecouplingConverter   {
 //			t.setAmount(amount.getValue());
 			//charging resource
 			ChargingResource cr;
-			if (amount.getResourceCode()!=null)
-				cr = new ChargingResource(amount.getResourceCode(), amount.getResource());
-			else	//use the currency lookup - could be monetary usage
-				cr = new ChargingResource(CurrencyUtils.getCurrency(amount.getResource()));
-			t.setChargingResource(cr);
+			if (amount.getResourceCode() != null) {
+                cr = new ChargingResource(amount.getResourceCode(), amount.getResource());
 
+//			else	//use the currency lookup - could be monetary usage
+//				cr = new ChargingResource(CurrencyUtils.getCurrency(amount.getResource()));
+
+                t.setChargingResource(cr);
+            }
 		}
 		//tax rate
 		if(txn.getTaxRate() != null)

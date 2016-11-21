@@ -27,8 +27,8 @@ public class ErX509TrustManager implements X509TrustManager {
     private static final String SYS_PROP_KEYSTORE_PASSWORD = "javax.net.ssl.keyStorePassword";
 
     private void init() throws GeneralSecurityException, IOException {
-        Optional<String> kStore = Optional.of(System.getProperty(SYS_PROP_KEYSTORE));
-        Optional<String> kStorePw = Optional.of(System.getProperty(SYS_PROP_KEYSTORE_PASSWORD));
+        Optional<String> kStore = Optional.fromNullable(System.getProperty(SYS_PROP_KEYSTORE));
+        Optional<String> kStorePw = Optional.fromNullable(System.getProperty(SYS_PROP_KEYSTORE_PASSWORD));
 
         if(!kStore.isPresent() || !kStorePw.isPresent()) {
             throw new HttpsConfigurationException("Property " +
