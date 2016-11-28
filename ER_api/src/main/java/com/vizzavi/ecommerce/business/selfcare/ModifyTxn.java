@@ -1,13 +1,11 @@
 package com.vizzavi.ecommerce.business.selfcare;
 
-import java.util.Date;
-import java.util.Locale;
-
-import javax.persistence.*;
-
+import com.vizzavi.ecommerce.common.ErCountry;
 import org.apache.commons.lang.StringUtils;
 
-import com.vizzavi.ecommerce.common.ErCountry;
+import javax.persistence.*;
+import java.util.Date;
+import java.util.Locale;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -19,7 +17,9 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @Entity
 @Table(name="ER_MODIFY")
 public class ModifyTxn extends Transaction {
-		
+
+	private static final long	serialVersionUID	= 1L;
+
 	public ModifyTxn(Transaction transaction){
 		super(transaction);
 		setCsrId(super.getCsrId());

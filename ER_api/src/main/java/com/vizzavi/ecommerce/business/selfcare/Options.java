@@ -211,9 +211,7 @@ public class Options implements Serializable	{
 		int result = 1;
 		result = prime * result
 				+ (int) (mOptionIdLong ^ (mOptionIdLong >>> 32));
-		result = prime * result + (int) (mPaymentId ^ (mPaymentId >>> 32));
-		result = prime * result
-				+ (int) (mSubscriptionId ^ (mSubscriptionId >>> 32));
+
 		return result;
 	}
 
@@ -226,13 +224,7 @@ public class Options implements Serializable	{
 		if (getClass() != obj.getClass())
 			return false;
 		Options other = (Options) obj;
-		if (mOptionIdLong != other.mOptionIdLong)
-			return false;
-		if (mPaymentId != other.mPaymentId)
-			return false;
-		if (mSubscriptionId != other.mSubscriptionId)
-			return false;
-		return true;
+		return mOptionIdLong .equals( other.mOptionIdLong);
 	}
 	
 	@OneToOne(fetch = FetchType.LAZY)

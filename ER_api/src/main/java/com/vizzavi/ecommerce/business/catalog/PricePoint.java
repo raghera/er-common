@@ -931,25 +931,37 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 
 
-	/**
-        The array of resources that the user will get if the price point is purchased - including the currency 
-	 */
-	@Transient
-	public ChargingResource[] getBalanceImpacts()	{
-		
-		List<ChargingResource> rv = new ArrayList<ChargingResource>();
-		for (int index=0; mBalances!=null && index<mBalances.length; index++) {
-			 if (mBalances[index].getBalance() != 0.0) {
-				 // PPM136861 refactoring aL. 
-				ChargingResource cr = mBalances[index].getResource();
-				if (cr != null ){	//ET138 ppt balance impacts missing from decoupling response
-					rv.add(cr);
-				}
-			}
-			//REMEDY 6493 END
-		}
-		return rv.toArray(new ChargingResource[rv.size()]);
-	}
+//	/**
+//        The array of resources that the user will get if the price point is purchased - including the currency
+//	 */
+//	@Transient
+//	public ChargingResource[] getBalanceImpacts()	{
+//
+//		List<ChargingResource> rv = new ArrayList<ChargingResource>();
+//		for (int index=0; mBalances!=null && index<mBalances.length; index++) {
+//			 if (mBalances[index].getBalance() != 0.0) {
+//				 // PPM136861 refactoring aL.
+//				ChargingResource cr = mBalances[index].getResource();
+//				if (cr != null ){	//ET138 ppt balance impacts missing from decoupling response
+//					rv.add(cr);
+//				}
+//			}
+//			//REMEDY 6493 END
+//		}
+//		return rv.toArray(new ChargingResource[rv.size()]);
+//	}
+
+    //Implementation changed as of 16-8
+    @Transient
+    public ChargingResource[] getBalanceImpacts() {
+        List<ChargingResource> chargingResources = new ArrayList<>();
+        if (mImpacts != null) {
+            for (BalanceImpact bi : mImpacts) {
+                chargingResources.add(bi.getResource());
+            }
+        }
+        return chargingResources.toArray(new ChargingResource[chargingResources.size()]);
+    }
 	
 	@OneToMany(mappedBy="pricePoint",targetEntity=BalanceImpact.class, fetch=FetchType.LAZY)
 //	@ForeignKey(name = "one_ppt_many_bal_impacts")	//only for the ddl generation to give the constraint a readable name
@@ -1993,27 +2005,47 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	//MQC 5067 - return the resource balances
 	@Transient
   	public ResourceBalance[] getResourceBalances () {
-		return this.mBalances;
+        List<ResourceBalance> resourceBalances = new ArrayList<>();
+        for (BalanceImpact bi : mImpacts) {
+            resourceBalances.add(new ResourceBalance(bi.getResource(), bi.getFixedAmount()));
+        }
+        return resourceBalances.toArray(new ResourceBalance[resourceBalances.size()]);
 	}
 
 	//MQC 5067 - return the custom resource balances
-	@Transient
-  	public ResourceBalance[] getCustomResourceBalances () {
-		List<ResourceBalance> rv = new ArrayList<ResourceBalance>();
-		for (int index=0; mBalances!=null && index<mBalances.length; index++) {
-			if (mBalances[index].getResource().isResource()) {
-				rv.add(mBalances[index]);
-			}
-		}
-		if (rv.size() > 0) {
-			return rv.toArray(new ResourceBalance[rv.size()]);
-		}
-		else {
-			return null;
-		}
-	}
+//	@Transient
+//  	public ResourceBalance[] getCustomResourceBalances () {
+//		List<ResourceBalance> rv = new ArrayList<ResourceBalance>();
+//		for (int index=0; mBalances!=null && index<mBalances.length; index++) {
+//			if (mBalances[index].getResource().isResource()) {
+//				rv.add(mBalances[index]);
+//			}
+//		}
+//		if (rv.size() > 0) {
+//			return rv.toArray(new ResourceBalance[rv.size()]);
+//		}
+//		else {
+//			return null;
+//		}
+//	}
+    @Transient
+    public ResourceBalance[] getCustomResourceBalances () {
+        List<ResourceBalance> rv = new ArrayList<ResourceBalance>();
+        for (BalanceImpact bi : mImpacts) {
+            if (bi.getResource().isResource()) {
+                rv.add(new ResourceBalance(bi.getResource(), bi.getRate()));
+            }
+        }
+        if (rv.size() > 0) {
+            return rv.toArray(new ResourceBalance[rv.size()]);
+        }
+        else {
+            return null;
+        }
+    }
 
-	//MQC 5654 - add Tax object for real time tax rate calculation
+
+    //MQC 5654 - add Tax object for real time tax rate calculation
 	@ManyToOne(optional=true, cascade=CascadeType.PERSIST)
 	public Tax getTax() {
 		return mTax;
@@ -2075,7 +2107,11 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	 */
 	@Transient
 	public ResourceBalance[] getBalances() {
-		return mBalances;
+        List<ResourceBalance> resourceBalances = new ArrayList<>();
+        for (BalanceImpact bi : mImpacts) {
+            resourceBalances.add(new ResourceBalance(bi.getResource(), bi.getFixedAmount()));
+        }
+		return resourceBalances.toArray(new ResourceBalance[resourceBalances.size()]);
 	}
 	/**
 	 * @param mBalances the mBalances to set
