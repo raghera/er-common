@@ -463,7 +463,7 @@ class DecouplingConverter   {
 			}
 			catch(final Exception e)
 			{
-				logger.error("Problem converting values added for Decoupling client:" + e);
+				logger.error("Problem converting values added for Decoupling client:", e);
 				return null;
 			}
 		}
@@ -611,7 +611,7 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.error("Problem adding service names " + e);
+					logger.error("Problem adding service names ", e);
 				}
 				cataloPackageImpl_.setParentPackageId(packType.getParentPackageId());
 				cataloPackageImpl_.setParentPackage(packType.isIsParentPackage());
@@ -626,7 +626,7 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.error("Problem setting Child Packages Ids:" +e);
+					logger.error("Problem setting Child Packages Ids:", e);
 				}
 
 				//CR1455 - end
@@ -645,7 +645,7 @@ class DecouplingConverter   {
 			}
 			catch(final Exception e)
 			{
-				logger.error("Problem converting values added for Decoupling client:" + e);
+				logger.error("Problem converting values added for Decoupling client:", e);
 				return null;
 			}
 		}
@@ -938,7 +938,7 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.error("Problem converting Duration:" + e);
+					logger.error("Problem converting Duration:", e);
 				}
 
 				pricePointImpl_.setFixedExpiryDate((ppType.getFixedExpiryDate() != null?ppType.getFixedExpiryDate().getTime():null));
@@ -958,14 +958,14 @@ class DecouplingConverter   {
 							pricePointImpl_.setUserGroup(fromUGArray);
 					}
 				}	catch(final Exception e)	{
-					logger.error("Problem setting User Groups:" + e);
+					logger.error("Problem setting User Groups:", e);
 				}
 
 				return pricePointImpl_;
 			}
 			catch(final Exception e)
 			{
-				logger.error("Problem converting values in Pricepoint:" + e);
+				logger.error("Problem converting values in Pricepoint:", e);
 				return null;
 			}
 		}
@@ -1034,7 +1034,7 @@ class DecouplingConverter   {
 						}
 						catch(final Exception e)
 						{
-							logger.error("Wrong format on chargingResource code:" + e);
+							logger.error("Wrong format on chargingResource code:", e);
 						}
 					}
 				}
@@ -1085,7 +1085,7 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.error("Problem converting Duration:" + e);
+					logger.error("Problem converting Duration:", e);
 				}
 
 				pricePointImpl_.setExpiryDate((ppType.getExpiryDate()!= null?ppType.getExpiryDate().getTime():null));
@@ -1111,7 +1111,7 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.error("Problem setting baerer id " + e);
+					logger.error("Problem setting baerer id ", e);
 				}
 
 				if (StringUtils.isNotBlank(ppType.getUserGroup()))
@@ -1129,7 +1129,7 @@ class DecouplingConverter   {
 							pricePointImpl_.setUserGroup(fromUGArray);
 					}
 				}	catch(final Exception e)	{
-					logger.error("Problem setting User Groups:" + e);
+					logger.error("Problem setting User Groups:", e);
 				}
 
 				pricePointImpl_.setIsHistoric(ppType.isIsHistoric());
@@ -1166,7 +1166,7 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.error("Problem converting PricePointTiersType:" + e);
+					logger.error("Problem converting PricePointTiersType:", e);
 				}
 				//CR1455 - end
 
@@ -1189,7 +1189,7 @@ class DecouplingConverter   {
 			}
 			catch(final Exception e)
 			{
-				logger.error("Problem converting values in Pricepoint:" + e);
+				logger.error("Problem converting values in Pricepoint:", e);
 				return null;
 			}
 		}
@@ -1228,14 +1228,14 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.error("Problem fetching User Groups:" + e);
+					logger.error("Problem fetching User Groups:", e);
 				}
 
 				return pricePointImpl_;
 			}
 			catch(final Exception e)
 			{
-				logger.error("Problem converting values in Pricepoint:" + e);
+				logger.error("Problem converting values in Pricepoint:", e);
 				return null;
 			}
 		}
@@ -1391,7 +1391,7 @@ class DecouplingConverter   {
 			
 			return transaction_;
 		}	catch(final Exception e)	{
-			logger.error("Problem converting values in Transaction:" + e);
+			logger.error("Problem converting values in Transaction:", e);
 			return null;
 		}
 	}
@@ -1571,7 +1571,7 @@ class DecouplingConverter   {
 		}
 		catch(final Exception e)
 		{
-			logger.error("Problem setting ResourceBalanceType in convertRenewPurchaseAuthObj " + e);
+			logger.error("Problem setting ResourceBalanceType in convertRenewPurchaseAuthObj ", e);
 		}
 		rv.setIsSuccess(auth.isIsSuccess());
 		return rv;
@@ -1732,7 +1732,7 @@ class DecouplingConverter   {
 		}
 		catch(final Exception e)
 		{
-			logger.error("Problem converting RangeValueFullType:" + e);
+			logger.error("Problem converting RangeValueFullType:", e);
 			return null;
 		}
 	}
@@ -1756,7 +1756,7 @@ class DecouplingConverter   {
 		}
 		catch(final Exception e)
 		{
-			logger.error("Problem converting DayRangeFullType:" + e);
+			logger.error("Problem converting DayRangeFullType:", e);
 			return null;
 		}
 	}
@@ -1776,7 +1776,7 @@ class DecouplingConverter   {
 		}
 		catch(final Exception e)
 		{
-			logger.error("Problem converting BalanceImpactFullType:" + e);
+			logger.error("Problem converting BalanceImpactFullType:", e);
 			return null;
 		}
 	}

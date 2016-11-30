@@ -2003,6 +2003,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	}
 
 	//MQC 5067 - return the resource balances
+    //Implementation changed since 16-8
 	@Transient
   	public ResourceBalance[] getResourceBalances () {
         List<ResourceBalance> resourceBalances = new ArrayList<>();
@@ -2105,6 +2106,7 @@ public class PricePoint extends RatingAttributes implements Serializable, Catalo
 	/**
 	 * @return the mBalances
 	 */
+    //Implementation changed as of 16-8
 	@Transient
 	public ResourceBalance[] getBalances() {
         List<ResourceBalance> resourceBalances = new ArrayList<>();

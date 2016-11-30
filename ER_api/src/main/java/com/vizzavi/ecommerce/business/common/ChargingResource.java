@@ -48,8 +48,8 @@ public final class ChargingResource implements Serializable	{
 	//probably not necessary since we aren't creating any in code
 	//@SequenceGenerator(name="resseq", sequenceName="er_resources_seq", allocationSize=1)
 	@Id
-	@Column(name="resource_obj_id", insertable=false, updatable=false)
-    long id;
+//	@Column(name="resource_obj_id", insertable=false, updatable=false)
+//    int id;
     
 	@Column(name="country_obj_id", insertable=false, updatable=false)
     int countryId;
