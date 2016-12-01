@@ -32,7 +32,8 @@
 		<dependency>
 			<groupId>com.vodafone.common</groupId>
 			<artifactId>APPLICATION_app_common</artifactId>
-			<version>RELEASE</version>
+			<!--<version>RELEASE</version>-->
+			<version>0.154.0</version>
 		</dependency>
 
 		<!-- all others, open source -->

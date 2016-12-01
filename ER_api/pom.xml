@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>com.vodafone.er</groupId>
 			<artifactId>ER_transactions_log</artifactId>
-			<version>RELEASE</version>
+			<version>0.52.0-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- Java EE -->

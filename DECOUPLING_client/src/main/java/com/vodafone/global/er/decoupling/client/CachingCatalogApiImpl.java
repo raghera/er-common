@@ -103,7 +103,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
             CatalogPackage fromCache = localPackageCache.get(packageId);
             if (fromCache!=null)	{	//if it's in the cache, use that
                 logger.info("found package {} in locale cache", packageId);
-                return fromCache;
+                return new CatalogPackage(fromCache);
             }
         }	else	{
             //initialise cache
@@ -114,7 +114,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
         logger.info("Package {} not found in locale cache - fetching from ER", packageId);
         CatalogPackage fromER =  super.getPackage(packageId);
         localPackageCache.put(packageId, fromER);
-        return fromER;
+        return new CatalogPackage(fromER);
     }
 
 
