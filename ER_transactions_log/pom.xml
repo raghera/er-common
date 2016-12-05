@@ -33,6 +33,13 @@
 			<groupId>com.vodafone.common</groupId>
 			<artifactId>APPLICATION_app_common</artifactId>
 			<version>0.154.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.axis2</groupId>
+					<artifactId>axis2-kernel</artifactId>
+				</exclusion>
+			</exclusions>
+
 		</dependency>
 
 		<!-- all others, open source -->
