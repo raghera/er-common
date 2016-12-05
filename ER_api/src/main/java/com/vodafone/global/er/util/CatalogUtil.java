@@ -23,8 +23,8 @@ public class CatalogUtil {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CatalogUtil.class);
 
-	private CatalogUtil(){}
-	
+	public CatalogUtil(){}
+
 	/**
 	 * assembles a 'full package id' from a pricepoint (starting with 'package:')
 	 * @param pricePointId
@@ -37,17 +37,23 @@ public class CatalogUtil {
 
 	/**
 	 *  Pass in a pricepoint id for a package or service
-	 *  content:pAlt_[TAX_sAlt]_1_999_*_999_999 or package:pAlt_[TAX_999_999_999_999_1_*_*_*_false_false_*].
+	 *  content:pAlt_TAX_sAlt_1_999_*_999_999 or package:pAlt_TAX_999_999_999_999_1_*_*_*_false_false_*
 	 *  This method will extract the tax code from the string and return it
 	 *  PricePoint instance.
 	 */
 	public static final String getTaxCodeFromPricePointId(final String pricePointIdString) {
-        if(pricePointIdString == null ) {
-            return null;
+
+        String substring = null;
+        if(pricePointIdString == null || pricePointIdString.isEmpty()) {
+            return substring;
         }
 		int startIdx = pricePointIdString.indexOf("_") + 1;
 		int endIdx = pricePointIdString.indexOf("_", startIdx );
-		final String substring = pricePointIdString.substring(startIdx,endIdx);
+
+        if(startIdx != endIdx && startIdx != 0 && endIdx != -1) {
+            substring = pricePointIdString.substring(startIdx, endIdx);
+        }
+
         return substring;
 	}
 
