@@ -31,8 +31,8 @@ import com.vodafone.global.er.http.HttpHeaderAware;
 
 abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 
-	protected final DecouplingMessageFactory _factory_;
-	protected final DecouplingClient _client ;
+	protected final DecouplingMessageFactory factory;
+	protected final DecouplingClient client ;
 	protected  Locale	locale;
 	protected final DecouplingConverter converter;
 	protected final ObjectFactory reqObjFactory = new ObjectFactory();
@@ -56,10 +56,9 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 		}	
 		logger.info("BaseErApiDecouplingImpl "+version+" dated "+date);
 		this.locale= locale;
-		_factory_ = new DecouplingMessageFactory();
-		_client = new DecouplingClient(this.locale, clientId);
+		factory = new DecouplingMessageFactory();
+		client = new DecouplingClient(this.locale, clientId);
 		this.converter = new DecouplingConverter(locale);
-		allLocales.add(locale);
 	}
 
 
@@ -99,12 +98,13 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	protected <T> T  sendRequestAndGetResponse(int requestTypeId, Object request, Class<T> expectedResponse, String clientId, int requestVersion) throws EcommerceException	{
 		logger.debug("Enter BaseErApiDecouplingImpl.sendRequestAndGetResponse");
 		Object payload = null;
-		final ErRequest element = _factory_.buildEnvelope(requestTypeId, request, clientId);
+
+		final ErRequest element = factory.buildEnvelope(requestTypeId, request, clientId);
 		if (requestVersion>1)
 			element.setVersion(requestVersion);
 		//TODO improve / replace this basic stub framework
 		File stubFile=null;
-		if (stubbed)	{
+		if (stubbed)	{	//stubbed=true;
 			stubFile = new File(requestTypeId+".xml");	//ideally we add msisdn or something in this filename
 			logger.error("stub enabled - looking for response in file "+stubFile.getAbsolutePath());
 		}
@@ -112,13 +112,13 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 			try {
 				String xml = FileUtils.getFile(stubFile.getAbsolutePath());
 				logger.error("response xml FROM STUB FILE:\n {}", xml);
-				payload= _client.getResponseObject(xml);
+				payload= client.getResponseObject(xml);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
 		}	else {
 			logger.debug("Calling DecouplingClient.getPayload");
-			payload = _client.getPayload(element, getHeaders(request));
+			payload = client.getPayload(element, getHeaders(request));
 		}
         logger.debug("Enter BaseErApiDecouplingImpl.sendRequestAndGetResponse response received." + payload);
 		return getResultFromPayload(payload, expectedResponse);
@@ -161,7 +161,7 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 	
 	@SuppressWarnings("unchecked")
 	protected <T> T createRequest(int requestTypeId)	{
-			return (T) _factory_.createRequest(requestTypeId);
+			return (T) factory.createRequest(requestTypeId);
 	}
 
 	/**
@@ -183,7 +183,8 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 					//final Class<?> returnType = method.getReturnType();
 					if (method.getParameterTypes().length==0 && method.getReturnType().equals(String.class) && (method.getName().toLowerCase().indexOf(searchString)>=0))	{
 						final Object result  = method.invoke(request, new Object[]{});
-						headersToAdd.add(new BasicHeader("x-"+thing, result!=null?result.toString():"null"));
+						if (result!=null)	//we don't want "x-msisdn:null"
+							headersToAdd.add(new BasicHeader("x-"+thing, result.toString()));
 					}
 				}
 			}
@@ -233,8 +234,8 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 			throw new EcommerceException("response payload was null");
 		//check for Error first, in case the client passed in expectedClass of Object
 		if (Error.class.isAssignableFrom(responsePayload.getClass()))	{
-			logger.warn("response {}, expected {}", responsePayload, expectedClass);
-			throw buildExceptionFromError((Error) responsePayload);	
+			logger.warn("response {}, expected {}", responsePayload.getClass(), expectedClass);
+			throw buildExceptionFromError((Error) responsePayload);
 		}
 		else if (expectedClass.isAssignableFrom(responsePayload.getClass()))	{
 			@SuppressWarnings("unchecked")
@@ -264,7 +265,8 @@ abstract class BaseErApiDecouplingImpl implements HttpHeaderAware {
 
 		int errorId=-1;
 		try	{
-			errorId=Integer.parseInt(error.getId());
+//			errorId=Integer.parseInt(error.getId());
+			errorId=error.getId();
 		} catch(NumberFormatException nfe)	{
 			logger.warn("error response {} has non-integer id {}", error, error.getId());
 		}

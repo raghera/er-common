@@ -1,25 +1,12 @@
 package com.vodafone.global.er.decoupling.client;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vizzavi.ecommerce.business.charging.AccountValidationAuthorization;
-import com.vizzavi.ecommerce.business.charging.ModifyAuthorisation;
-import com.vizzavi.ecommerce.business.charging.RefundAttributes;
-import com.vizzavi.ecommerce.business.charging.RefundAuthorization;
-import com.vizzavi.ecommerce.business.charging.SubscriptionAttributes;
+import com.vizzavi.ecommerce.business.charging.*;
 import com.vizzavi.ecommerce.business.common.ChargingResource;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.business.common.ReasonCode;
-import com.vizzavi.ecommerce.business.selfcare.*;
 import com.vizzavi.ecommerce.business.selfcare.Bar;
 import com.vizzavi.ecommerce.business.selfcare.BasicAccount;
+import com.vizzavi.ecommerce.business.selfcare.*;
 import com.vizzavi.ecommerce.business.selfcare.ModifySubscriptionAuthorization;
 import com.vodafone.global.er.decoupling.PayloadConstants;
 import com.vodafone.global.er.decoupling.binding.request.*;
@@ -31,6 +18,14 @@ import com.vodafone.global.er.decoupling.binding.response.*;
 import com.vodafone.global.er.decoupling.binding.response.InactivateSubscriptionPromoCodeAuthorisationType;
 import com.vodafone.global.er.decoupling.binding.response.ReasonCodeType;
 import com.vodafone.global.er.decoupling.binding.response.RefundAuthorisationFullType;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 
@@ -368,11 +363,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 					refundAuthorizationType_.getErrorId(),
 					refundAuthorizationType_.getErrorDescription());
 			refundAuthorization_.setIsSuccess(refundAuthorizationType_.isIsSuccess());
-//			}
-//			catch(final Exception e)
-//			{
-//				log.error("Problem setting RefundAuthorization:" + e);
-//			}
+
 		}	else  {
 			refundAuthorization_ = new RefundAuthorization(reasonCode_);
 			refundAuthorization_.setTransactionId(refundAuthorizationType_.getTransactionId());
@@ -848,7 +839,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		final GetBarringStatusResponse response = sendRequestAndGetResponse(PayloadConstants.GET_BARRING_STATUS_REQUEST, request, GetBarringStatusResponse.class);
 		
 		if(response!=null && response.getBars()!=null){
-			barList = new ArrayList<Bar>();
+			barList = new ArrayList<>();
 			
 			for(com.vodafone.global.er.decoupling.binding.response.Bar bar: response.getBars()){
 				Bar barItem = new Bar();
@@ -867,8 +858,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
      * JIRA ET196 Inactivate subscription promo-code
      * @param msisdn
 	 * @param clientId
-     * @param subscriptionId
-     * @param packageId
+     * @param inactivateSubPromoAttrs
      * @return List<InactivateSubscriptionPromoCodeAuthorization>
      * @throws EcommerceException
      */
@@ -892,7 +882,7 @@ public class CustCareApiDecouplingImpl extends SelfcareApiDecouplingImpl impleme
 		final InactivateSubscriptionPromoCodeResponse inactivateSubPromoCodeType_ =sendRequestAndGetResponse(PayloadConstants.INACTIVATE_SUBSCRIPTION_PROMO_CODE_REQUEST, request, InactivateSubscriptionPromoCodeResponse.class);
 		
 		if (inactivateSubPromoCodeType_.getInactivateSubscriptionPromoCodeAuthorisation() != null && inactivateSubPromoCodeType_.getInactivateSubscriptionPromoCodeAuthorisation().size() >0) {
-			inactivesubscriptionPromoCodesAuths = new ArrayList<InactivateSubscriptionPromoCodeAuthorization>();
+			inactivesubscriptionPromoCodesAuths = new ArrayList<>();
 			for (InactivateSubscriptionPromoCodeAuthorisationType inactivateSubPromoCodeType : inactivateSubPromoCodeType_.getInactivateSubscriptionPromoCodeAuthorisation() ) {
 				InactivateSubscriptionPromoCodeAuthorization inactivateSubPromoCode = new InactivateSubscriptionPromoCodeAuthorization();
 					inactivateSubPromoCode.setSuccess(inactivateSubPromoCodeType.isIsSuccess());

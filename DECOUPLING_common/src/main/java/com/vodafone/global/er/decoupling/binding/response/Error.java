@@ -1,14 +1,9 @@
 
 package com.vodafone.global.er.decoupling.binding.response;
 
-import java.io.Serializable;
 import javax.xml.bind.Element;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 
 
 /**
@@ -49,7 +44,7 @@ public class Error
     @XmlElement(required = true)
     protected String description;
     @XmlAttribute(name = "id", required = true)
-    protected String id;
+    protected int id;
     @XmlAttribute(name = "system-id")
     protected String systemId;
     @XmlAttribute(name = "type", required = true)
@@ -105,25 +100,17 @@ public class Error
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
      */
-    public String getId() {
+    public int getId() {
         return id;
     }
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
      */
-    public void setId(String value) {
+    public void setId(int value) {
         this.id = value;
     }
 

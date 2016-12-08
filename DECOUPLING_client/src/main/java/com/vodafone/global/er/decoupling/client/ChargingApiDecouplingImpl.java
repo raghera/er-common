@@ -1,27 +1,17 @@
 package com.vodafone.global.er.decoupling.client;
 
-import java.util.Locale;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vizzavi.ecommerce.business.catalog.CatalogService;
-import com.vizzavi.ecommerce.business.charging.ChargingApi;
-import com.vizzavi.ecommerce.business.charging.PromoCodeAttributes;
-import com.vizzavi.ecommerce.business.charging.PromoCodeValidation;
-import com.vizzavi.ecommerce.business.charging.UsageAttributes;
-import com.vizzavi.ecommerce.business.charging.UsageAuthorization;
-import com.vizzavi.ecommerce.business.charging.UsageAuthorizationException;
+import com.vizzavi.ecommerce.business.charging.*;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vodafone.global.er.business.charging.UsageCompleteAttributes;
 import com.vodafone.global.er.decoupling.PayloadConstants;
-import com.vodafone.global.er.decoupling.binding.request.RatingAttributesType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAttributesType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateChargeRequestType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateRequestType;
-import com.vodafone.global.er.decoupling.binding.request.UsageComplete;
+import com.vodafone.global.er.decoupling.binding.request.*;
 import com.vodafone.global.er.decoupling.binding.response.PurchaseOptions;
 import com.vodafone.global.er.decoupling.binding.response.UsageAuthorisation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
 
 
 /**
@@ -78,8 +68,6 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 		
 		Object responsePayload = null;
 		try {
-//			ErRequest erRequest = new DecouplingMessageFactory().buildEnvelope(PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD, uar, clientApplicationId);
-//			responsePayload = new DecouplingClient(locale).getPayload(erRequest, getHeaders(erRequest)); // MQC 9487 - set headers
 			responsePayload = sendRequestAndGetResponse(PayloadConstants.USAGE_AUTH_RATE_REQUEST_PAYLOAD, uar, Object.class, clientApplicationId);
 		} catch (final EcommerceException e) {
 			logger.info("problem talking to er? {}", e.getMessage());
@@ -95,12 +83,6 @@ public class ChargingApiDecouplingImpl  extends BaseErApiDecouplingImpl implemen
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * @exception UsageAuthorizationException
-	 *                   if the serviceId is not recognised or has been disabled
-	 *                   if the charging subsystem is not operational
-	 */
 	@Override
 	public UsageAuthorization usageAuthRateCharge(String clientApplicationId, String msisdn,
 			String serviceId, UsageAttributes usageAttributes) throws UsageAuthorizationException {

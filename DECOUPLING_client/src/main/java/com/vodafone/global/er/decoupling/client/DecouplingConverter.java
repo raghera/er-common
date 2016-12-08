@@ -50,6 +50,7 @@ class DecouplingConverter   {
 
 	private final static Logger logger = LoggerFactory.getLogger(DecouplingConverter.class);
 	private final Locale locale;
+	private String clientId;
 
 
 	public DecouplingConverter(Locale locale)	{
@@ -204,7 +205,7 @@ class DecouplingConverter   {
 
 			subscription_.setStatus(subType.getStatus());
 
-			if(subType.getTransactions() != null)
+			if(subType.getTransactions() != null && !subType.getTransactions().getTransaction().isEmpty())
 			{
 				try
 				{
@@ -220,7 +221,7 @@ class DecouplingConverter   {
 				}
 				catch(final Exception e)
 				{
-					logger.info("Problem with Decoupling Client added conversions - transaction type:" + e);
+					logger.info("Problem with Decoupling Client added conversions - transaction type:", e);
 				}
 			}
 			//subscription_.setHasValidMicroService(subType.isHasValidMicroService());
@@ -324,7 +325,7 @@ class DecouplingConverter   {
 				final double bal = resBalType.getBalance();
 				final ChargingResource chRes = convertChargingResourceFullType(resBalType.getChargingResource());
 				final ResourceBalance resourceBalance_ = new ResourceBalance(chRes, bal);
-				resourceBalance_.setSubscriptionIdLong((resBalType.getSubscriptionId() != null?new Long(resBalType.getSubscriptionId()):-1));
+				resourceBalance_.setSubscriptionIdLong((StringUtils.isNotBlank(resBalType.getSubscriptionId())?new Long(resBalType.getSubscriptionId()):-1));
 				return resourceBalance_;
 			}
 			else
@@ -398,19 +399,6 @@ class DecouplingConverter   {
 					cataloPackageImpl_.setPackageType(CatalogPackage.EVENT_PACKAGE_TYPE);
 
 
-				//				DRMType drmType_ = DRMType.NOT_DRM;
-				//				try
-				//				{
-				//					if(packType.getDrmType().getName() != null && !packType.getDrmType().getName().equalsIgnoreCase(""))
-				//						drmType_ = DRMType.convertStringToDRMType(packType.getDrmType().getName());
-				//				}
-				//				catch(final Exception e)
-				//				{
-				//					logger.error("Problem converting DRMType will set NOT_DRM:" + e);
-				//					drmType_ = DRMType.NOT_DRM;
-				//				}
-
-				//				cataloPackageImpl_.setDRMType(drmType_);
 
 				final PricePointType pricePointType_ = packType.getPricePoint();
 				//PricePointImpl dummyPricepoint_ = new PricePointImpl();
@@ -431,7 +419,7 @@ class DecouplingConverter   {
 					final List<PricePointType> points_ = pps_.getPricePoint();
 					if(points_ != null)
 					{
-						final HashMap<String, PricePoint> map_ = new HashMap<String, PricePoint>();
+						final HashMap<String, PricePoint> map_ = new HashMap<>();
 						for (final PricePointType pricePoint_ : points_)
 						{
 							map_.put(pricePoint_.getId(), this.convertPricePointType(pricePoint_));
@@ -447,7 +435,7 @@ class DecouplingConverter   {
 						{
 							if(logger.isDebugEnabled())
 								logger.debug("Setting single pricepoint as map");
-							final Map<String, PricePoint> map_ = new HashMap<String, PricePoint>();
+							final Map<String, PricePoint> map_ = new HashMap<>();
 							map_.put(singlePricePoint_.getId(), singlePricePoint_);
 							cataloPackageImpl_.setPricePoints(new PricePointsImpl(map_));
 						}
@@ -512,20 +500,6 @@ class DecouplingConverter   {
 				if(packType.isIsEventPackage())
 					cataloPackageImpl_.setPackageType(CatalogPackage.EVENT_PACKAGE_TYPE);
 
-
-				//				DRMType drmType_ = DRMType.NOT_DRM;
-				//				try
-				//				{
-				//					if(packType.getDrmType().getName() != null && !packType.getDrmType().getName().equalsIgnoreCase(""))
-				//						drmType_ = DRMType.convertStringToDRMType(packType.getDrmType().getName());
-				//				}
-				//				catch(final Exception e)
-				//				{
-				//					logger.error("Problem converting DRMType will set NOT_DRM:" + e);
-				//					drmType_ = DRMType.NOT_DRM;
-				//				}
-
-				//				cataloPackageImpl_.setDRMType(drmType_);
 
 				final PricePointFullType pricePointType_ = packType.getPricePoint();
 				PricePointImpl singlePricePoint_= null;
@@ -596,7 +570,7 @@ class DecouplingConverter   {
 					if(serviceNamesTypes_ != null)
 					{
 						final List<CatalogServiceFullType> catalogServicesList_ = serviceNamesTypes_.getCatalogService();
-						final List<CatalogService> services_ = new ArrayList<CatalogService>();
+						final List<CatalogService> services_ = new ArrayList<>();
 						for (final CatalogServiceFullType catalogService_: catalogServicesList_)
 						{
 							final CatalogService service_ = convertService(catalogService_);
@@ -874,18 +848,7 @@ class DecouplingConverter   {
 				else
 					pricePointImpl_.setChargingMethod(ChargingMethod.NON_RECURRING);
 
-//				pricePointImpl_.setChannel(ppType.getChannel());
-//				pricePointImpl_.setChannel(getChannelFromPricePointId(ppType.getId()));
 				ppType.getUserGroups();
-				//CR2241start
-				//looks like missed implementation - was:
-				//				ppType.isIsActive();
-				//				ppType.isIsDiscount();
-				//				ppType.isIsPreOrder();
-				//				ppType.isIsPreview();
-				//				ppType.isIsTrial();
-				//				ppType.isIsValidSuperCreditOption();
-				//changed to:
 				if (ppType.getStartDate() != null){
 					pricePointImpl_.setStartDate(ppType.getStartDate().getTime()); //handles: ppType.isIsActive();
 				}
@@ -897,13 +860,6 @@ class DecouplingConverter   {
 				if (ppType.getPromoCode() != null){
 					pricePointImpl_.setPromoCodes(new String []{ppType.getPromoCode()} ); //does: ppType.isIsPreview() && isIsTrial();
 				}
-
-				//can't do this final one unless we add field to PricePointImpl or convert differently, yuk :( 
-				//ppType.isIsValidSuperCreditOption();
-
-				//				pricePointImpl_.setFixedRecurrence(ppType.getFixedNumRecurrences());
-				//				pricePointImpl_.setBearer(ppType.getBearerId());
-				//CR2241end
 
 				final BalanceImpactRates balanceImpactsType_ =  ppType.getBalanceImpactRates();
 				if(balanceImpactsType_ != null)				{
@@ -1039,19 +995,7 @@ class DecouplingConverter   {
 					}
 				}
 
-//				final PricePointFullType.BalanceImpacts balanceImpacts_ = ppType.getBalanceImpacts();
-//				if(balanceImpacts_ != null)
-//				{
-//					final BalanceImpacts bis = new BalanceImpacts();
-//					final List<ChargingResourceFullType> balanceImpactsList_ = balanceImpacts_.getBalanceImpact();
-//					for (final ChargingResourceFullType chargingResourceFullType : balanceImpactsList_)
-//					{
-//						final ChargingResourceType c_ =  chargingResourceFullType.getChargingResourceType();
-//						BalanceImpact b_ = new BalanceImpact(new ChargingResource(new Integer(c_.getCode()),c_.getName()), pricePointImpl_.getNetRate());
-//						bis.addBalanceImpact(b_);
-//					}
-//					pricePointImpl_.setBalanceImpacts(bis,new Date());
-//				}
+
 
 				//ET-657
 				final BalanceImpactRates balanceImpactsType_ =  ppType.getBalanceImpactRates();
@@ -1139,7 +1083,7 @@ class DecouplingConverter   {
 					if(tiersType_ != null)
 					{
 						final List<PricePointTierFullType> tiersTypeList_ = tiersType_.getPricePointTier();
-						final HashMap<String, PricePointTier> tierMap_ = new HashMap<String, PricePointTier>();
+						final HashMap<String, PricePointTier> tierMap_ = new HashMap<>();
 						for (final PricePointTierFullType pricePointTierFullType_ : tiersTypeList_)
 						{
 							if(pricePointTierFullType_ != null)
@@ -1473,21 +1417,6 @@ class DecouplingConverter   {
 			ratingAtts.setPromoCodes((rAtts.getPromoCode() != null?new String[]{rAtts.getPromoCode()}:new String[]{""}));
 			ratingAtts.setPaymentInformation(rAtts.getPaymentInformation());
 
-			//			if(rAtts.getNetworkCodeString() != null)
-			//			{
-			//				final NetworkCode networkCode_ = new NetworkCode();
-			//
-			//				if(rAtts.getNetworkCodeString().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_DOMESTIC]))
-			//					networkCode_.setRoamingType(ErCoreConst.ROAMING_DOMESTIC);
-			//				else if(rAtts.getNetworkCodeString().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_DUMMY_NETWORK_CODE_ID]))
-			//					networkCode_.setRoamingType(ErCoreConst.ROAMING_DUMMY_NETWORK_CODE_ID);
-			//				else if(rAtts.getNetworkCodeString().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_OFF_FOOTPRINT]))
-			//					networkCode_.setRoamingType(ErCoreConst.ROAMING_OFF_FOOTPRINT);
-			//				else if(rAtts.getNetworkCodeString().equals(ErCoreConst.ROAMING_TYPE_STR[ErCoreConst.ROAMING_ON_FOOTPRINT]))
-			//					networkCode_.setRoamingType(ErCoreConst.ROAMING_ON_FOOTPRINT);
-			//
-			//				ratingAtts.setNetworkCode(networkCode_);
-			//			}
 
 			ratingAtts.setChargingMethod(ratingAttributesFullType.getChargingMethod());
 
@@ -1598,6 +1527,12 @@ class DecouplingConverter   {
 		if(codeType_ != null)
 		{
 			rv.setReasonCode(convertReasonCode(codeType_)); 
+		}
+		final ReasonCodeType subCodeType_ = auth.getSubReasonCode();
+		//JIRAET624 - also set the sub reason code
+		if(subCodeType_ != null)
+		{
+			rv.setSubReasonCode(convertReasonCode(subCodeType_));
 		}
 		rv.setPackageSubscriptionId(auth.getPackageSubscriptionId());
 		//CR2241start
@@ -2211,6 +2146,36 @@ class DecouplingConverter   {
 			ratingAtt.setAssetId(purchaseAttributes.getAssetID());
 		}
 
+		//JIRAET624 - add Purchase Channel
+		if (isNotBlank(purchaseAttributes.getPurchaseChannel())) {
+			ratingAtt.setPurchaseChannel(purchaseAttributes.getPurchaseChannel());
+		}
+
+		//JIRAET624 - add Affiliate Id
+		if (isNotBlank(purchaseAttributes.getAffiliateID())) {
+			ratingAtt.setAffiliateId(purchaseAttributes.getAffiliateID());
+		}
+
+		//JIRAET624 - add Aggregator Id
+		if (isNotBlank(purchaseAttributes.getAggregatorId())) {
+			ratingAtt.setAggregatorId(purchaseAttributes.getAggregatorId());
+		}
+
+		//JIRAET624 - add Receipient Msisdn
+		if (isNotBlank(purchaseAttributes.getReceipientMsisdn())) {
+			ratingAtt.setRecipientMsisdn(purchaseAttributes.getReceipientMsisdn());
+		}
+
+		//JIRAET624 - add Product Code
+		if (isNotBlank(purchaseAttributes.getProductCode())) {
+			ratingAtt.setProductCode(purchaseAttributes.getProductCode());
+		}
+
+		//JIRAET624 - add Content Category
+		if (isNotBlank(purchaseAttributes.getContentCategory())) {
+			ratingAtt.setContentCategory(purchaseAttributes.getContentCategory());
+		}
+
 		if (purchaseAttributes.getChannel() != Constants.INT_NOT_SET) {
 			ratingAtt.setChannel(purchaseAttributes.getChannel());
 		}
@@ -2409,16 +2374,6 @@ class DecouplingConverter   {
 		s.setSubscriptionIdLong(subs.getId());
 		
 		s.setStatus(subs.getStatus());
-		/*if(isNotBlank(subs.getSubscriptionStatus())){
-			
-				for (Entry<Integer, String> statusMap: SubscriptionStatus.statusMap.entrySet()){
-					if (Objects.equals(subs.getSubscriptionStatus(), statusMap.getValue())) {
-						s.setStatus(statusMap.getKey());
-			        }
-				}
-			
-				//s.setStatus(SubscriptionStatus.statusMap.);
-		}*/
 		
 		s.setPricePoint(buildPricepoint(subs.getPricepoint()));
 		s.setPurchaseDate(subs.getPurchaseDate().getTime()); 
@@ -2456,7 +2411,7 @@ class DecouplingConverter   {
 			if(respBalanceList!=null && !respBalanceList.isEmpty())
 				s.setResourceBalances(respBalanceList.toArray(new ResourceBalance[respBalanceList.size()]));
 		}else{
-			List<ResourceBalance> respBalanceList = new ArrayList<ResourceBalance>();
+			List<ResourceBalance> respBalanceList = new ArrayList<>();
 			s.setResourceBalances(respBalanceList.toArray(new ResourceBalance[0]));
 		}
 		//ET-265 - Adding External sub id in response - begin
@@ -2479,12 +2434,6 @@ class DecouplingConverter   {
 //		if(subs.getPenaltyCharge() != null && subs.getMinSubPeriodEnd() != null)
 //			s.setPenaltyCharge(subs.getPenaltyCharge().doubleValue());
 		//ET-280 |End
-
-//		if(subs.getServices() != null && subs.getServices().getServiceId() != null) {
-//            for(String id : subs.getServices().getServiceId()) {
-//                s.setServiceProvTag(id,"N/A");
-//            }
-//        }
 
 		// ET391 - Add external fields to ER_subscriptions and pass to ERIF & PNH starts here
 		s.setExtIdentifier1(subs.getExternalIdentifier1());
@@ -2626,7 +2575,7 @@ class DecouplingConverter   {
 	 * @return
 	 */
 	private List<ResourceBalance> buildResourceBalances(List<com.vodafone.global.er.decoupling.binding.response.v2.ResourceBalance> resourceBalancesList){
-		List<ResourceBalance> resourceBalances = new ArrayList<ResourceBalance>();
+		List<ResourceBalance> resourceBalances = new ArrayList<>();
 		
 		for(com.vodafone.global.er.decoupling.binding.response.v2.ResourceBalance resourceBalance: resourceBalancesList){
 			ResourceBalance rb = new ResourceBalance(buildResourceBalance(resourceBalance));
@@ -2709,7 +2658,7 @@ class DecouplingConverter   {
 
 		t.setServiceId(txn.getServiceId());
 		t.setStatus(txn.getStatus());
-
+		t.setSubscriptionId(txn.getSubscriptionId());
 		t.setTransactionIdLong(txn.getId());
 		t.setType(new TransactionType(txn.getType()));
 		return t;
@@ -2830,9 +2779,9 @@ class DecouplingConverter   {
 		m.setModifyTransactionId(String.valueOf(txn.getId()));
 		
 		m.setType(new TransactionType(txn.getType()));
-		
 		m.setSubscriptionIdLong(txn.getSubId());
 		m.setReason(txn.getReason());
+		m.setCsrId(txn.getCsrId());
 		if(m.getEventDateTime()!=null && txn.getTimestamp()!=null)
 			m.getEventDateTime().setTime(txn.getTimestamp().getTime());
 		return m;
@@ -2860,9 +2809,17 @@ class DecouplingConverter   {
 	}
 	// Jira ET245: ends here
 
+
+
+	/**
+	 * build a list of {@link Subscription}s from a list of jaxb subscription objects
+	 * @param subscriptions
+	 * @param clientId
+	 * @return {@link List}&lt;{@link Subscription}> never null
+	 */
 	//Start for ET-280
 	public List<Subscription> buildPackageForSubscription(List<com.vodafone.global.er.decoupling.binding.response.v2.Subscription> subscripitonList,String clientId) {
-		List<Subscription> list = new ArrayList<Subscription>();
+		List<Subscription> list = new ArrayList<>();
 		
 		for (Subscription subs : buildSubscriptions(subscripitonList)) {
 			PricePoint pricePoint = subs.getPricePoint();
@@ -2915,7 +2872,7 @@ class DecouplingConverter   {
 
 
 	public List<ServiceOffer> buildServiceOffers(List<OfferServiceType> service) {
-		List<ServiceOffer> serviceOfferList = new ArrayList<ServiceOffer>();
+		List<ServiceOffer> serviceOfferList = new ArrayList<>();
 		
 		for (OfferServiceType serviceOffer : service) {
 			serviceOfferList.add(buildServiceOffer(serviceOffer));
@@ -2949,8 +2906,9 @@ class DecouplingConverter   {
 		return offer;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private <T>List<T> castCollection(List srcList, Class<T> clas){
-	    List<T> list =new ArrayList<T>();
+		List<T> list =new ArrayList<>();
 	    for (Object obj : srcList) {
 	    	if(obj!=null && clas.isAssignableFrom(obj.getClass())) {
 	    		list.add(clas.cast(obj));
@@ -2961,7 +2919,7 @@ class DecouplingConverter   {
 	
 	private List<Subscription> getSubscriptionLiteList(List<Element> subs) {
 		List<SubscriptionLiteType> subLiteTypes = castCollection(subs, com.vodafone.global.er.decoupling.binding.response.SubscriptionLiteType.class);
-		List<Subscription> subList = new ArrayList<Subscription>();
+		List<Subscription> subList = new ArrayList<>();
 		for(SubscriptionLiteType subLiteType : subLiteTypes) {
 			Subscription sub = new Subscription();
 			sub.setSubscriptionIdLong(subLiteType.getId());
@@ -2986,7 +2944,7 @@ class DecouplingConverter   {
 	
 	private List<PricePoint> getPricePointLiteList(List<Element> ppts) {
 		List<PricePointLiteType> pptLiteTypes = castCollection(ppts, com.vodafone.global.er.decoupling.binding.response.PricePointLiteType.class);
-		List<PricePoint> pptList = new ArrayList<PricePoint>();
+		List<PricePoint> pptList = new ArrayList<>();
 		for(PricePointLiteType pptLiteType : pptLiteTypes) {
 			PricePoint ppt = new PricePoint();
 			ppt.setId(pptLiteType.getId());
@@ -3001,6 +2959,7 @@ class DecouplingConverter   {
 			if (isNotBlank(pptLiteType.getPromoCode()))
 				ppt.setPromoCodes(new String [] {pptLiteType.getPromoCode()});
 			ppt.setChannel(pptLiteType.getChannel());
+			ppt.setRenewalsUntilLinkedPricepoint(pptLiteType.getRenewalsUntilLinkedPricepoint());
 			pptList.add(ppt);
 		}
 		

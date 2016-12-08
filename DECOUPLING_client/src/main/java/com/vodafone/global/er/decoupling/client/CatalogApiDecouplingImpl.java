@@ -227,7 +227,7 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 //			final OnestepPackages response = (OnestepPackages) _client.getPayload(element_, getHeaders(element_)); // MQC 9487
 			final OnestepPackages response = sendRequestAndGetResponse(PayloadConstants.FIND_PACKAGES_BY_SERVICE_ID_ONE_STEP_PAYLOAD, request, OnestepPackages.class);
 			
-			final Map<String, OneStepData> tb = new HashMap<String, OneStepData>();
+			final Map<String, OneStepData> tb = new HashMap<>();
 			for (final OnestepPackage impl: response.getOnestepPackage()){
 				final OneStepData dt = new OneStepData();
 				dt.setCreditsLeft(impl.getCreditsLeft());

@@ -3,20 +3,14 @@ package com.vodafone.global.er.decoupling.client;
 
 
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
+import com.vodafone.global.er.decoupling.PayloadConstants;
+import com.vodafone.global.er.decoupling.binding.request.*;
+import com.vodafone.global.er.decoupling.util.xml.QnameMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vodafone.global.er.decoupling.PayloadConstants;
-import com.vodafone.global.er.decoupling.binding.request.ErRequest;
-import com.vodafone.global.er.decoupling.binding.request.ObjectFactory;
-import com.vodafone.global.er.decoupling.binding.request.PayloadType;
-import com.vodafone.global.er.decoupling.binding.request.ProvisionUpdateRequestType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateChargeRequestType;
-import com.vodafone.global.er.decoupling.binding.request.UsageAuthRateRequestType;
-import com.vodafone.global.er.decoupling.util.xml.QnameMapper;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 /**
  * Copyright VODAFONE - 2010
@@ -190,15 +184,15 @@ class DecouplingMessageFactory
 
 		if (obj instanceof UsageAuthRateChargeRequestType)	{
 			QName elementName = QnameMapper.getQname(id);
-			JAXBElement<UsageAuthRateChargeRequestType> jaxbObject = new JAXBElement<UsageAuthRateChargeRequestType>(elementName, UsageAuthRateChargeRequestType.class, (UsageAuthRateChargeRequestType)obj);
+			JAXBElement<UsageAuthRateChargeRequestType> jaxbObject = new JAXBElement<>(elementName, UsageAuthRateChargeRequestType.class, (UsageAuthRateChargeRequestType)obj);
 			pt.setAny(jaxbObject);
 		}	else if (obj instanceof UsageAuthRateRequestType)	{
 			QName elementName = QnameMapper.getQname(id);
-			JAXBElement<UsageAuthRateRequestType> jaxbObject = new JAXBElement<UsageAuthRateRequestType>(elementName, UsageAuthRateRequestType.class, (UsageAuthRateRequestType)obj);
+			JAXBElement<UsageAuthRateRequestType> jaxbObject = new JAXBElement<>(elementName, UsageAuthRateRequestType.class, (UsageAuthRateRequestType)obj);
 			pt.setAny(jaxbObject);
 		} 	else if (obj instanceof ProvisionUpdateRequestType)	{
 			QName elementName = QnameMapper.getQname(id);
-			JAXBElement<ProvisionUpdateRequestType> jaxbObject = new JAXBElement<ProvisionUpdateRequestType>(elementName, ProvisionUpdateRequestType.class, (ProvisionUpdateRequestType)obj);
+			JAXBElement<ProvisionUpdateRequestType> jaxbObject = new JAXBElement<>(elementName, ProvisionUpdateRequestType.class, (ProvisionUpdateRequestType)obj);
 			pt.setAny(jaxbObject);
 		}	else	{
 			pt.setAny(obj);

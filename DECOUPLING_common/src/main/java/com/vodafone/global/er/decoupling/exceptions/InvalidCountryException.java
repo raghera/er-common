@@ -6,7 +6,7 @@ public class InvalidCountryException extends RuntimeException {
 
 
 	private static final long serialVersionUID = 198498468198L;
-	private final String mErrorId;
+	private final int mErrorId;
 	private final String mErrorDescription;
 	
 	public InvalidCountryException(String mErrorDescription, Exception e)
@@ -16,10 +16,10 @@ public class InvalidCountryException extends RuntimeException {
 		this.mErrorDescription = mErrorDescription;
 	}
 	
-	public InvalidCountryException(String mErrorId, String mErrorDescription) {
-		super(mErrorDescription);
-		this.mErrorId = mErrorId;
-		this.mErrorDescription = mErrorDescription;
+	public InvalidCountryException(int errorId, String errorDescription) {
+		super(errorDescription);
+		this.mErrorId = errorId;
+		this.mErrorDescription = errorDescription;
 	}
 	
 	public InvalidCountryException(String mErrorDescription) {
@@ -32,7 +32,7 @@ public class InvalidCountryException extends RuntimeException {
 		return mErrorDescription;
 	}
 
-	public String getErrorId() {
+	public int getErrorId() {
 		return mErrorId;
 	}
 	

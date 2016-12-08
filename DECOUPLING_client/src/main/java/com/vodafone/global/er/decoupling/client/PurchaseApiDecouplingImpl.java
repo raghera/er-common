@@ -1,33 +1,24 @@
  package com.vodafone.global.er.decoupling.client;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vizzavi.ecommerce.business.catalog.CatalogPackage;
 import com.vizzavi.ecommerce.business.charging.*;
 import com.vizzavi.ecommerce.business.common.EcommerceException;
 import com.vizzavi.ecommerce.common.EcommerceRuntimeException;
 import com.vodafone.global.er.decoupling.PayloadConstants;
-import com.vodafone.global.er.decoupling.binding.request.GoodwillCreditRequest;
-import com.vodafone.global.er.decoupling.binding.request.ModifyTariffRequest;
-import com.vodafone.global.er.decoupling.binding.request.Purchase;
+import com.vodafone.global.er.decoupling.binding.request.*;
 import com.vodafone.global.er.decoupling.binding.request.PurchaseAttributesType;
 import com.vodafone.global.er.decoupling.binding.request.RatingAttributesType;
-import com.vodafone.global.er.decoupling.binding.request.RenewPurchasePackageRequest;
-import com.vodafone.global.er.decoupling.binding.response.ErVersionInfoResponse;
-import com.vodafone.global.er.decoupling.binding.response.GoodwillCreditResponse;
-import com.vodafone.global.er.decoupling.binding.response.ModifyTariffAuthorisation;
-import com.vodafone.global.er.decoupling.binding.response.RenewPurchaseAuthorisation;
-import com.vodafone.global.er.decoupling.binding.response.UsageAuthorisation;
+import com.vodafone.global.er.decoupling.binding.response.*;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.JAXBElement;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 
 /**
@@ -236,7 +227,7 @@ public class PurchaseApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 		final JAXBElement<Object> request = createRequest(PayloadConstants.ER_VERSION_INFO_REQUEST_PAYLOAD);
 
 		
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 		ErVersionInfoResponse response;
 		try {
 			response = sendRequestAndGetResponse(PayloadConstants.ER_VERSION_INFO_REQUEST_PAYLOAD, request, ErVersionInfoResponse.class);

@@ -3,6 +3,7 @@ package com.vodafone.global.er.decoupling.client;
 import com.vizzavi.ecommerce.business.charging.BaseAuthorization;
 import com.vizzavi.ecommerce.business.common.*;
 import com.vizzavi.ecommerce.business.selfcare.*;
+import com.vizzavi.ecommerce.common.Utils;
 import com.vodafone.config.ConfigProvider;
 import com.vodafone.global.er.business.selfcare.BalanceFilter;
 import com.vodafone.global.er.business.selfcare.MicroServiceStatus;
@@ -542,6 +543,19 @@ public class SelfcareApiDecouplingImpl extends BaseErApiDecouplingImpl implement
 			subFilType.setUseMaxEventsForTrans(filter.isUseMaxEventsForTransactions()); // MQC9072
 
 			subFilType.setTariff(filter.getTariff());
+
+			List<String> includeTxns = new ArrayList<>();
+
+			if(filter.includePaymentTxns())
+				includeTxns.add("payment");
+
+			if(filter.includeModifyTxns())
+				includeTxns.add("modify");
+
+			if(filter.includeRefundTxns())
+				includeTxns.add("refund");
+
+			subFilType.setIncludeTxns(Utils.StringifyList(includeTxns, ","));
 
 			request_.setSubscriptionFilter(subFilType);
 		}

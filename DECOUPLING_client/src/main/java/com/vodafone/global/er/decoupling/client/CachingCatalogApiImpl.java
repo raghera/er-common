@@ -25,7 +25,7 @@ import java.util.Map;
 class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
 
     private static final long	serialVersionUID	= -460035351009169974L;
-    static final Logger logger = LoggerFactory.getLogger("com.vodafone.global.er.decoupling.client.CachingCatalogApiImpl");
+	static final Logger logger = LoggerFactory.getLogger(CachingCatalogApiImpl.class);
 
     /**default cache thread sleep time - 30 minutes*/
     public static int cacheRefreshTimeSeconds=ConfigProvider.getPropertyAsInteger("decoupling.catalog.cache.time", 1800);
