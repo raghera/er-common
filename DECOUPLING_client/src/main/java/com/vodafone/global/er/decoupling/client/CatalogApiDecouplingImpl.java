@@ -263,13 +263,15 @@ public class CatalogApiDecouplingImpl extends BaseErApiDecouplingImpl implements
 		checkNullParams(pricePointId);
 		final GetPricepointRequest request = createRequest(PayloadConstants.GET_PRICEPOINT_REQUEST_PAYLOAD);
 		request.setPricepointId(pricePointId);
-		GetPricepointResponse jaxbResponse;
+		GetPricepointResponse response;
 		try {
-			jaxbResponse = sendRequestAndGetResponse(PayloadConstants.GET_PRICEPOINT_REQUEST_PAYLOAD, request, GetPricepointResponse.class);
+			response = sendRequestAndGetResponse(PayloadConstants.GET_PRICEPOINT_REQUEST_PAYLOAD, request, GetPricepointResponse.class);
+//			CatalogFullPricepoint fullResponse = sendRequestAndGetResponse(PayloadConstants.CATALOG_FULL_PRICEPOINT_REQUEST_PAYLOAD, request, CatalogFullPricepoint.class);
+//			return converter.convertFullPricePointType(fullResponse.getPricepoint(), null);
 		} catch (EcommerceException e) {
 			throw new EcommerceRuntimeException(e);
 		}
-		return converter.convertPricePointType(jaxbResponse.getPricePoint());
+		return converter.convertPricePointType(response.getPricePoint());
 
 	}
 
