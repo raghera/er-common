@@ -14,7 +14,7 @@
 	<groupId>com.vodafone.er</groupId>
 	<artifactId>ER_transactions_log</artifactId>
 	<version>0.52.0-SNAPSHOT</version>
-	<packaging>bundle</packaging>
+	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<description>${project.artifactId}, packaged with maven as a jar file (and also an osgi bundle)</description>
 

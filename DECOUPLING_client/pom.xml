@@ -16,7 +16,7 @@
     <groupId>com.vodafone.er</groupId>
     <artifactId>DECOUPLING_client</artifactId>
     <version>0.162.3-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>decoupling client, packaged with maven as a jar file (and also an osgi bundle)</description>
 

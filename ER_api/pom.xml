@@ -12,7 +12,7 @@
  	<groupId>com.vodafone.er</groupId>
 	<artifactId>ER_api</artifactId>
 	<version>0.1080.4-SNAPSHOT</version>
-	<packaging>bundle</packaging>
+	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<description>ER_api, packaged with maven as a jar file (and also an osgi bundle)</description>
 
