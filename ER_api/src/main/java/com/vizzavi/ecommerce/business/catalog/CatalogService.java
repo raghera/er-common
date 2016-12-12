@@ -456,6 +456,11 @@ public class CatalogService implements Serializable, CatalogBean	{
 			mPackageIds = new ArrayList<String>(copy.mPackageIds);	//required for fast rating
 		//ET126 missing fields in response for ES
 		this.mPaymentContent = copy.getPaymentContent();
+
+        if(copy.getPricePoints() != null) {
+            mPricePoints = new PricePointsImpl(copy.getPricePoints());
+        }
+
     }
 
     @Override

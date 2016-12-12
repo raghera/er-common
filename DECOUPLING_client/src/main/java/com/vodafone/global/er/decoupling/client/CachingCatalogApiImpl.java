@@ -127,7 +127,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
             CatalogService fromCache = localServiceCache.get(serviceId);
             if (fromCache!=null)	{	//if it's in the cache, use that
                 logger.info("found service {} in locale cache", serviceId);
-                return fromCache;
+				return new CatalogService(fromCache);
             }
         }	else	{
             //initialise cache
@@ -138,7 +138,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
         logger.info("service {} not found in locale cache - fetching from ER", serviceId);
         CatalogService fromER =  super.getService(serviceId);
         localServiceCache.put(serviceId, fromER);
-        return fromER;
+		return new CatalogService(fromER);
     }
 
     @Override
@@ -150,7 +150,7 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
             PricePoint fromCache = localPricePointCache.get(id);
             if (fromCache!=null)	{
                 logger.info("found ppt {} in locale cache", id);
-                return fromCache;
+				return new PricePoint(fromCache);
             }
         }	else	{
             //initialise cache
@@ -161,14 +161,13 @@ class CachingCatalogApiImpl extends CatalogApiDecouplingImpl  {
         logger.info("ppt {} not found in locale cache - fetching from ER", id);
         PricePoint fromER =  super.getPricePoint(id);
         localPricePointCache.put(id, fromER);
-        return fromER;
+		return new PricePoint(fromER);
     }
 
 
 
     private static void clearCachesForLocale(Locale locale) {
-        logger.info("CachingCatalogApiImpl.clearCachesForLocale to logger {}", locale);
-        logger.info("clearing caches for {}", locale);
+        logger.info("CachingCatalogApiImpl.clearCachesForLocale for {}", locale);
         simplePackageCache.put(locale, null);
         simpleServiceCache.put(locale, null);
         if (fullPackageCache.get(locale)!=null)
