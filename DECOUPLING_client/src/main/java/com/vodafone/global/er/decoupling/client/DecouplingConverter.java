@@ -874,10 +874,8 @@ class DecouplingConverter   {
                             boolean isCurrency = Long.valueOf(balanceImpactType_.getChargingResourceCode())>0 && Long.valueOf(balanceImpactType_.getChargingResourceCode())<1000;
                             double biRate = isCurrency ? ppType.getNetRate() : balanceImpactType_.getRate();
                             balanceImpact_ = new BalanceImpact(new ChargingResource(new Integer(balanceImpactType_.getChargingResourceCode()), ""), biRate, 0.0, !isCurrency?"CREDIT":"");
+                            balanceImpacts_.addBalanceImpact(balanceImpact_);
 
-                            if (balanceImpact_ != null) {
-                                balanceImpacts_.addBalanceImpact(balanceImpact_);
-                            }
                         } catch (NumberFormatException nfe) {
                             logger.warn("Could not parse BalanceImpact from Decoupling response string: " + balanceImpactType_.getChargingResourceCode());
                             logger.warn(nfe.getMessage());
